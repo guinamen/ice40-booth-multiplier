@@ -1,6 +1,6 @@
 # High-Performance 16-bit Mixed-Mode Booth Radix-8 Multiplier
 <div align="center">
-  ## (Optimized for Lattice iCE40 - Supports Signed & Unsigned Operations)
+  <h2> (Optimized for Lattice iCE40 - Supports Signed & Unsigned Operations) </h2>
 </div>
 
 
