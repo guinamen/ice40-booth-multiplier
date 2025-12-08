@@ -1,5 +1,8 @@
 # High-Performance 16-bit Mixed-Mode Booth Radix-8 Multiplier
-(Optimized for Lattice iCE40 - Supports Signed & Unsigned Operations)
+<div align="center">
+  ## (Optimized for Lattice iCE40 - Supports Signed & Unsigned Operations)
+</div>
+
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Verilog](https://img.shields.io/badge/language-Verilog-green)
