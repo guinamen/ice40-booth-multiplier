@@ -28,7 +28,7 @@ Synthesized using Yosys/Nextpnr for **iCE40HX8K-CT256**. Comparison against a st
 
 ## 📈 Waveform Verification
 
-![Simulation Waveform](waveform_booth.png)
+![Simulation Waveform](https://github.com/guinamen/ice40-booth-multiplier/blob/main/booth_multiplayer.png?raw=true)
 
 ## 🛠️ Usage
 
