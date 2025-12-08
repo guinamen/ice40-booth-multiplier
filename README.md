@@ -79,7 +79,7 @@ The bottleneck of the Booth Radix-8 algorithm is calculating the 3×M3×M term (
 ### The Optimization
 This design breaks that bottleneck by **pre-calculating the 3M term** during the setup cycle (when the start signal is active). The result is stored in a register.
     
-    **Result** : During the calculation loops, the MUX simply selects the pre-calculated value. The critical path is reduced to a simple MUX + Accumulator, allowing the clock speed to rise from ~110 MHz to ~133 MHz.
+**Result** : During the calculation loops, the MUX simply selects the pre-calculated value. The critical path is reduced to a simple MUX + Accumulator, allowing the clock speed to rise from ~110 MHz to ~133 MHz.
 
 ### Decomposition
 Instead of a single 16-bit iterative core, the design splits the operation into four 8-bit multiplications (L×LL×L,H×LH×L,L×HL×H,H×HH×H) running in parallel. This keeps the carry chains short and manageable for the FPGA routing fabric.
