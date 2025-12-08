@@ -1,0 +1,373 @@
+======================================================
+  Análise de Timing: booth_radix8_multiplier
+======================================================
+1. Síntese (Yosys)... OK
+2. P&R (nextpnr)...   Warning: No PCF file specified; IO pins will be placed automatically
+
+Info: Packing constants..
+Info: Packing IOs..
+Info: Packing LUT-FFs..
+Info:      239 LCs used as LUT4 only
+Info:      114 LCs used as LUT4 and DFF
+Info: Packing non-LUT FFs..
+Info:      128 LCs used as DFF only
+Info: Packing carries..
+Info:        4 LCs used as CARRY only
+Info: Packing indirect carry+LUT pairs...
+Info:        4 LUTs merged into carry LCs
+Info: Packing RAMs..
+Info: Placing PLLs..
+Info: Packing special functions..
+Info: Packing PLLs..
+Info: Promoting globals..
+Info: promoting clk$SB_IO_IN (fanout 242)
+Info: promoting rst_n_SB_LUT4_I3_O [reset] (fanout 242)
+Info: promoting state_SB_LUT4_I2_O[0] [cen] (fanout 32)
+Info: promoting mult0.active_SB_DFFR_Q_D [cen] (fanout 21)
+Info: promoting mult1.active_SB_DFFR_Q_D [cen] (fanout 21)
+Info: promoting mult2.active_SB_DFFR_Q_D [cen] (fanout 21)
+Info: Constraining chains...
+Info:        5 LCs used to legalise carry chains.
+Info: Checksum: 0xfb58fd0c
+
+Info: Annotating ports with timing budgets for target frequency 12.00 MHz
+Info: Checksum: 0x6336f2eb
+
+Info: Device utilisation:
+Info:            ICESTORM_LC:   488/ 7680     6%
+Info:           ICESTORM_RAM:     0/   32     0%
+Info:                  SB_IO:    71/  256    27%
+Info:                  SB_GB:     6/    8    75%
+Info:           ICESTORM_PLL:     0/    2     0%
+Info:            SB_WARMBOOT:     0/    1     0%
+
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 409 cells, random placement wirelen = 15158.
+Info:     at initial placer iter 0, wirelen = 1913
+Info:     at initial placer iter 1, wirelen = 1781
+Info:     at initial placer iter 2, wirelen = 1698
+Info:     at initial placer iter 3, wirelen = 1707
+Info: Running main analytical placer.
+Info:     at iteration #1, type ALL: wirelen solved = 1723, spread = 3125, legal = 3499; time = 0.02s
+Info:     at iteration #2, type ALL: wirelen solved = 1821, spread = 3116, legal = 3385; time = 0.02s
+Info:     at iteration #3, type ALL: wirelen solved = 1851, spread = 3086, legal = 3399; time = 0.02s
+Info:     at iteration #4, type ALL: wirelen solved = 1949, spread = 3206, legal = 3477; time = 0.02s
+Info:     at iteration #5, type ALL: wirelen solved = 2053, spread = 3143, legal = 3715; time = 0.02s
+Info:     at iteration #6, type ALL: wirelen solved = 2118, spread = 3293, legal = 3732; time = 0.02s
+Info:     at iteration #7, type ALL: wirelen solved = 2165, spread = 3152, legal = 3534; time = 0.01s
+Info: HeAP Placer Time: 0.15s
+Info:   of which solving equations: 0.10s
+Info:   of which spreading cells: 0.01s
+Info:   of which strict legalisation: 0.03s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 29, wirelen = 3385
+Info:   at iteration #5: temp = 0.000000, timing cost = 21, wirelen = 2633
+Info:   at iteration #10: temp = 0.000000, timing cost = 21, wirelen = 2491
+Info:   at iteration #15: temp = 0.000000, timing cost = 17, wirelen = 2452
+Info:   at iteration #17: temp = 0.000000, timing cost = 21, wirelen = 2415
+Info: SA placement time 0.22s
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 103.39 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 7.76 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 3.58 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 2 endpoint(s)
+Info:          + represents [1,2) endpoint(s)
+Info: [ 73661,  74072) |********+
+Info: [ 74072,  74483) |******+
+Info: [ 74483,  74894) |******+
+Info: [ 74894,  75305) |
+Info: [ 75305,  75716) |****+
+Info: [ 75716,  76127) |****************+
+Info: [ 76127,  76538) |***********+
+Info: [ 76538,  76949) |********+
+Info: [ 76949,  77360) |***********+
+Info: [ 77360,  77771) |******************+
+Info: [ 77771,  78182) |****************+
+Info: [ 78182,  78593) |******************+
+Info: [ 78593,  79004) |*********************************************+
+Info: [ 79004,  79415) |************************************************************
+Info: [ 79415,  79826) |**********************+
+Info: [ 79826,  80237) |**********************************+
+Info: [ 80237,  80648) |**************************+
+Info: [ 80648,  81059) |******************************************+
+Info: [ 81059,  81470) |**********************************+
+Info: [ 81470,  81881) |***********************************************+
+Info: Checksum: 0x326cac14
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 1671 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       85        859 |   85   859 |       767|       0.16       0.16|
+Info:       1935 |      218       1648 |  133   789 |         0|       0.32       0.48|
+Info: Routing complete.
+Info: Router1 time 0.48s
+Info: Checksum: 0xd0076b1e
+
+Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
+Info: curr total
+Info:  0.5  0.5  Source mult2.prod_reg_SB_DFFER_Q_15_D_SB_LUT4_O_LC.O
+Info:  1.0  1.5    Net mult2.booth_bits[2] budget 16.070999 ns (9,9) -> (10,12)
+Info:                Sink mult2.operand_SB_LUT4_O_8_I0_SB_LUT4_O_LC.I1
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:27.32-27.40
+Info:  0.4  1.9  Source mult2.operand_SB_LUT4_O_8_I0_SB_LUT4_O_LC.O
+Info:  0.6  2.5    Net mult2.operand_SB_LUT4_O_1_I0[2] budget 16.070000 ns (10,12) -> (9,13)
+Info:                Sink mult2.operand_SB_LUT4_O_9_I2_SB_LUT4_O_LC.I0
+Info:                Defined in:
+Info:                  /usr/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.4  2.9  Source mult2.operand_SB_LUT4_O_9_I2_SB_LUT4_O_LC.O
+Info:  1.3  4.3    Net mult2.operand_SB_LUT4_O_9_I2[0] budget 16.070000 ns (9,13) -> (9,8)
+Info:                Sink mult2.inv_SB_CARRY_CI$CARRY.I0
+Info:                Defined in:
+Info:                  /usr/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.4  4.7  Source mult2.inv_SB_CARRY_CI$CARRY.O
+Info:  0.6  5.3    Net mult2.operand[0] budget 16.070000 ns (9,8) -> (9,8)
+Info:                Sink mult2.inv_SB_CARRY_CI$CARRY.I1
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:73.33-73.40
+Info:  0.3  5.6  Source mult2.inv_SB_CARRY_CI$CARRY.COUT
+Info:  0.0  5.6    Net mult2.inv_SB_CARRY_CI_CO[1] budget 0.000000 ns (9,8) -> (9,8)
+Info:                Sink mult2.sum_result_SB_LUT4_O_1_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  5.7  Source mult2.sum_result_SB_LUT4_O_1_LC.COUT
+Info:  0.0  5.7    Net mult2.inv_SB_CARRY_CI_CO[2] budget 0.000000 ns (9,8) -> (9,8)
+Info:                Sink mult2.sum_result_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  5.8  Source mult2.sum_result_SB_LUT4_O_LC.COUT
+Info:  0.0  5.8    Net mult2.inv_SB_CARRY_CI_CO[3] budget 0.000000 ns (9,8) -> (9,8)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_7_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  5.9  Source mult2.prod_reg_SB_DFFER_Q_7_D_SB_LUT4_O_LC.COUT
+Info:  0.0  5.9    Net mult2.inv_SB_CARRY_CI_CO[4] budget 0.000000 ns (9,8) -> (9,8)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_6_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.1  Source mult2.prod_reg_SB_DFFER_Q_6_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.1    Net mult2.inv_SB_CARRY_CI_CO[5] budget 0.000000 ns (9,8) -> (9,8)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_5_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.2  Source mult2.prod_reg_SB_DFFER_Q_5_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.2    Net mult2.inv_SB_CARRY_CI_CO[6] budget 0.000000 ns (9,8) -> (9,8)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_4_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.3  Source mult2.prod_reg_SB_DFFER_Q_4_D_SB_LUT4_O_LC.COUT
+Info:  0.2  6.5    Net mult2.inv_SB_CARRY_CI_CO[7] budget 0.190000 ns (9,8) -> (9,9)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_3_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.6  Source mult2.prod_reg_SB_DFFER_Q_3_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.6    Net mult2.inv_SB_CARRY_CI_CO[8] budget 0.000000 ns (9,9) -> (9,9)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_2_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.8  Source mult2.prod_reg_SB_DFFER_Q_2_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.8    Net mult2.inv_SB_CARRY_CI_CO[9] budget 0.000000 ns (9,9) -> (9,9)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_1_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.9  Source mult2.prod_reg_SB_DFFER_Q_1_D_SB_LUT4_O_LC.COUT
+Info:  0.3  7.1    Net mult2.inv_SB_CARRY_CI_CO[10] budget 0.260000 ns (9,9) -> (9,9)
+Info:                Sink mult2.prod_reg_SB_DFFER_Q_D_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:185.17-190.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.3  7.5  Setup mult2.prod_reg_SB_DFFER_Q_D_SB_LUT4_O_LC.I3
+Info: 3.6 ns logic, 3.9 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge clk$SB_IO_IN_$glb_clk':
+Info: curr total
+Info:  0.0  0.0  Source multiplicand[0]$sb_io.D_IN_0
+Info:  3.0  3.0    Net a_low[0] budget 20.407000 ns (33,13) -> (7,7)
+Info:                Sink mult0.operand_SB_LUT4_O_9_I2_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:139.41-139.53
+Info:  0.3  3.3  Source mult0.operand_SB_LUT4_O_9_I2_SB_LUT4_O_LC.O
+Info:  1.3  4.6    Net mult0.operand_SB_LUT4_O_9_I2[0] budget 16.111000 ns (7,7) -> (9,5)
+Info:                Sink mult0.inv_SB_CARRY_CI$CARRY.I0
+Info:                Defined in:
+Info:                  /usr/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.4  5.0  Source mult0.inv_SB_CARRY_CI$CARRY.O
+Info:  0.6  5.6    Net mult0.operand[0] budget 16.111000 ns (9,5) -> (9,5)
+Info:                Sink mult0.inv_SB_CARRY_CI$CARRY.I2
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:73.33-73.40
+Info:  0.2  5.8  Source mult0.inv_SB_CARRY_CI$CARRY.COUT
+Info:  0.0  5.8    Net mult0.inv_SB_CARRY_CI_CO[1] budget 0.000000 ns (9,5) -> (9,5)
+Info:                Sink mult0.sum_result_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.0  Source mult0.sum_result_SB_LUT4_O_LC.COUT
+Info:  0.0  6.0    Net mult0.inv_SB_CARRY_CI_CO[2] budget 0.000000 ns (9,5) -> (9,5)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_8_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.1  Source mult0.prod_reg_SB_DFFER_Q_8_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.1    Net mult0.inv_SB_CARRY_CI_CO[3] budget 0.000000 ns (9,5) -> (9,5)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_7_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.2  Source mult0.prod_reg_SB_DFFER_Q_7_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.2    Net mult0.inv_SB_CARRY_CI_CO[4] budget 0.000000 ns (9,5) -> (9,5)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_6_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.3  Source mult0.prod_reg_SB_DFFER_Q_6_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.3    Net mult0.inv_SB_CARRY_CI_CO[5] budget 0.000000 ns (9,5) -> (9,5)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_5_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.5  Source mult0.prod_reg_SB_DFFER_Q_5_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.5    Net mult0.inv_SB_CARRY_CI_CO[6] budget 0.000000 ns (9,5) -> (9,5)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_4_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.6  Source mult0.prod_reg_SB_DFFER_Q_4_D_SB_LUT4_O_LC.COUT
+Info:  0.2  6.8    Net mult0.inv_SB_CARRY_CI_CO[7] budget 0.190000 ns (9,5) -> (9,6)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_3_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  6.9  Source mult0.prod_reg_SB_DFFER_Q_3_D_SB_LUT4_O_LC.COUT
+Info:  0.0  6.9    Net mult0.inv_SB_CARRY_CI_CO[8] budget 0.000000 ns (9,6) -> (9,6)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_2_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  7.0  Source mult0.prod_reg_SB_DFFER_Q_2_D_SB_LUT4_O_LC.COUT
+Info:  0.0  7.0    Net mult0.inv_SB_CARRY_CI_CO[9] budget 0.000000 ns (9,6) -> (9,6)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_1_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.1  7.2  Source mult0.prod_reg_SB_DFFER_Q_1_D_SB_LUT4_O_LC.COUT
+Info:  0.3  7.4    Net mult0.inv_SB_CARRY_CI_CO[10] budget 0.260000 ns (9,6) -> (9,6)
+Info:                Sink mult0.prod_reg_SB_DFFER_Q_D_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:169.17-174.6
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:77.46-77.98
+Info:                  /usr/bin/../share/yosys/ice40/arith_map.v:51.21-51.22
+Info:  0.3  7.8  Setup mult0.prod_reg_SB_DFFER_Q_D_SB_LUT4_O_LC.I3
+Info: 2.5 ns logic, 5.3 ns routing
+
+Info: Critical path report for cross-domain path 'posedge clk$SB_IO_IN_$glb_clk' -> '<async>':
+Info: curr total
+Info:  0.5  0.5  Source result_temp_SB_LUT4_O_8_LC.O
+Info:  3.2  3.7    Net product[24]$SB_IO_OUT budget 82.792999 ns (13,7) -> (17,33)
+Info:                Sink product[24]$sb_io.D_OUT_0
+Info:                Defined in:
+Info:                  booth_radix8_circular_su_decomposto_pipeline.v:142.41-142.48
+Info: 0.5 ns logic, 3.2 ns routing
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 133.62 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 7.75 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 3.71 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 4 endpoint(s)
+Info:          + represents [1,4) endpoint(s)
+Info: [ 75581,  75900) |*+
+Info: [ 75900,  76219) |*+
+Info: [ 76219,  76538) |********+
+Info: [ 76538,  76857) |***+
+Info: [ 76857,  77176) |****+
+Info: [ 77176,  77495) |****************+
+Info: [ 77495,  77814) |******+
+Info: [ 77814,  78133) |************+
+Info: [ 78133,  78452) |******+
+Info: [ 78452,  78771) |****+
+Info: [ 78771,  79090) |***+
+Info: [ 79090,  79409) |********+
+Info: [ 79409,  79728) |********+
+Info: [ 79728,  80047) |***********+
+Info: [ 80047,  80366) |*******+
+Info: [ 80366,  80685) |******+
+Info: [ 80685,  81004) |************************************************************
+Info: [ 81004,  81323) |****************+
+Info: [ 81323,  81642) |*******+
+Info: [ 81642,  81961) |***********************+
+1 warning, 0 errors
+
+Info: Program finished normally.
+OK
+
+======================================================
+  RELATÓRIO DE PERFORMANCE
+======================================================
+Clock Domain:      clk$SB_IO_IN_$glb_clk
+Frequência Máxima: 133.62 MHz
+
+  UTILIZAÇÃO DE RECURSOS
+------------------------------------------------------
+Logic Cells (LCs):               ICESTORM_LC:   488/ 7680     6%
+Block RAMs:                     ICESTORM_RAM:     0/   32     0%
+IO Pins:                               SB_IO:    71/  256    27%
+
+  CAMINHO CRÍTICO (icetime)
+------------------------------------------------------
+     3.137 ns ..  4.350 ns mult0.operand_SB_LUT4_O_9_I2[0]
+     4.799 ns ..  5.388 ns mult0.operand[0]
+     5.648 ns ..  5.648 ns mult0.inv_SB_CARRY_CI_CO[1]
+     5.774 ns ..  5.774 ns mult0.inv_SB_CARRY_CI_CO[2]
+     5.900 ns ..  5.900 ns mult0.inv_SB_CARRY_CI_CO[3]
+     6.026 ns ..  6.026 ns mult0.inv_SB_CARRY_CI_CO[4]
+     6.153 ns ..  6.153 ns mult0.inv_SB_CARRY_CI_CO[5]
+     6.279 ns ..  6.279 ns mult0.inv_SB_CARRY_CI_CO[6]
+     6.405 ns ..  6.601 ns mult0.inv_SB_CARRY_CI_CO[7]
+     6.728 ns ..  6.728 ns mult0.inv_SB_CARRY_CI_CO[8]
+     6.854 ns ..  6.854 ns mult0.inv_SB_CARRY_CI_CO[9]
+     6.980 ns ..  7.240 ns mult0.inv_SB_CARRY_CI_CO[10]
+                  lcout -> mult0.acc_upper[10]
+
+Total number of logic levels: 13
+Total path delay: 7.46 ns (134.10 MHz)
+
+======================================================
