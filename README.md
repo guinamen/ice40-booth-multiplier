@@ -26,9 +26,9 @@ Synthesized using Yosys/Nextpnr for **iCE40HX8K-CT256**. Comparison against a st
 | **Total Execution Time** | ~175.4 ns | **~52.4 ns** | **3.3x Faster Calculation** |
 | **Area (Logic Cells)** | ~340 LCs | **~488 LCs** | +43% Area (Trade-off) |
 
-## Waveform
-![GtkWave printscrean](https://github.com/guinamen/ice40-booth-multiplier/blob/main/booth_multiplayer.png?raw=true)
+## 📈 Waveform Verification
 
+![Simulation Waveform](waveform_booth.png)
 
 ## 🛠️ Usage
 
