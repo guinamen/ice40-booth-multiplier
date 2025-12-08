@@ -39,7 +39,7 @@ booth_radix8_multiplier #(
     .start(start_signal),       // One-cycle pulse to start
     .multiplicand(op_a),        // 16-bit input A
     .multiplier(op_b),          // 16-bit input B
-    .sign_mode(2'b11),          // Mode control (see below)
+    .sign_mode(2'b11),          // Mode control for [AB] -> 0 unsigned 1 signed. 
     .product(result),           // 32-bit output
     .done(done_signal),         // High when result is ready
     .busy(busy_signal)          // High while calculating
