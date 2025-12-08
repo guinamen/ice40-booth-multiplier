@@ -50,7 +50,7 @@ booth_radix8_multiplier #(
 );
 ```
 
-###Sign Modes (sign_mode)
+### Sign Modes (sign_mode)
 
 This core handles bit extension automatically based on the selected mode:
 
@@ -59,7 +59,7 @@ This core handles bit extension automatically based on the selected mode:
     2'b10: Signed × Unsigned (A is Signed, B is Unsigned)
     2'b11: Signed × Signed (Standard behavior)
 
-##⚡ How to Simulate
+## ⚡ How to Simulate
 
 Prerequisites: Icarus Verilog and GTKWave.
 ```bash
@@ -70,7 +70,7 @@ vvp sim_mult.out
 gtkwave dump.vcd
 ```
 
-##⚙️ Architectural Details
+## ⚙️ Architectural Details
 
 ###The "Hard 3M" Problem
 
@@ -83,6 +83,6 @@ This design breaks that bottleneck by **pre-calculating the 3M term** during the
 ###Decomposition
 Instead of a single 16-bit iterative core, the design splits the operation into four 8-bit multiplications (L×LL×L,H×LH×L,L×HL×H,H×HH×H) running in parallel. This keeps the carry chains short and manageable for the FPGA routing fabric.
 
-##📄 License
+## 📄 License
 
 This project is open-source and available under the MIT License.
