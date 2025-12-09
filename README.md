@@ -7,44 +7,60 @@
 ```mermaid
 graph TD
     subgraph INPUTS ["Input Decomposition"]
-        A[Operand A (16-bit)] --> A_H[A High] & A_L[A Low]
-        B[Operand B (16-bit)] --> B_H[B High] & B_L[B Low]
+        A["Operand A (16-bit)"] --> A_H["A High"]
+        A --> A_L["A Low"]
+        B["Operand B (16-bit)"] --> B_H["B High"]
+        B --> B_L["B Low"]
     end
 
     subgraph PARALLEL_CORES ["Parallel Execution Engine (5 Cycles)"]
         direction LR
-        note1[Features:<br/>- Flattened Control Logic<br/>- Look-Ahead 3M Calc]
         
-        M0[<b>Core P0</b><br/>Low x Low]
-        M1[<b>Core P1</b><br/>High x Low]
-        M2[<b>Core P2</b><br/>Low x High]
-        M3[<b>Core P3</b><br/>High x High]
+        M0["Core P0<br/>(Low x Low)"]
+        M1["Core P1<br/>(High x Low)"]
+        M2["Core P2<br/>(Low x High)"]
+        M3["Core P3<br/>(High x High)"]
 
-        A_L & B_L --> M0
-        A_H & B_L --> M1
-        A_L & B_H --> M2
-        A_H & B_H --> M3
+        A_L --> M0
+        B_L --> M0
+        A_H --> M1
+        B_L --> M1
+        A_L --> M2
+        B_H --> M2
+        A_H --> M3
+        B_H --> M3
     end
 
     subgraph SPLIT_ADDER ["Optimized Split-Adder Topology"]
-        P0_L[P0 Low Byte] --- WIRE_FAST[Direct Wire<br/>(No Delay)]
+        P0_L["P0 Low Byte"]
+        P0_H["P0 High Byte"]
+        P1["P1"]
+        P2["P2"]
+        P3["P3"]
+
+        P0_L --- WIRE_FAST["Direct Wire<br/>(No Delay)"]
         
-        P1 & P2 --> ADD1(<b>Adder 1</b><br/>18-bit Intermediate)
+        P1 --> ADD1("Adder 1<br/>(18-bit Intermediate)")
+        P2 --> ADD1
         
-        ADD1 --> EXT[Sign Ext]
-        P3 & P0_H[P0 High Byte] --> BASE[Base Upper]
+        ADD1 --> EXT["Sign Ext"]
+        P3 --> BASE["Base Upper"]
+        P0_H --> BASE
         
-        BASE & EXT --> ADD2(<b>Adder 2</b><br/>24-bit Final Upper)
+        BASE --> ADD2("Adder 2<br/>(24-bit Final Upper)")
+        EXT --> ADD2
     end
 
     subgraph RESULT ["Output"]
-        ADD2 --> RES_H[Result Upper]
-        WIRE_FAST --> RES_L[Result Lower]
-        RES_H & RES_L --> OUT([<b>Final Product</b><br/>32-bit])
+        ADD2 --> RES_H["Result Upper"]
+        WIRE_FAST --> RES_L["Result Lower"]
+        RES_H --> OUT([Final Product 32-bit])
+        RES_L --> OUT
     end
 
-    %% Connections specific to data flow
-    M0 --> P0_L & P0_H
+    %% Wiring connections between subgraphs
+    M0 --> P0_L
+    M0 --> P0_H
     M1 --> P1
     M2 --> P2
     M3 --> P3
