@@ -60,6 +60,7 @@ booth_radix8_multiplier #(
 ### Sign Modes (sign_mode)
 
 This core handles bit extension automatically based on the selected mode:
+    
     2'b00: Unsigned × Unsigned
     2'b01: Unsigned × Signed (A is Unsigned, B is Signed)
     2'b10: Signed × Unsigned (A is Signed, B is Unsigned)
