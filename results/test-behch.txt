@@ -71,20 +71,3 @@ Test #40000 PASSED: 16627 × 17859 = 296941593 [mode=01]
 
   ✓ TODOS OS TESTES PASSARAM!
 ========================================
-================================================================
-=== Iniciando Testes do Multiplicador Booth Radix-8 (16-bit) ===
-
---- Testes Básicos ---
-
---- Testes de Corner Cases ---
-
---- Testes de Modos Mistos ---
-
---- Testes Aleatórios (200 iterações) ---
-
-=======================================================
-RESULTADO FINAL:
-Passaram: 214
-Falharam: 0
-=======================================================
-
