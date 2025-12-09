@@ -71,3 +71,29 @@ Test #40000 PASSED: 16627 × 17859 = 296941593 [mode=01]
 
   ✓ TODOS OS TESTES PASSARAM!
 ========================================
+
+VCD info: dumpfile booth_mult.vcd opened for output.
+=== Iniciando Testes do Multiplicador Booth Radix-8 (16-bit) ===
+
+--- Testes Básicos ---
+
+--- Testes de Corner Cases ---
+
+--- Testes de Modos Mistos ---
+
+--- Testes Aleatórios (200 iterações) ---
+
+=======================================================
+RESULTADO FINAL:
+Passaram: 214
+Falharam: 0
+=======================================================
+SUCESSO: O design passou em todos os testes!
+Starting edge-value cross-product tests...
+ Mode = 00
+ Mode = 01
+ Mode = 10
+ Mode = 11
+Running low-byte sweep (A=1, B=0..255) for mode 00...
+Running randomized tests (small batch)...
+[TESTBENCH] All tests passed (errors = 0).
