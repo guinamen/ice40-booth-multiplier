@@ -4,6 +4,55 @@
   <h3>🚀 Now v2.0: Faster (145 MHz), Lower Latency (5 Cycles), and Smaller Area!</h3>
 </div>
 
+```mermaid
+graph TD
+    subgraph INPUTS ["Input Decomposition"]
+        A[Operand A (16-bit)] --> A_H[A High] & A_L[A Low]
+        B[Operand B (16-bit)] --> B_H[B High] & B_L[B Low]
+    end
+
+    subgraph PARALLEL_CORES ["Parallel Execution Engine (5 Cycles)"]
+        direction LR
+        note1[Features:<br/>- Flattened Control Logic<br/>- Look-Ahead 3M Calc]
+        
+        M0[<b>Core P0</b><br/>Low x Low]
+        M1[<b>Core P1</b><br/>High x Low]
+        M2[<b>Core P2</b><br/>Low x High]
+        M3[<b>Core P3</b><br/>High x High]
+
+        A_L & B_L --> M0
+        A_H & B_L --> M1
+        A_L & B_H --> M2
+        A_H & B_H --> M3
+    end
+
+    subgraph SPLIT_ADDER ["Optimized Split-Adder Topology"]
+        P0_L[P0 Low Byte] --- WIRE_FAST[Direct Wire<br/>(No Delay)]
+        
+        P1 & P2 --> ADD1(<b>Adder 1</b><br/>18-bit Intermediate)
+        
+        ADD1 --> EXT[Sign Ext]
+        P3 & P0_H[P0 High Byte] --> BASE[Base Upper]
+        
+        BASE & EXT --> ADD2(<b>Adder 2</b><br/>24-bit Final Upper)
+    end
+
+    subgraph RESULT ["Output"]
+        ADD2 --> RES_H[Result Upper]
+        WIRE_FAST --> RES_L[Result Lower]
+        RES_H & RES_L --> OUT([<b>Final Product</b><br/>32-bit])
+    end
+
+    %% Connections specific to data flow
+    M0 --> P0_L & P0_H
+    M1 --> P1
+    M2 --> P2
+    M3 --> P3
+
+    style SPLIT_ADDER fill:#e1f5fe,stroke:#01579b,stroke-width:2px,stroke-dasharray: 5 5
+    style PARALLEL_CORES fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style WIRE_FAST stroke:#00c853,stroke-width:4px
+```
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Verilog](https://img.shields.io/badge/language-Verilog-green)
 ![FPGA](https://img.shields.io/badge/target-Lattice%20iCE40-purple)
