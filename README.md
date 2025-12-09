@@ -5,66 +5,68 @@
 </div>
 
 ```mermaid
-graph TD
-    subgraph INPUTS ["Input Decomposition"]
-        A["Operand A (16-bit)"] --> A_H["A High"]
+graph LR
+    subgraph INPUTS ["1. Input Decomposition"]
+        direction TB
+        A["Operand A (16-bit)"]
+        B["Operand B (16-bit)"]
+        
+        A --> A_H["A High"]
         A --> A_L["A Low"]
-        B["Operand B (16-bit)"] --> B_H["B High"]
+        B --> B_H["B High"]
         B --> B_L["B Low"]
     end
 
-    subgraph PARALLEL_CORES ["Parallel Execution Engine (5 Cycles)"]
-        direction LR
-        
+    subgraph PARALLEL_CORES ["2. Parallel Execution (5 Cycles)"]
+        direction TB
         M0["Core P0<br/>(Low x Low)"]
         M1["Core P1<br/>(High x Low)"]
         M2["Core P2<br/>(Low x High)"]
         M3["Core P3<br/>(High x High)"]
-
-        A_L --> M0
-        B_L --> M0
-        A_H --> M1
-        B_L --> M1
-        A_L --> M2
-        B_H --> M2
-        A_H --> M3
-        B_H --> M3
     end
 
-    subgraph SPLIT_ADDER ["Optimized Split-Adder Topology"]
+    subgraph SPLIT_ADDER ["3. Split-Adder Topology"]
+        direction TB
         P0_L["P0 Low Byte"]
-        P0_H["P0 High Byte"]
-        P1["P1"]
-        P2["P2"]
-        P3["P3"]
-
-        P0_L --- WIRE_FAST["Direct Wire<br/>(No Delay)"]
         
-        P1 --> ADD1("Adder 1<br/>(18-bit Intermediate)")
-        P2 --> ADD1
+        ADD1("Adder 1<br/>(18-bit Mid)")
+        ADD2("Adder 2<br/>(24-bit Upper)")
         
-        ADD1 --> EXT["Sign Ext"]
-        P3 --> BASE["Base Upper"]
-        P0_H --> BASE
-        
-        BASE --> ADD2("Adder 2<br/>(24-bit Final Upper)")
-        EXT --> ADD2
+        EXT["Sign Ext"]
+        BASE["Base Upper"]
     end
 
-    subgraph RESULT ["Output"]
-        ADD2 --> RES_H["Result Upper"]
-        WIRE_FAST --> RES_L["Result Lower"]
-        RES_H --> OUT([Final Product 32-bit])
-        RES_L --> OUT
+    subgraph RESULT ["4. Output"]
+        OUT([Final Product 32-bit])
     end
 
-    %% Wiring connections between subgraphs
+    %% Wiring connections - Input to Cores
+    A_L --> M0
+    B_L --> M0
+    A_H --> M1
+    B_L --> M1
+    A_L --> M2
+    B_H --> M2
+    A_H --> M3
+    B_H --> M3
+
+    %% Wiring connections - Cores to Adder
     M0 --> P0_L
-    M0 --> P0_H
-    M1 --> P1
-    M2 --> P2
-    M3 --> P3
+    M0 --> BASE
+    M1 --> ADD1
+    M2 --> ADD1
+    M3 --> BASE
 
+    %% Internal Adder Wiring
+    ADD1 --> EXT
+    EXT --> ADD2
+    BASE --> ADD2
+    
+    %% Wiring to Output
+    P0_L --- WIRE_FAST["Direct Wire<br/>(No Delay)"] --> OUT
+    ADD2 --> OUT
+
+    %% Styling
     style SPLIT_ADDER fill:#e1f5fe,stroke:#01579b,stroke-width:2px,stroke-dasharray: 5 5
     style PARALLEL_CORES fill:#fff3e0,stroke:#e65100,stroke-width:2px
     style WIRE_FAST stroke:#00c853,stroke-width:4px
