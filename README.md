@@ -79,7 +79,7 @@ gtkwave dump.vcd
 
 ## ⚡ How to Synthesize 
 
-Prerequisites: Icarus Verilog and GTKWave.
+Prerequisites: Yosys and Icetime.
 ```bash
 script/synthesis.sh rtl/booth_radix8_multiplier.v
 ```
