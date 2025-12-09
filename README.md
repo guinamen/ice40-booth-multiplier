@@ -12,8 +12,8 @@ A highly optimized, soft-core 16-bit multiplier designed specifically for Lattic
 
 ## 📈 Waveform Verification
 
-![Simulation Waveform](https://github.com/guinamen/ice40-booth-multiplier/blob/main/booth_multiplayer2.png?raw=true)
-![Simulation Waveform](https://github.com/guinamen/ice40-booth-multiplier/blob/main/booth_multiplayer.png?raw=true)
+![Simulation Waveform](doc/waveform.png?raw=true))
+![Simulation Waveform](doc/gtk_wave.png?raw=true)
 
 ## 🚀 Key Features
 
