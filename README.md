@@ -4,6 +4,8 @@
   <h3>🚀 Now v2.0: Faster (145 MHz), Lower Latency (5 Cycles), and Smaller Area!</h3>
 </div>
 
+
+## 📊 High-Level Diagram
 ```mermaid
 graph LR
     subgraph INPUTS ["1. Input Decomposition"]
