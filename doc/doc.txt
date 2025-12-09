@@ -1,5 +1,5 @@
 ================================================================================
-PROJECT: High-Performance 16-bit Booth Radix-8 Multiplier (Soft-Core)
+PROJECT: High-Performance 16-bit Booth Radix-8 Multiplier (Soft-Core) v2.0
 PLATFORM: Lattice iCE40 FPGA
 AUTHOR: Guilherme Namen
 REPOSITORY: https://github.com/guinamen/ice40-booth-multiplier
@@ -8,97 +8,88 @@ LICENSE: MIT
 
 1. EXECUTIVE SUMMARY
 --------------------------------------------------------------------------------
-This document details the architecture and performance of a specialized 16-bit
-multiplier IP Core designed for the Lattice iCE40 FPGA family.
+This document details the architecture and performance of a highly optimized 
+16-bit multiplier IP Core designed for the Lattice iCE40 FPGA family.
 
 The primary goal was to create a high-speed multiplication unit using only soft 
 logic (LUTs and Carry Chains), avoiding the usage of hard-wired DSP blocks. 
-By implementing a Parallel Booth Radix-8 algorithm with specific timing 
-optimizations, the core achieves an operating frequency of >133 MHz and a total
-latency of 52ns, significantly outperforming standard serial implementations.
+Through a combination of **Parallel Booth Radix-8**, **Flattened Control Logic**, 
+and a **Split-Adder Topology**, the core achieves an operating frequency of 
+**~145 MHz** and a deterministic latency of just **5 cycles** (~34.5ns).
+
+Notably, this version achieves a simultaneous improvement in Power, Performance, 
+and Area (PPA) compared to previous iterations, delivering higher speed while 
+consuming fewer logic resources (~5% of iCE40HX8K).
 
 2. ARCHITECTURAL DESIGN & METHODS
 --------------------------------------------------------------------------------
 The design overcomes the traditional trade-off between Area and Speed through
-three distinct engineering methods:
+four distinct engineering methods:
 
 2.1. PARALLEL DECOMPOSITION (DIVIDE AND CONQUER)
-Instead of implementing a monolithic 16-bit Booth multiplier, the design
-decomposes the operation into four independent 8-bit multiplications:
-    - P0: Low  x Low
-    - P1: High x Low
-    - P2: Low  x High
-    - P3: High x High
+The 16-bit operation is decomposed into four independent 8-bit cores running
+in parallel:
+    - P0 (Low x Low)
+    - P1 (High x Low)
+    - P2 (Low x High)
+    - P3 (High x High)
+    This reduces the depth of internal carry chains and improves routing efficiency.
 
+2.2. BOOTH RADIX-8 WITH MAGNITUDE SYMMETRY
+    Standard Booth implementations often suffer from complex decoding logic.
+    This design uses **Magnitude Symmetry** to map positive and negative Booth
+    encodings to the same absolute values, reducing the Multiplexer complexity.
+    Processing 3 bits per cycle reduces the iterative loop to just 3 steps.
+
+2.3. CRITICAL PATH OPTIMIZATION: FLATTENED CONTROL MUX
+    The bottleneck in FPGA multipliers is often the logic depth before the adder.
+    
     Method:
-    These four cores run in parallel. The final result is reconstructed using 
-    combinational logic: Result = (P3 << 16) + (P2 << 8) + (P1 << 8) + P0.
+    Instead of a cascaded "Decode -> Select -> Invert -> Add" path, this design
+    calculates selection signals (1x, 2x, 3x, 4x) and inversion flags in parallel
+    using "Flattened" logic. The 3x term is still pre-calculated in the setup
+    cycle ("Look-Ahead"), but the selection logic now fits into a single level 
+    of LUTs before the carry chain.
 
     Gain:
-    This reduces the depth of the internal carry chains and the complexity of
-    the multiplexers inside each core, improving routing efficiency on the 
-    FPGA fabric.
+    - Reduced logic depth from ~13 levels to ~9 levels inside the loop.
+    - Enabled the reduction of pipeline latency from 7 cycles to 5 cycles.
 
-2.2. BOOTH RADIX-8 ALGORITHM
-Standard "Shift-and-Add" multipliers process 1 bit per clock cycle. 
-This core uses the Booth Radix-8 algorithm, which processes 3 bits per cycle.
-
-    Gain:
-    This reduces the number of iterations required for an 8-bit multiplication
-    from 8 cycles down to just 3 cycles.
-
-2.3. CRITICAL PATH OPTIMIZATION: "LOOK-AHEAD 3M"
-The bottleneck of the Radix-8 algorithm is the generation of the "3x Multiplicand"
-term (calculated as M + 2M). In standard implementations, this adder sits inside
-the iterative loop, limiting the maximum frequency (Fmax).
+2.4. TOP-LEVEL OPTIMIZATION: SPLIT-ADDER TOPOLOGY
+    The final recombination of the 32-bit result (P3<<16 + P2<<8 + P1<<8 + P0)
+    traditionally uses a full 32-bit adder chain, which is slow.
 
     Method:
-    This design implements a "Look-Ahead" strategy. The 3M term is pre-calculated
-    during the setup cycle (when the 'start' signal is asserted) and stored in a 
-    dedicated register.
-    During the computation loops, the logic selects the pre-calculated 
-    value via a Multiplexer.
-
+    We exploit the fact that the lower 8 bits of the result come purely from P0
+    and require no addition. The adder is split into:
+    1. An 18-bit intermediate adder for the middle terms (P1+P2).
+    2. A 24-bit final adder for the upper section.
+    
     Gain:
-    This removes the adder from the main loop's critical path.
-    - Before Optimization: ~111 MHz
-    - After Optimization:  ~133 MHz (+20% Speedup)
-
-2.4. ROBUST SIGNED/UNSIGNED HANDLING
-The core supports four modes of operation via the 'sign_mode' input:
-    - Unsigned x Unsigned
-    - Unsigned x Signed
-    - Signed x Unsigned
-    - Signed x Signed
-
-    Method:
-    The internal 8-bit cores always perform arithmetic using signed logic to 
-    maintain the validity of the Booth algorithm (which uses temporary negative
-    partials). The Top-Level module handles the bit-extension and correction
-    logic based on the selected mode.
+    This effectively cuts ~8 bits of carry propagation delay from the critical path, 
+    boosting Fmax from ~133 MHz to ~145 MHz.
 
 3. PERFORMANCE BENCHMARKS
 --------------------------------------------------------------------------------
 Synthesis and Timing Analysis were performed using Yosys and Nextpnr for the
 iCE40HX8K-CT256 FPGA (Speed Grade 1).
 
-3.1. COMPARISON VS. STANDARD SERIAL MULTIPLIER
+3.1. COMPARISON: SERIAL VS. BOOTH V1 VS. BOOTH V2 (FINAL)
 
-    METRIC              | STANDARD SERIAL     | BOOTH RADIX-8 (THIS CORE)
-    --------------------|---------------------|--------------------------
-    Max Frequency (Fmax)| 96.85 MHz           | 133.62 MHz
-    Clock Cycles        | 17 Cycles           | 7 Cycles
-    Total Time (Latency)| ~175.4 ns           | ~52.4 ns
-    Logic Cells (Area)  | ~342 LCs            | ~488 LCs
+    METRIC              | SERIAL STD    | BOOTH V1    | BOOTH V2 (FINAL)
+    --------------------|---------------|-------------|---------------------
+    Max Frequency (Fmax)| 96.85 MHz     | 133.62 MHz  | 144.93 MHz
+    Clock Cycles        | 17 Cycles     | 7 Cycles    | 5 Cycles
+    Total Time (Latency)| ~175.4 ns     | ~52.4 ns    | ~34.5 ns
+    Logic Cells (Area)  | ~342 LCs      | ~488 LCs    | ~407 LCs
 
 3.2. ANALYSIS
-    - Speed: The Booth core is 3.3x faster in total execution time compared
+    - Speed: The V2 core is **~5.1x faster** in total execution time compared
       to the standard serial approach.
-    - Efficiency: The design achieves this speed with a moderate area increase
-      (~146 Logic Cells), making it a highly efficient trade-off for 
-      performance-critical applications.
-    - Timing Closure: The reduced combinational depth allows the core to easily
-      meet timing constraints in complex system-on-chip designs.
+    - Efficiency: Surprisingly, the V2 core is smaller (~407 LCs) than the V1
+      implementation due to the removal of complex conditional logic in favor
+      of flattened bitwise operations.
+    - Area: Occupies only ~5% of an iCE40HX8K device.
 
 4. INTERFACE SPECIFICATIONS
 --------------------------------------------------------------------------------
@@ -116,8 +107,9 @@ iCE40HX8K-CT256 FPGA (Speed Grade 1).
 
 5. CONCLUSION
 --------------------------------------------------------------------------------
-The optimizations applied in this project successfully demonstrate that 
-High-performance arithmetic is possible on low-cost FPGAs without dedicated 
-DSP hardware. By combining algorithmic efficiency (Radix-8) with architectural 
-pipelining (3M Pre-calculation), the core delivers industrial-grade performance
-suitable for signal processing and real-time control applications.
+The "Booth V2" optimization represents a significant milestone in soft-core
+arithmetic design. By manually optimizing the datapath to align with the FPGA's 
+LUT4 architecture—specifically through **Flattened Control** and **Split Addition**—
+we achieved a design that is faster, lower latency, and smaller than previous 
+iterations. This core proves that high-performance arithmetic (>140 MHz) is 
+achievable on low-cost FPGAs without dedicated DSP hardware.
