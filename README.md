@@ -3,6 +3,9 @@
   <h2> (Optimized for Lattice iCE40 - Supports Signed & Unsigned Operations) </h2>
   <h3>🚀 Now v2.0: Faster (145 MHz), Lower Latency (5 Cycles), and Smaller Area!</h3>
 </div>
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Verilog](https://img.shields.io/badge/language-Verilog-green)
+![FPGA](https://img.shields.io/badge/target-Lattice%20iCE40-purple)
 
 
 A highly optimized, soft-core 16-bit multiplier designed specifically for Lattice iCE40 FPGAs. Through deep architectural optimizations  (**Flattened Control Mux** and **Split-Adder Topology** ), this V2 core achieves **~145 MHz** performance and a deterministic latency of just **34.5ns**  (5 cycles), outperforming standard serial implementations by over 5x while consuming only ~5% of the FPGA resources.
@@ -75,9 +78,7 @@ graph LR
     style PARALLEL_CORES fill:#fff3e0,stroke:#e65100,stroke-width:2px
     style WIRE_FAST stroke:#00c853,stroke-width:4px
 ```
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Verilog](https://img.shields.io/badge/language-Verilog-green)
-![FPGA](https://img.shields.io/badge/target-Lattice%20iCE40-purple)
+
 
 
 
