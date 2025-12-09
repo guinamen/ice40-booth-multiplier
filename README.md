@@ -80,12 +80,15 @@ gtkwave dump.vcd
 ## ⚙️ Architectural Details
 
 The high speed of this core comes from three specific optimizations targeting the iCE40 LUT4 architecture:
+
 1. "Flattened" Control Logic
 
 Standard Booth multipliers use a deep logic chain (Decode → Select → Invert → Add). This design calculates selection signals (1x, 2x, 3x, 4x) and inversion flags in parallel, reducing the logic depth before the adder to just 1 LUT level.
+
 2. Look-Ahead 3M Calculation
 
 The hard "3×M" term (M + 2M) is pre-calculated during the setup cycle and stored in a register. This removes the adder overhead from the critical path of the iterative loop.
+
 3. Split-Adder Topology (Top Level)
 
 Instead of recombining the 4 sub-products using a slow 32-bit chain, the final adder is split. We skip carry propagation for the lower 8 bits (which require no addition), effectively turning the final stage into a faster ~24-bit adder.
