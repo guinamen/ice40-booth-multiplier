@@ -77,6 +77,13 @@ vvp sim_mult.out
 gtkwave dump.vcd
 ```
 
+## ⚡ How to Synthesize 
+
+Prerequisites: Icarus Verilog and GTKWave.
+```bash
+script/synthesis.sh rtl/booth_radix8_multiplier.v
+```
+
 ## ⚙️ Architectural Details
 
 The high speed of this core comes from three specific optimizations targeting the iCE40 LUT4 architecture:
