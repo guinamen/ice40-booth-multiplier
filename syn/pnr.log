@@ -1,8 +1,4 @@
-[0;34m======================================================[0m
-[0;34m  Análise de Timing: [0m[1;33mbooth_radix8_multiplier[0m
-[0;34m======================================================[0m
-1. Síntese (Yosys)... [0;32mOK[0m
-2. P&R (nextpnr)...   Warning: No PCF file specified; IO pins will be placed automatically
+Warning: No PCF file specified; IO pins will be placed automatically
 
 Info: Packing constants..
 Info: Packing IOs..
@@ -246,37 +242,3 @@ Info: [ 82038,  82333) |*+
 1 warning, 0 errors
 
 Info: Program finished normally.
-[0;32mOK[0m
-
-[0;34m======================================================[0m
-[0;34m  RELATÓRIO DE PERFORMANCE[0m
-[0;34m======================================================[0m
-Clock Domain:      [1;33mclk$SB_IO_IN_$glb_clk[0m
-Frequência Máxima: [0;32m144.93 MHz[0m
-
-[0;34m  UTILIZAÇÃO DE RECURSOS[0m
-[0;34m------------------------------------------------------[0m
-Logic Cells (LCs): [1;33m 	         ICESTORM_LC:   407/ 7680     5%[0m
-Block RAMs:        [1;33m 	        ICESTORM_RAM:     0/   32     0%[0m
-IO Pins:           [1;33m 	               SB_IO:    71/  256    27%[0m
-
-[0;34m  CAMINHO CRÍTICO (icetime)[0m
-[0;34m------------------------------------------------------[0m
-     4.021 ns ..  4.610 ns mid_extended[12]
-     4.869 ns ..  4.869 ns res_upper_SB_LUT4_O_I3[13]
-     4.995 ns ..  4.995 ns res_upper_SB_LUT4_O_I3[14]
-     5.122 ns ..  5.122 ns res_upper_SB_LUT4_O_I3[15]
-     5.248 ns ..  5.444 ns res_upper_SB_LUT4_O_I3[16]
-     5.570 ns ..  5.570 ns res_upper_SB_LUT4_O_I3[17]
-     5.697 ns ..  5.697 ns res_upper_SB_LUT4_O_I3[18]
-     5.823 ns ..  5.823 ns res_upper_SB_LUT4_O_I3[19]
-     5.949 ns ..  5.949 ns res_upper_SB_LUT4_O_I3[20]
-     6.075 ns ..  6.075 ns res_upper_SB_LUT4_O_I3[21]
-     6.202 ns ..  6.202 ns res_upper_SB_LUT4_O_I3[22]
-     6.328 ns ..  6.587 ns res_upper_SB_LUT4_O_I3[23]
-                  lcout -> product[31]$SB_IO_OUT
-
-Total number of logic levels: 25
-Total path delay: 6.80 ns (146.95 MHz)
-
-[0;34m======================================================[0m
