@@ -231,6 +231,8 @@ The table below compares the three implementations. While the **Linear** version
 *   **Parallel Architecture:** Uses 8-bit Decomposition (4 parallel cores) + Split-Adder Recombination.
 *   **Advanced Optimization:** Implements **"Look-Ahead 3M"** + **"Flattened Control Logic"** to minimize logic levels.
 *   **Full Mode Support:** Supports Signed, Unsigned, and Mixed-mode (Signed × Unsigned) operations.
+*   **Pipeline Support**
+*   Frequency **> 155 MHz**
 
 ## 🛠️ Usage
 
@@ -288,7 +290,7 @@ gtkwave dump.vcd
 
 Prerequisites: Yosys and Icetime.
 ```bash
-script/synthesis.sh rtl/booth_radix8_multiplier.v
+script/synthesis.sh rtl/booth_radix8_multiplier<type>.v
 ```
 
 ## ⚙️ Architectural Details
