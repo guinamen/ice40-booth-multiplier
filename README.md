@@ -106,9 +106,9 @@ Synthesized using Yosys/Nextpnr for **iCE40HX8K-CT256**. Comparison against a st
 
 | Metric | Standard Serial Mult | **Booth Radix-8 (V2)** | Improvement |
 | :--- | :--- | :--- | :--- |
-| **Fmax (Frequency)** | 96.8 MHz | **144.9 MHz** | **+50% Faster Clock** |
+| **Fmax (Frequency)** | 96.8 MHz | **145.45 MHz** | **+50% Faster Clock** |
 | **Latency (Cycles)** | 17 Cycles | **5 Cycles** | **3.4x Fewer Cycles** |
-| **Total Execution Time** | ~175.4 ns | **~34.5 ns** | **5.1x Faster Calculation** |
+| **Total Execution Time** | ~175.4 ns | **~34.4 ns** | **5.1x Faster Calculation** |
 | **Area (Logic Cells)** | ~340 LCs | **~407 LCs** | Extremely Efficient (~5% util) |
 
 > **Note:** Version 2.0 reduced the area by ~17% compared to V1 while increasing speed by ~9%.
