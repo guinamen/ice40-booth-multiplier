@@ -91,8 +91,8 @@ This project provides three variations of the Booth Radix-8 multiplier, optimize
 
 | Source File | Architecture | Latency (Cycles) | Max Frequency | Resources (LCs) | Throughput (MOPS)* | Best Use Case |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| `..._su_5_linear_146.v` | Iterative (Linear) | 5 | **149.10 MHz** | **441 (5%)** | 29.8 | **Low Area**: Best for generic use where space is tight. |
-| `..._su_7_linear_155.v` | Linear + IO Regs | 7 | 149.10 MHz | 441 (5%) | 21.3 | **Robustness**: Registered I/O ensures easier timing closure in full designs. |
+| `..._su_5_linear_146.v` | Iterative (Linear) | 5 | 149.10 MHz | **441 (5%)** | 29.8 | **Low Area**: Best for generic use where space is tight. |
+| `..._su_7_linear_155.v` | Linear + IO Regs | 7 | **154.77 MHz** | 441 (5%) | 21.3 | **Robustness**: Registered I/O ensures easier timing closure in full designs. |
 | `..._su_4_pipeline_144.v` | Decoupled Pipeline | **4 (Sustained)** | 141.00 MHz | 463 (6%) | **35.2** | **High Throughput**: Best for DSP/Streaming (Audio, Video, Filters). |
 
 *\* **MOPS**: Million Operations Per Second (Calculated as $F_{max} / \text{Cycles per Op}$).*
