@@ -144,7 +144,7 @@ graph LR
 ```
 ---
 
-### Performance Comparison (Lattice iCE40)
+### 📊 Performance Comparison (Lattice iCE40)
 
 The table below compares the three implementations. While the **Linear** version achieves a higher raw clock frequency, the **Pipeline** version delivers superior processing power (Throughput) by handling one operation every 4 cycles.
 
@@ -204,19 +204,6 @@ The table below compares the three implementations. While the **Linear** version
 *   **Advanced Optimization:** Implements **"Look-Ahead 3M"** + **"Flattened Control Logic"** to minimize logic levels.
 *   **Full Mode Support:** Supports Signed, Unsigned, and Mixed-mode (Signed × Unsigned) operations.
 
-## 📊 Performance Benchmarks
-
-Synthesized using Yosys/Nextpnr for **iCE40HX8K-CT256**. Comparison against a standard "Shift-and-Add" Serial Multiplier:
-
-| Metric | Standard Serial Mult | **Booth Radix-8 (V2)** | Improvement |
-| :--- | :--- | :--- | :--- |
-| **Fmax (Frequency)** | 96.8 MHz | **145.45 MHz** | **+50% Faster Clock** |
-| **Latency (Cycles)** | 17 Cycles | **5 Cycles** | **3.4x Fewer Cycles** |
-| **Total Execution Time** | ~175.4 ns | **~34.4 ns** | **5.1x Faster Calculation** |
-| **Area (Logic Cells)** | ~340 LCs | **~407 LCs** | Extremely Efficient (~5% util) |
-
-> **Note:** Version 2.0 reduced the area by ~17% compared to V1 while increasing speed by ~9%.
-
 ## 🛠️ Usage
 
 ### Instantiation Template
@@ -251,7 +238,7 @@ Prerequisites: Icarus Verilog and GTKWave.
 ```bash
 git clone https://github.com/guinamen/ice40-booth-multiplier.git
 cd ice40-booth-multiplier
-iverilog -Wall -o sim_mult.out tb/tb_booth_radix8_su_simple.v  rtl/booth_radix8_multiplier.v
+iverilog -Wall -o sim_mult.out tb/tb_booth_radix8_su_simple.v  rtl/booth_radix8_multiplier<type>.v
 vvp sim_mult.out
 gtkwave dump.vcd
 ```
