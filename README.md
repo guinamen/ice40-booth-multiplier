@@ -11,7 +11,8 @@
 ## 📋 About The Project
 
 This project implements Booth's multiplication algorithm, an efficient method for multiplying signed binary numbers in two's complement notation. The implementation is optimized for low-power iCE40 FPGAs, making it ideal for embedded and IoT applications.
-Booth's Algorithm
+
+### Booth's Algorithm
 Booth's algorithm reduces the number of addition/subtraction operations required during multiplication by:
 
 Detecting consecutive bit sequences (0s and 1s) in the multiplier
