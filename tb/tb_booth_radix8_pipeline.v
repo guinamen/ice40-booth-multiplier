@@ -30,7 +30,7 @@ module tb_booth_pipeline;
     end
 
     // Estruturas de Teste
-    parameter FIFO_DEPTH = 256; 
+    parameter FIFO_DEPTH = 5000; 
     reg signed [31:0] fifo_expected [0:FIFO_DEPTH-1];
     integer           fifo_id       [0:FIFO_DEPTH-1];
     integer write_ptr, read_ptr, error_count, tx_count;
@@ -105,7 +105,7 @@ module tb_booth_pipeline;
         drive_transaction(-16'd32768, 16'd1, 2'b11);   
 
         // 2. Burst (Pipeline Stress)
-        for (i = 0; i < 50; i = i + 1) begin
+        for (i = 0; i < 5000; i = i + 1) begin
             ra = $random; rb = $random;
             drive_transaction(ra, rb, 2'b11);
         end
