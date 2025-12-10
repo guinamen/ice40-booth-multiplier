@@ -29,11 +29,17 @@ Native support for signed and unsigned numbers
 ## 🎯 Features
 
 ✅ Signed multiplication in two's complement
+
 ✅ Optimized implementation for iCE40 (low LUT consumption)
+
 ✅ Synchronous interface with clock
+
 ✅ Parameterizable word size
+
 ✅ Complete testbench included
+
 ✅ Synthesis verified with open-source tools
+
 
 ## 📊 High-Level Diagram
 
