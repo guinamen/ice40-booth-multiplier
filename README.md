@@ -183,8 +183,10 @@ The table below compares the three implementations. While the **Linear** version
 ![Simulation Waveform](doc/gtk_wave.png?raw=true)
 
 ### 7 Cicles
-![Simulation Waveform](doc/booth_radix8_multiplier_su_7_linear_155.png?raw=true))
+
 ![Simulation Waveform](doc/booth_radix8_multiplier_su_7_linear_155_2.png?raw=true)
+![Simulation Waveform](doc/booth_radix8_multiplier_su_7_linear_155.png?raw=true))
+
 
 ### Pipeline
 
