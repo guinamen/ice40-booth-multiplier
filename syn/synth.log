@@ -6,10 +6,10 @@
  \----------------------------------------------------------------------------/
  Yosys 0.60+8 (git sha1 1cceaa2a8, g++ 12.2.0-14+deb12u1 -fPIC -O3)
 
-1. Executing Verilog-2005 frontend: ../rtl/booth_radix8_multiplier_su_7_linear_155.v
-Parsing Verilog input from `../rtl/booth_radix8_multiplier_su_7_linear_155.v' to AST representation.
-verilog frontend filename ../rtl/booth_radix8_multiplier_su_7_linear_155.v
-Generating RTLIL representation for module `\booth_mult8'.
+1. Executing Verilog-2005 frontend: ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v
+Parsing Verilog input from `../rtl/booth_radix8_multiplier_su_4_pipeline_144.v' to AST representation.
+verilog frontend filename ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v
+Generating RTLIL representation for module `\booth_core_4cycle'.
 Generating RTLIL representation for module `\booth_radix8_multiplier'.
 Successfully finished Verilog frontend.
 
@@ -17,11 +17,11 @@ Successfully finished Verilog frontend.
 
 2.1. Analyzing design hierarchy..
 Top module:  \booth_radix8_multiplier
-Used module:     \booth_mult8
+Used module:     \booth_core_4cycle
 
 2.2. Analyzing design hierarchy..
 Top module:  \booth_radix8_multiplier
-Used module:     \booth_mult8
+Used module:     \booth_core_4cycle
 Removed 0 unused modules.
 
 3. Executing PROC pass (convert processes to netlists).
@@ -30,9 +30,11 @@ Removed 0 unused modules.
 Cleaned up 0 empty switches.
 
 3.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
-Marked 2 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56 in module booth_radix8_multiplier.
-Marked 1 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50 in module booth_radix8_multiplier.
-Marked 3 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47 in module booth_mult8.
+Marked 2 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80 in module booth_radix8_multiplier.
+Marked 3 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73 in module booth_radix8_multiplier.
+Marked 2 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65 in module booth_radix8_multiplier.
+Marked 1 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62 in module booth_radix8_multiplier.
+Marked 2 switch rules as full_case in process $proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48 in module booth_core_4cycle.
 Removed a total of 0 dead cases.
 
 3.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
@@ -42,169 +44,205 @@ Promoted 5 assignments to connections.
 3.4. Executing PROC_INIT pass (extract init attributes).
 
 3.5. Executing PROC_ARST pass (detect async resets in processes).
-Found async reset \rst_n in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-Found async reset \rst_n in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-Found async reset \rst_n in `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
+Found async reset \rst_n in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+Found async reset \rst_n in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73'.
+Found async reset \rst_n in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+Found async reset \rst_n in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
 
 3.6. Executing PROC_ROM pass (convert switches to ROMs).
 Converted 0 switches.
-<suppressed ~7 debug messages>
+<suppressed ~12 debug messages>
 
 3.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
-Creating decoders for process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-     1/8: $0\product[31:0] [31:8]
-     2/8: $0\product[31:0] [7:0]
-     3/8: $0\done[0:0]
-     4/8: $0\mult_active[0:0]
-     5/8: $0\pipe_p0_low[7:0]
-     6/8: $0\pipe_base[23:0]
-     7/8: $0\pipe_sum_p1_p2[17:0]
-     8/8: $0\pipe_valid[0:0]
-Creating decoders for process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-     1/4: $0\r_start[0:0]
-     2/4: $0\r_sign_mode[1:0]
-     3/4: $0\r_mult[15:0]
-     4/4: $0\r_mcand[15:0]
-Creating decoders for process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
+Creating decoders for process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+     1/7: $0\product[31:0] [31:8]
+     2/7: $0\product[31:0] [7:0]
+     3/7: $0\done[0:0]
+     4/7: $0\pipe_p0_low[7:0]
+     5/7: $0\pipe_base[23:0]
+     6/7: $0\pipe_sum_p1_p2[17:0]
+     7/7: $0\pipe_valid[0:0]
+Creating decoders for process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73'.
+     1/3: $0\active_sign_mode[1:0]
+     2/3: $0\core_active[0:0]
+     3/3: $0\core_timer[2:0]
+Creating decoders for process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+     1/4: $0\buf_valid[0:0]
+     2/4: $0\buf_sign_mode[1:0]
+     3/4: $0\buf_mult[15:0]
+     4/4: $0\buf_mcand[15:0]
+Creating decoders for process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
+     1/4: $0\r_start_in[0:0]
+     2/4: $0\r_sign_mode_in[1:0]
+     3/4: $0\r_mult_in[15:0]
+     4/4: $0\r_mcand_in[15:0]
+Creating decoders for process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
      1/5: $0\mcand_ext_reg[10:0]
      2/5: $0\m_3x_reg[10:0]
-     3/5: $0\iter_shift[3:0]
-     4/5: $0\prod_reg[20:0]
-     5/5: $0\active[0:0]
-Creating decoders for process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:62$35'.
-Creating decoders for process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:46$5'.
+     3/5: $0\active[0:0]
+     4/5: $0\cycle_cnt[2:0]
+     5/5: $0\prod_reg[20:0]
+Creating decoders for process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:54$35'.
+Creating decoders for process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:41$5'.
 
 3.8. Executing PROC_DLATCH pass (convert process syncs to latches).
-No latch inferred for signal `\booth_mult8.\mag_sel' from process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:62$35'.
-No latch inferred for signal `\booth_mult8.\sel_1x' from process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:46$5'.
-No latch inferred for signal `\booth_mult8.\sel_2x' from process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:46$5'.
-No latch inferred for signal `\booth_mult8.\sel_3x' from process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:46$5'.
-No latch inferred for signal `\booth_mult8.\sel_4x' from process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:46$5'.
+No latch inferred for signal `\booth_core_4cycle.\mag_sel' from process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:54$35'.
+No latch inferred for signal `\booth_core_4cycle.\sel_1x' from process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:41$5'.
+No latch inferred for signal `\booth_core_4cycle.\sel_2x' from process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:41$5'.
+No latch inferred for signal `\booth_core_4cycle.\sel_3x' from process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:41$5'.
+No latch inferred for signal `\booth_core_4cycle.\sel_4x' from process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:41$5'.
 
 3.9. Executing PROC_DFF pass (convert process syncs to FFs).
-Creating register for signal `\booth_radix8_multiplier.\product' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-  created $adff cell `$procdff$127' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\done' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-  created $adff cell `$procdff$132' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\pipe_sum_p1_p2' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-  created $adff cell `$procdff$137' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\pipe_base' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-  created $adff cell `$procdff$142' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\pipe_p0_low' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-  created $adff cell `$procdff$147' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\pipe_valid' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-  created $adff cell `$procdff$152' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\mult_active' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-  created $adff cell `$procdff$157' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\r_start' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-  created $adff cell `$procdff$162' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\r_mcand' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-  created $adff cell `$procdff$167' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\r_mult' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-  created $adff cell `$procdff$172' with positive edge clock and positive level reset.
-Creating register for signal `\booth_radix8_multiplier.\r_sign_mode' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-  created $adff cell `$procdff$177' with positive edge clock and positive level reset.
-Creating register for signal `\booth_mult8.\active' using process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
-  created $adff cell `$procdff$182' with positive edge clock and positive level reset.
-Creating register for signal `\booth_mult8.\prod_reg' using process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
-  created $adff cell `$procdff$187' with positive edge clock and positive level reset.
-Creating register for signal `\booth_mult8.\iter_shift' using process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
-  created $adff cell `$procdff$192' with positive edge clock and positive level reset.
-Creating register for signal `\booth_mult8.\m_3x_reg' using process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
-  created $adff cell `$procdff$197' with positive edge clock and positive level reset.
-Creating register for signal `\booth_mult8.\mcand_ext_reg' using process `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
-  created $adff cell `$procdff$202' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\product' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+  created $adff cell `$procdff$179' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\done' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+  created $adff cell `$procdff$184' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\pipe_sum_p1_p2' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+  created $adff cell `$procdff$189' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\pipe_base' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+  created $adff cell `$procdff$194' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\pipe_p0_low' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+  created $adff cell `$procdff$199' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\pipe_valid' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+  created $adff cell `$procdff$204' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\core_timer' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73'.
+  created $adff cell `$procdff$209' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\core_active' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73'.
+  created $adff cell `$procdff$214' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\active_sign_mode' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73'.
+  created $adff cell `$procdff$219' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\buf_mcand' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+  created $adff cell `$procdff$224' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\buf_mult' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+  created $adff cell `$procdff$229' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\buf_sign_mode' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+  created $adff cell `$procdff$234' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\buf_valid' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+  created $adff cell `$procdff$239' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\r_start_in' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
+  created $adff cell `$procdff$244' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\r_mcand_in' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
+  created $adff cell `$procdff$249' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\r_mult_in' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
+  created $adff cell `$procdff$254' with positive edge clock and positive level reset.
+Creating register for signal `\booth_radix8_multiplier.\r_sign_mode_in' using process `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
+  created $adff cell `$procdff$259' with positive edge clock and positive level reset.
+Creating register for signal `\booth_core_4cycle.\prod_reg' using process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
+  created $dff cell `$procdff$260' with positive edge clock.
+Creating register for signal `\booth_core_4cycle.\cycle_cnt' using process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
+  created $dff cell `$procdff$261' with positive edge clock.
+Creating register for signal `\booth_core_4cycle.\active' using process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
+  created $dff cell `$procdff$262' with positive edge clock.
+Creating register for signal `\booth_core_4cycle.\m_3x_reg' using process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
+  created $dff cell `$procdff$263' with positive edge clock.
+Creating register for signal `\booth_core_4cycle.\mcand_ext_reg' using process `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
+  created $dff cell `$procdff$264' with positive edge clock.
 
 3.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
 
 3.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
-Found and cleaned up 3 empty switches in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-Removing empty process `booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:206$56'.
-Found and cleaned up 1 empty switch in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-Removing empty process `booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:128$50'.
-Found and cleaned up 3 empty switches in `\booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
-Removing empty process `booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:75$47'.
-Removing empty process `booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:62$35'.
-Removing empty process `booth_mult8.$proc$../rtl/booth_radix8_multiplier_su_7_linear_155.v:46$5'.
-Cleaned up 7 empty switches.
+Found and cleaned up 2 empty switches in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+Removing empty process `booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:189$80'.
+Found and cleaned up 3 empty switches in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73'.
+Removing empty process `booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:153$73'.
+Found and cleaned up 3 empty switches in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+Removing empty process `booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:126$65'.
+Found and cleaned up 1 empty switch in `\booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
+Removing empty process `booth_radix8_multiplier.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:99$62'.
+Found and cleaned up 3 empty switches in `\booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
+Removing empty process `booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:65$48'.
+Removing empty process `booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:54$35'.
+Removing empty process `booth_core_4cycle.$proc$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:41$5'.
+Cleaned up 12 empty switches.
 
 3.12. Executing OPT_EXPR pass (perform const folding).
 Optimizing module booth_radix8_multiplier.
-<suppressed ~22 debug messages>
-Optimizing module booth_mult8.
-<suppressed ~14 debug messages>
+<suppressed ~34 debug messages>
+Optimizing module booth_core_4cycle.
+<suppressed ~3 debug messages>
 
 4. Executing OPT pass (performing simple optimizations).
 
 4.1. Executing OPT_EXPR pass (perform const folding).
 Optimizing module booth_radix8_multiplier.
-<suppressed ~3 debug messages>
-Optimizing module booth_mult8.
+<suppressed ~4 debug messages>
+Optimizing module booth_core_4cycle.
 <suppressed ~28 debug messages>
 
 4.2. Executing OPT_MERGE pass (detect identical cells).
 Finding identical cells in module `\booth_radix8_multiplier'.
-<suppressed ~33 debug messages>
-Finding identical cells in module `\booth_mult8'.
-<suppressed ~12 debug messages>
-Removed a total of 15 cells.
+<suppressed ~60 debug messages>
+Finding identical cells in module `\booth_core_4cycle'.
+<suppressed ~3 debug messages>
+Removed a total of 21 cells.
 
 4.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
 Running muxtree optimizer on module \booth_radix8_multiplier..
   Creating internal representation of mux trees.
   Evaluating internal representation of mux trees.
+      Replacing known input bits on port A of cell $procmux$107: \core_active -> 1'0
+      Replacing known input bits on port A of cell $procmux$105: \core_active -> 1'1
   Analyzing evaluation results.
-Running muxtree optimizer on module \booth_mult8..
+Running muxtree optimizer on module \booth_core_4cycle..
   Creating internal representation of mux trees.
   Evaluating internal representation of mux trees.
-      Replacing known input bits on port A of cell $procmux$119: \active -> 1'1
-      Replacing known input bits on port B of cell $procmux$103: \iter_shift -> { \iter_shift [3:1] 1'1 }
+      Replacing known input bits on port A of cell $procmux$157: \active -> 1'0
+      Replacing known input bits on port A of cell $procmux$155: \active -> 1'1
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~35 debug messages>
+<suppressed ~51 debug messages>
 
 4.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
   Optimizing cells in module \booth_radix8_multiplier.
-  Optimizing cells in module \booth_mult8.
+  Optimizing cells in module \booth_core_4cycle.
 Performed a total of 0 changes.
 
 4.5. Executing OPT_MERGE pass (detect identical cells).
 Finding identical cells in module `\booth_radix8_multiplier'.
-Finding identical cells in module `\booth_mult8'.
+Finding identical cells in module `\booth_core_4cycle'.
 Removed a total of 0 cells.
 
 4.6. Executing OPT_SHARE pass.
 
 4.7. Executing OPT_DFF pass (perform DFF optimizations).
-Adding EN signal on $procdff$177 ($adff) from module booth_radix8_multiplier (D = \sign_mode, Q = \r_sign_mode).
-Adding EN signal on $procdff$142 ($adff) from module booth_radix8_multiplier (D = { \w_p3 \w_p0 [15:8] }, Q = \pipe_base).
-Adding EN signal on $procdff$172 ($adff) from module booth_radix8_multiplier (D = \multiplier, Q = \r_mult).
-Adding EN signal on $procdff$127 ($adff) from module booth_radix8_multiplier (D = $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:240$59_Y, Q = \product [31:8]).
-Adding EN signal on $procdff$127 ($adff) from module booth_radix8_multiplier (D = \pipe_p0_low, Q = \product [7:0]).
-Adding EN signal on $procdff$167 ($adff) from module booth_radix8_multiplier (D = \multiplicand, Q = \r_mcand).
-Adding EN signal on $procdff$147 ($adff) from module booth_radix8_multiplier (D = \w_p0 [7:0], Q = \pipe_p0_low).
-Adding EN signal on $procdff$137 ($adff) from module booth_radix8_multiplier (D = $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:197$54_Y, Q = \pipe_sum_p1_p2).
-Adding EN signal on $procdff$192 ($adff) from module booth_mult8 (D = $procmux$105_Y [0], Q = \iter_shift [0]).
-Adding EN signal on $procdff$192 ($adff) from module booth_mult8 (D = $procmux$105_Y [3:1], Q = \iter_shift [3:1]).
-Adding EN signal on $procdff$197 ($adff) from module booth_mult8 (D = $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3_Y, Q = \m_3x_reg).
-Adding EN signal on $procdff$187 ($adff) from module booth_mult8 (D = $procmux$113_Y, Q = \prod_reg).
-Adding EN signal on $procdff$202 ($adff) from module booth_mult8 (D = { $and$../rtl/booth_radix8_multiplier_su_7_linear_155.v:30$1_Y $and$../rtl/booth_radix8_multiplier_su_7_linear_155.v:30$1_Y $and$../rtl/booth_radix8_multiplier_su_7_linear_155.v:30$1_Y \multiplicand }, Q = \mcand_ext_reg).
+Adding EN signal on $procdff$239 ($adff) from module booth_radix8_multiplier (D = $procmux$125_Y, Q = \buf_valid).
+Adding EN signal on $procdff$199 ($adff) from module booth_radix8_multiplier (D = \w_p0 [7:0], Q = \pipe_p0_low).
+Adding EN signal on $procdff$249 ($adff) from module booth_radix8_multiplier (D = \multiplicand, Q = \r_mcand_in).
+Adding EN signal on $procdff$224 ($adff) from module booth_radix8_multiplier (D = \r_mcand_in, Q = \buf_mcand).
+Adding EN signal on $procdff$229 ($adff) from module booth_radix8_multiplier (D = \r_mult_in, Q = \buf_mult).
+Adding EN signal on $procdff$219 ($adff) from module booth_radix8_multiplier (D = \buf_sign_mode, Q = \active_sign_mode).
+Adding EN signal on $procdff$179 ($adff) from module booth_radix8_multiplier (D = $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:206$82_Y, Q = \product [31:8]).
+Adding EN signal on $procdff$179 ($adff) from module booth_radix8_multiplier (D = \pipe_p0_low, Q = \product [7:0]).
+Adding EN signal on $procdff$254 ($adff) from module booth_radix8_multiplier (D = \multiplier, Q = \r_mult_in).
+Adding EN signal on $procdff$234 ($adff) from module booth_radix8_multiplier (D = \r_sign_mode_in, Q = \buf_sign_mode).
+Adding EN signal on $procdff$209 ($adff) from module booth_radix8_multiplier (D = $procmux$118_Y, Q = \core_timer).
+Adding EN signal on $procdff$189 ($adff) from module booth_radix8_multiplier (D = $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:187$79_Y, Q = \pipe_sum_p1_p2).
+Adding EN signal on $procdff$259 ($adff) from module booth_radix8_multiplier (D = \sign_mode, Q = \r_sign_mode_in).
+Adding EN signal on $procdff$194 ($adff) from module booth_radix8_multiplier (D = { \w_p3 \w_p0 [15:8] }, Q = \pipe_base).
+Adding EN signal on $procdff$264 ($dff) from module booth_core_4cycle (D = { $and$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:25$1_Y $and$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:25$1_Y $and$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:25$1_Y \multiplicand }, Q = \mcand_ext_reg).
+Adding EN signal on $procdff$263 ($dff) from module booth_core_4cycle (D = $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3_Y, Q = \m_3x_reg).
+Adding SRST signal on $procdff$261 ($dff) from module booth_core_4cycle (D = $procmux$165_Y, Q = \cycle_cnt, rval = 3'000).
+Adding EN signal on $auto$ff.cc:337:slice$309 ($sdff) from module booth_core_4cycle (D = $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50_Y [2:0], Q = \cycle_cnt).
+Adding SRST signal on $procdff$260 ($dff) from module booth_core_4cycle (D = { $procmux$170_Y [20:10] $procmux$170_Y [0] }, Q = { \prod_reg [20:10] \prod_reg [0] }, rval = 12'000000000000).
+Adding EN signal on $procdff$260 ($dff) from module booth_core_4cycle (D = $procmux$173_Y [9:1], Q = \prod_reg [9:1]).
+Adding EN signal on $auto$ff.cc:337:slice$315 ($sdff) from module booth_core_4cycle (D = { $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45_Y [10] $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45_Y [10] $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45_Y [10] $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45_Y [10:3] \prod_reg [3] }, Q = { \prod_reg [20:10] \prod_reg [0] }).
 
 4.8. Executing OPT_CLEAN pass (remove unused cells and wires).
 Finding unused cells or wires in module \booth_radix8_multiplier..
-Finding unused cells or wires in module \booth_mult8..
-Removed 16 unused cells and 123 unused wires.
-<suppressed ~18 debug messages>
+Finding unused cells or wires in module \booth_core_4cycle..
+Removed 22 unused cells and 165 unused wires.
+<suppressed ~24 debug messages>
 
 4.9. Executing OPT_EXPR pass (perform const folding).
-Optimizing module booth_mult8.
-<suppressed ~7 debug messages>
+Optimizing module booth_core_4cycle.
+<suppressed ~3 debug messages>
 Optimizing module booth_radix8_multiplier.
+<suppressed ~7 debug messages>
 
 4.10. Rerunning OPT passes. (Maybe there is more to do..)
 
 4.11. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
-Running muxtree optimizer on module \booth_mult8..
+Running muxtree optimizer on module \booth_core_4cycle..
   Creating internal representation of mux trees.
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
@@ -213,42 +251,39 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~9 debug messages>
+<suppressed ~7 debug messages>
 
 4.12. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
-  Optimizing cells in module \booth_mult8.
-    Consolidated identical input bits for $mux cell $procmux$113:
-      Old ports: A=$procmux$107_Y, B=$procmux$111_Y, Y=$0\prod_reg[20:0]
-      New ports: A={ 8'00000000 \sign_bit_b \multiplier 1'0 }, B={ \sum_result \prod_reg [9:3] }, Y=$0\prod_reg[20:0] [17:0]
-      New connections: $0\prod_reg[20:0] [20:18] = { $0\prod_reg[20:0] [17] $0\prod_reg[20:0] [17] $0\prod_reg[20:0] [17] }
-  Optimizing cells in module \booth_mult8.
+  Optimizing cells in module \booth_core_4cycle.
   Optimizing cells in module \booth_radix8_multiplier.
-Performed a total of 1 changes.
+Performed a total of 0 changes.
 
 4.13. Executing OPT_MERGE pass (detect identical cells).
-Finding identical cells in module `\booth_mult8'.
-<suppressed ~18 debug messages>
+Finding identical cells in module `\booth_core_4cycle'.
+<suppressed ~3 debug messages>
 Finding identical cells in module `\booth_radix8_multiplier'.
-Removed a total of 6 cells.
+<suppressed ~6 debug messages>
+Removed a total of 3 cells.
 
 4.14. Executing OPT_SHARE pass.
 
 4.15. Executing OPT_DFF pass (perform DFF optimizations).
 
 4.16. Executing OPT_CLEAN pass (remove unused cells and wires).
-Finding unused cells or wires in module \booth_mult8..
+Finding unused cells or wires in module \booth_core_4cycle..
 Finding unused cells or wires in module \booth_radix8_multiplier..
-Removed 0 unused cells and 9 unused wires.
-<suppressed ~1 debug messages>
+Removed 0 unused cells and 6 unused wires.
+<suppressed ~2 debug messages>
 
 4.17. Executing OPT_EXPR pass (perform const folding).
-Optimizing module booth_mult8.
+Optimizing module booth_core_4cycle.
 Optimizing module booth_radix8_multiplier.
+<suppressed ~1 debug messages>
 
 4.18. Rerunning OPT passes. (Maybe there is more to do..)
 
 4.19. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
-Running muxtree optimizer on module \booth_mult8..
+Running muxtree optimizer on module \booth_core_4cycle..
   Creating internal representation of mux trees.
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
@@ -257,15 +292,15 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~9 debug messages>
+<suppressed ~5 debug messages>
 
 4.20. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
-  Optimizing cells in module \booth_mult8.
+  Optimizing cells in module \booth_core_4cycle.
   Optimizing cells in module \booth_radix8_multiplier.
 Performed a total of 0 changes.
 
 4.21. Executing OPT_MERGE pass (detect identical cells).
-Finding identical cells in module `\booth_mult8'.
+Finding identical cells in module `\booth_core_4cycle'.
 Finding identical cells in module `\booth_radix8_multiplier'.
 Removed a total of 0 cells.
 
@@ -274,11 +309,11 @@ Removed a total of 0 cells.
 4.23. Executing OPT_DFF pass (perform DFF optimizations).
 
 4.24. Executing OPT_CLEAN pass (remove unused cells and wires).
-Finding unused cells or wires in module \booth_mult8..
+Finding unused cells or wires in module \booth_core_4cycle..
 Finding unused cells or wires in module \booth_radix8_multiplier..
 
 4.25. Executing OPT_EXPR pass (perform const folding).
-Optimizing module booth_mult8.
+Optimizing module booth_core_4cycle.
 Optimizing module booth_radix8_multiplier.
 
 4.26. Finished fast OPT passes. (There is nothing left to do.)
@@ -292,7 +327,7 @@ Optimizing module booth_radix8_multiplier.
 5.3. Executing FSM_OPT pass (simple optimizations of FSMs).
 
 5.4. Executing OPT_CLEAN pass (remove unused cells and wires).
-Finding unused cells or wires in module \booth_mult8..
+Finding unused cells or wires in module \booth_core_4cycle..
 Finding unused cells or wires in module \booth_radix8_multiplier..
 
 5.5. Executing FSM_OPT pass (simple optimizations of FSMs).
@@ -320,7 +355,7 @@ Performed a total of 0 transformations.
 7.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
 
 7.6. Executing OPT_CLEAN pass (remove unused cells and wires).
-Finding unused cells or wires in module \booth_mult8..
+Finding unused cells or wires in module \booth_core_4cycle..
 Finding unused cells or wires in module \booth_radix8_multiplier..
 
 7.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
@@ -329,7 +364,7 @@ Finding unused cells or wires in module \booth_radix8_multiplier..
 Performed a total of 0 transformations.
 
 7.9. Executing OPT_CLEAN pass (remove unused cells and wires).
-Finding unused cells or wires in module \booth_mult8..
+Finding unused cells or wires in module \booth_core_4cycle..
 Finding unused cells or wires in module \booth_radix8_multiplier..
 
 7.10. Executing MEMORY_COLLECT pass (generating $mem cells).
@@ -337,16 +372,16 @@ Finding unused cells or wires in module \booth_radix8_multiplier..
 8. Executing OPT pass (performing simple optimizations).
 
 8.1. Executing OPT_EXPR pass (perform const folding).
-Optimizing module booth_mult8.
+Optimizing module booth_core_4cycle.
 Optimizing module booth_radix8_multiplier.
 
 8.2. Executing OPT_MERGE pass (detect identical cells).
-Finding identical cells in module `\booth_mult8'.
+Finding identical cells in module `\booth_core_4cycle'.
 Finding identical cells in module `\booth_radix8_multiplier'.
 Removed a total of 0 cells.
 
 8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
-Running muxtree optimizer on module \booth_mult8..
+Running muxtree optimizer on module \booth_core_4cycle..
   Creating internal representation of mux trees.
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
@@ -355,15 +390,15 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~9 debug messages>
+<suppressed ~5 debug messages>
 
 8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
-  Optimizing cells in module \booth_mult8.
+  Optimizing cells in module \booth_core_4cycle.
   Optimizing cells in module \booth_radix8_multiplier.
 Performed a total of 0 changes.
 
 8.5. Executing OPT_MERGE pass (detect identical cells).
-Finding identical cells in module `\booth_mult8'.
+Finding identical cells in module `\booth_core_4cycle'.
 Finding identical cells in module `\booth_radix8_multiplier'.
 Removed a total of 0 cells.
 
@@ -372,17 +407,17 @@ Removed a total of 0 cells.
 8.7. Executing OPT_DFF pass (perform DFF optimizations).
 
 8.8. Executing OPT_CLEAN pass (remove unused cells and wires).
-Finding unused cells or wires in module \booth_mult8..
+Finding unused cells or wires in module \booth_core_4cycle..
 Finding unused cells or wires in module \booth_radix8_multiplier..
 
 8.9. Executing OPT_EXPR pass (perform const folding).
-Optimizing module booth_mult8.
+Optimizing module booth_core_4cycle.
 Optimizing module booth_radix8_multiplier.
 
 8.10. Finished fast OPT passes. (There is nothing left to do.)
 
 9. Executing FLATTEN pass (flatten design).
-Deleting now unused module booth_mult8.
+Deleting now unused module booth_core_4cycle.
 <suppressed ~4 debug messages>
 
 10. Printing statistics.
@@ -391,26 +426,30 @@ Deleting now unused module booth_mult8.
 
         +----------Local Count, excluding submodules.
         | 
-      318 wires
-     1713 wire bits
+      323 wires
+     1930 wire bits
       154 public wires
-     1146 public wire bits
+     1145 public wire bits
         9 ports
        71 port bits
-      252 cells
-       14   $add
-        8   $adff
-       28   $adffe
-       30   $and
-       56   $eq
+      265 cells
+       19   $add
+        4   $adff
+       14   $adffe
+       36   $and
+        4   $dff
+       12   $dffe
+       61   $eq
         5   $logic_and
-       41   $logic_or
-       17   $mux
-        4   $ne
-       12   $not
-       17   $or
-       12   $reduce_and
-        4   $reduce_bool
+        2   $logic_not
+       43   $logic_or
+        9   $mux
+        1   $ne
+        9   $not
+       18   $or
+       10   $reduce_and
+        6   $reduce_bool
+        8   $sdffe
         4   $xor
 
 11. Executing SYNTH_ICE40 pass.
@@ -538,8 +577,8 @@ Optimizing module booth_radix8_multiplier.
 
 11.10.2. Executing OPT_MERGE pass (detect identical cells).
 Finding identical cells in module `\booth_radix8_multiplier'.
-<suppressed ~12 debug messages>
-Removed a total of 4 cells.
+<suppressed ~24 debug messages>
+Removed a total of 8 cells.
 
 11.10.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
 Running muxtree optimizer on module \booth_radix8_multiplier..
@@ -547,7 +586,7 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~30 debug messages>
+<suppressed ~14 debug messages>
 
 11.10.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
   Optimizing cells in module \booth_radix8_multiplier.
@@ -558,12 +597,9 @@ Finding identical cells in module `\booth_radix8_multiplier'.
 Removed a total of 0 cells.
 
 11.10.6. Executing OPT_DFF pass (perform DFF optimizations).
-Setting constant 0-bit at position 8 on $flatten\mult0.$auto$ff.cc:337:slice$247 ($adffe) from module booth_radix8_multiplier.
-Setting constant 0-bit at position 9 on $flatten\mult0.$auto$ff.cc:337:slice$247 ($adffe) from module booth_radix8_multiplier.
-Setting constant 0-bit at position 10 on $flatten\mult0.$auto$ff.cc:337:slice$247 ($adffe) from module booth_radix8_multiplier.
-Setting constant 0-bit at position 8 on $flatten\mult2.$auto$ff.cc:337:slice$247 ($adffe) from module booth_radix8_multiplier.
-Setting constant 0-bit at position 9 on $flatten\mult2.$auto$ff.cc:337:slice$247 ($adffe) from module booth_radix8_multiplier.
-Setting constant 0-bit at position 10 on $flatten\mult2.$auto$ff.cc:337:slice$247 ($adffe) from module booth_radix8_multiplier.
+Setting constant 0-bit at position 8 on $flatten\u0.$auto$ff.cc:337:slice$307 ($dffe) from module booth_radix8_multiplier.
+Setting constant 0-bit at position 9 on $flatten\u0.$auto$ff.cc:337:slice$307 ($dffe) from module booth_radix8_multiplier.
+Setting constant 0-bit at position 10 on $flatten\u0.$auto$ff.cc:337:slice$307 ($dffe) from module booth_radix8_multiplier.
 
 11.10.7. Executing OPT_CLEAN pass (remove unused cells and wires).
 Finding unused cells or wires in module \booth_radix8_multiplier..
@@ -579,7 +615,7 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~30 debug messages>
+<suppressed ~14 debug messages>
 
 11.10.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
   Optimizing cells in module \booth_radix8_multiplier.
@@ -633,7 +669,7 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~30 debug messages>
+<suppressed ~14 debug messages>
 
 11.12.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
   Optimizing cells in module \booth_radix8_multiplier.
@@ -644,6 +680,8 @@ Finding identical cells in module `\booth_radix8_multiplier'.
 Removed a total of 0 cells.
 
 11.12.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding SRST signal on $flatten\u1.$auto$ff.cc:337:slice$317 ($dffe) from module booth_radix8_multiplier (D = $flatten\u1.$procmux$170_Y [9], Q = \u1.prod_reg [9], rval = 1'0).
+Adding SRST signal on $flatten\u0.$auto$ff.cc:337:slice$317 ($dffe) from module booth_radix8_multiplier (D = $flatten\u0.$procmux$170_Y [9], Q = \u0.prod_reg [9], rval = 1'0).
 
 11.12.7. Executing OPT_CLEAN pass (remove unused cells and wires).
 Finding unused cells or wires in module \booth_radix8_multiplier..
@@ -651,74 +689,135 @@ Finding unused cells or wires in module \booth_radix8_multiplier..
 11.12.8. Executing OPT_EXPR pass (perform const folding).
 Optimizing module booth_radix8_multiplier.
 
-11.12.9. Finished fast OPT passes. (There is nothing left to do.)
+11.12.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+11.12.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \booth_radix8_multiplier..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~16 debug messages>
+
+11.12.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \booth_radix8_multiplier.
+Performed a total of 0 changes.
+
+11.12.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\booth_radix8_multiplier'.
+Removed a total of 0 cells.
+
+11.12.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+11.12.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \booth_radix8_multiplier..
+
+11.12.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module booth_radix8_multiplier.
+
+11.12.16. Finished fast OPT passes. (There is nothing left to do.)
 
 11.13. Executing WREDUCE pass (reducing word size of cells).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult3.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:53$27 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult3.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$21 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult3.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$20 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult3.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$14 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult3.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$13 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult3.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$7 ($eq).
-Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult3.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$6 ($eq).
-Converting cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:197$54 ($add) from unsigned to signed.
-Removed top 1 bits (of 18) from port A of cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:197$54 ($add).
-Removed top 1 bits (of 18) from port B of cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:197$54 ($add).
-Removed top 2 bits (of 11) from FF cell booth_radix8_multiplier.$flatten\mult3.$auto$ff.cc:337:slice$247 ($adffe).
-Removed top 3 bits (of 21) from FF cell booth_radix8_multiplier.$flatten\mult3.$auto$ff.cc:337:slice$240 ($adffe).
-Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult3.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult2.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-Removed top 3 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult2.$and$../rtl/booth_radix8_multiplier_su_7_linear_155.v:63$36 ($and).
-Removed top 3 bits (of 21) from FF cell booth_radix8_multiplier.$flatten\mult2.$auto$ff.cc:337:slice$240 ($adffe).
-Removed top 2 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\mult2.$auto$opt_expr.cc:276:group_cell_inputs$204 ($and).
-Removed top 1 bits (of 9) from port B of cell booth_radix8_multiplier.$flatten\mult2.$auto$opt_expr.cc:276:group_cell_inputs$208 ($and).
-Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult2.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$6 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult2.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$7 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult2.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$13 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult2.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$14 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult2.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$20 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult2.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$21 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult2.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:53$27 ($eq).
-Converting cell booth_radix8_multiplier.$flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add) from unsigned to signed.
-Removed top 2 bits (of 10) from port A of cell booth_radix8_multiplier.$flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-Removed top 1 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-Removed top 3 bits (of 21) from FF cell booth_radix8_multiplier.$flatten\mult1.$auto$ff.cc:337:slice$240 ($adffe).
-Removed top 2 bits (of 11) from FF cell booth_radix8_multiplier.$flatten\mult1.$auto$ff.cc:337:slice$247 ($adffe).
-Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult1.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$6 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult1.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$7 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult1.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$13 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult1.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$14 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult1.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$20 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult1.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$21 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult1.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:53$27 ($eq).
-Removed top 2 bits (of 10) from port A of cell booth_radix8_multiplier.$flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-Removed top 1 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-Converting cell booth_radix8_multiplier.$flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add) from signed to unsigned.
-Removed top 1 bits (of 8) from port A of cell booth_radix8_multiplier.$flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-Removed top 1 bits (of 9) from port B of cell booth_radix8_multiplier.$flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-Removed top 1 bits (of 10) from port Y of cell booth_radix8_multiplier.$flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-Removed top 3 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult0.$and$../rtl/booth_radix8_multiplier_su_7_linear_155.v:63$36 ($and).
-Removed top 1 bits (of 11) from FF cell booth_radix8_multiplier.$flatten\mult0.$auto$ff.cc:337:slice$235 ($adffe).
-Removed top 3 bits (of 21) from FF cell booth_radix8_multiplier.$flatten\mult0.$auto$ff.cc:337:slice$240 ($adffe).
-Removed top 2 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\mult0.$auto$opt_expr.cc:276:group_cell_inputs$204 ($and).
-Removed top 1 bits (of 9) from port B of cell booth_radix8_multiplier.$flatten\mult0.$auto$opt_expr.cc:276:group_cell_inputs$208 ($and).
-Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult0.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$6 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult0.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:47$7 ($eq).
-Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult0.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$13 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult0.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:49$14 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult0.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$20 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult0.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:51$21 ($eq).
-Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\mult0.$eq$../rtl/booth_radix8_multiplier_su_7_linear_155.v:53$27 ($eq).
-Removed top 1 bits (of 11) from FF cell booth_radix8_multiplier.$flatten\mult2.$auto$ff.cc:337:slice$235 ($adffe).
-Removed top 1 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult0.$and$../rtl/booth_radix8_multiplier_su_7_linear_155.v:65$39 ($and).
-Removed top 1 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\mult2.$and$../rtl/booth_radix8_multiplier_su_7_linear_155.v:65$39 ($and).
+Removed top 31 bits (of 32) from port B of cell booth_radix8_multiplier.$flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 29 bits (of 32) from port Y of cell booth_radix8_multiplier.$flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+Removed top 1 bits (of 3) from port B of cell booth_radix8_multiplier.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:164$75 ($eq).
+Removed top 31 bits (of 32) from port B of cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:165$76 ($add).
+Removed top 29 bits (of 32) from port Y of cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:165$76 ($add).
+Converting cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:187$79 ($add) from unsigned to signed.
+Removed top 1 bits (of 18) from port A of cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:187$79 ($add).
+Removed top 1 bits (of 18) from port B of cell booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:187$79 ($add).
+Removed top 11 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u3.$procmux$173 ($mux).
+Removed top 11 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u3.$procmux$170 ($mux).
+Removed top 1 bits (of 3) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:74$49 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:45$27 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$21 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$20 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$14 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$13 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$7 ($eq).
+Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u3.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$6 ($eq).
+Removed top 3 bits (of 12) from FF cell booth_radix8_multiplier.$flatten\u3.$auto$ff.cc:337:slice$320 ($sdffe).
+Removed top 31 bits (of 32) from port B of cell booth_radix8_multiplier.$flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 29 bits (of 32) from port Y of cell booth_radix8_multiplier.$flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+Removed top 3 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u2.$and$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:55$36 ($and).
+Removed top 3 bits (of 12) from FF cell booth_radix8_multiplier.$flatten\u2.$auto$ff.cc:337:slice$320 ($sdffe).
+Removed top 2 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\u2.$auto$opt_expr.cc:276:group_cell_inputs$266 ($and).
+Removed top 1 bits (of 9) from port B of cell booth_radix8_multiplier.$flatten\u2.$auto$opt_expr.cc:276:group_cell_inputs$270 ($and).
+Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$6 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$7 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$13 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$14 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$20 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$21 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:45$27 ($eq).
+Removed top 1 bits (of 3) from port B of cell booth_radix8_multiplier.$flatten\u2.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:74$49 ($eq).
+Removed top 11 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u2.$procmux$173 ($mux).
+Converting cell booth_radix8_multiplier.$flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add) from unsigned to signed.
+Removed top 2 bits (of 10) from port A of cell booth_radix8_multiplier.$flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+Removed top 1 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+Removed top 31 bits (of 32) from port B of cell booth_radix8_multiplier.$flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 29 bits (of 32) from port Y of cell booth_radix8_multiplier.$flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 2 bits (of 11) from FF cell booth_radix8_multiplier.$flatten\u1.$auto$ff.cc:337:slice$307 ($dffe).
+Removed top 3 bits (of 12) from FF cell booth_radix8_multiplier.$flatten\u1.$auto$ff.cc:337:slice$320 ($sdffe).
+Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$6 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$7 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$13 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$14 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$20 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$21 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:45$27 ($eq).
+Removed top 1 bits (of 3) from port B of cell booth_radix8_multiplier.$flatten\u1.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:74$49 ($eq).
+Removed top 12 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u1.$procmux$173 ($mux).
+Removed top 2 bits (of 10) from port A of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+Removed top 1 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+Converting cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add) from signed to unsigned.
+Removed top 1 bits (of 8) from port A of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+Removed top 1 bits (of 9) from port B of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+Removed top 1 bits (of 10) from port Y of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+Removed top 10 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+Removed top 31 bits (of 32) from port B of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 29 bits (of 32) from port Y of cell booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+Removed top 3 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u0.$and$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:55$36 ($and).
+Removed top 1 bits (of 11) from FF cell booth_radix8_multiplier.$flatten\u0.$auto$ff.cc:337:slice$308 ($dffe).
+Removed top 3 bits (of 12) from FF cell booth_radix8_multiplier.$flatten\u0.$auto$ff.cc:337:slice$320 ($sdffe).
+Removed top 2 bits (of 10) from port B of cell booth_radix8_multiplier.$flatten\u0.$auto$opt_expr.cc:276:group_cell_inputs$266 ($and).
+Removed top 1 bits (of 9) from port B of cell booth_radix8_multiplier.$flatten\u0.$auto$opt_expr.cc:276:group_cell_inputs$270 ($and).
+Removed top 3 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$6 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:42$7 ($eq).
+Removed top 2 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$13 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:43$14 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$20 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:44$21 ($eq).
+Removed top 1 bits (of 4) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:45$27 ($eq).
+Removed top 1 bits (of 3) from port B of cell booth_radix8_multiplier.$flatten\u0.$eq$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:74$49 ($eq).
+Removed top 12 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u0.$procmux$173 ($mux).
+Removed top 1 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u2.$and$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:56$39 ($and).
+Removed top 11 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u2.$procmux$170 ($mux).
+Removed top 11 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u1.$procmux$170 ($mux).
+Removed top 1 bits (of 11) from port B of cell booth_radix8_multiplier.$flatten\u0.$and$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:56$39 ($and).
+Removed top 11 bits (of 21) from mux cell booth_radix8_multiplier.$flatten\u0.$procmux$170 ($mux).
+Removed top 29 bits (of 32) from wire booth_radix8_multiplier.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:165$76_Y.
+Removed top 12 bits (of 21) from wire booth_radix8_multiplier.$flatten\u0.$0\prod_reg[20:0].
+Removed top 29 bits (of 32) from wire booth_radix8_multiplier.$flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50_Y.
+Removed top 11 bits (of 21) from wire booth_radix8_multiplier.$flatten\u0.$procmux$170_Y.
+Removed top 12 bits (of 21) from wire booth_radix8_multiplier.$flatten\u1.$0\prod_reg[20:0].
+Removed top 29 bits (of 32) from wire booth_radix8_multiplier.$flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50_Y.
+Removed top 11 bits (of 21) from wire booth_radix8_multiplier.$flatten\u1.$procmux$170_Y.
+Removed top 11 bits (of 21) from wire booth_radix8_multiplier.$flatten\u2.$0\prod_reg[20:0].
+Removed top 1 bits (of 11) from wire booth_radix8_multiplier.$flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44_Y.
+Removed top 12 bits (of 21) from wire booth_radix8_multiplier.$flatten\u3.$0\prod_reg[20:0].
+Removed top 29 bits (of 32) from wire booth_radix8_multiplier.$flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50_Y.
+Removed top 9 bits (of 11) from wire booth_radix8_multiplier.$flatten\u3.$or$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:55$40_Y.
 
 11.14. Executing PEEPOPT pass (run peephole optimizers).
 
 11.15. Executing OPT_CLEAN pass (remove unused cells and wires).
 Finding unused cells or wires in module \booth_radix8_multiplier..
+Removed 0 unused cells and 12 unused wires.
+<suppressed ~1 debug messages>
 
 11.16. Executing SHARE pass (SAT-based resource sharing).
 
@@ -742,39 +841,54 @@ Finding unused cells or wires in module \booth_radix8_multiplier..
 
 11.20. Executing ALUMACC pass (create $alu and $macc cells).
 Extracting $alu and $macc cells in module booth_radix8_multiplier:
-  creating $macc model for $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:197$54 ($add).
-  creating $macc model for $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:240$59 ($add).
-  creating $macc model for $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-  creating $macc model for $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 ($add).
-  creating $macc model for $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-  creating $macc model for $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3 ($add).
-  creating $macc model for $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 ($add).
-  creating $macc model for $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-  creating $macc model for $flatten\mult2.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 ($add).
-  creating $macc model for $flatten\mult2.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-  creating $macc model for $flatten\mult3.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 ($add).
-  creating $macc model for $flatten\mult3.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45 ($add).
-  merging $macc model for $flatten\mult3.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 into $flatten\mult3.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  merging $macc model for $flatten\mult2.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 into $flatten\mult2.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  merging $macc model for $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 into $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  merging $macc model for $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$44 into $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  creating $alu model for $macc $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  creating $alu model for $macc $flatten\mult2.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  creating $alu model for $macc $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3.
-  creating $alu model for $macc $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  creating $alu model for $macc $flatten\mult3.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45.
-  creating $alu model for $macc $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3.
-  creating $alu model for $macc $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:240$59.
-  creating $alu model for $macc $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:197$54.
-  creating $alu cell for $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:197$54: $auto$alumacc.cc:512:replace_alu$635
-  creating $alu cell for $add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:240$59: $auto$alumacc.cc:512:replace_alu$638
-  creating $alu cell for $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3: $auto$alumacc.cc:512:replace_alu$641
-  creating $alu cell for $flatten\mult3.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45: $auto$alumacc.cc:512:replace_alu$644
-  creating $alu cell for $flatten\mult0.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45: $auto$alumacc.cc:512:replace_alu$647
-  creating $alu cell for $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:32$3: $auto$alumacc.cc:512:replace_alu$650
-  creating $alu cell for $flatten\mult2.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45: $auto$alumacc.cc:512:replace_alu$653
-  creating $alu cell for $flatten\mult1.$add$../rtl/booth_radix8_multiplier_su_7_linear_155.v:70$45: $auto$alumacc.cc:512:replace_alu$656
-  created 8 $alu and 0 $macc cells.
+  creating $macc model for $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:165$76 ($add).
+  creating $macc model for $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:187$79 ($add).
+  creating $macc model for $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:206$82 ($add).
+  creating $macc model for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+  creating $macc model for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 ($add).
+  creating $macc model for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+  creating $macc model for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+  creating $macc model for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3 ($add).
+  creating $macc model for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 ($add).
+  creating $macc model for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+  creating $macc model for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+  creating $macc model for $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 ($add).
+  creating $macc model for $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+  creating $macc model for $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+  creating $macc model for $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 ($add).
+  creating $macc model for $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45 ($add).
+  creating $macc model for $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50 ($add).
+  merging $macc model for $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 into $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  merging $macc model for $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 into $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  merging $macc model for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 into $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  merging $macc model for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$44 into $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  creating $alu model for $macc $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  creating $alu model for $macc $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50.
+  creating $alu model for $macc $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50.
+  creating $alu model for $macc $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  creating $alu model for $macc $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  creating $alu model for $macc $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3.
+  creating $alu model for $macc $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50.
+  creating $alu model for $macc $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45.
+  creating $alu model for $macc $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50.
+  creating $alu model for $macc $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3.
+  creating $alu model for $macc $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:206$82.
+  creating $alu model for $macc $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:187$79.
+  creating $alu model for $macc $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:165$76.
+  creating $alu cell for $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:165$76: $auto$alumacc.cc:512:replace_alu$719
+  creating $alu cell for $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:187$79: $auto$alumacc.cc:512:replace_alu$722
+  creating $alu cell for $add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:206$82: $auto$alumacc.cc:512:replace_alu$725
+  creating $alu cell for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3: $auto$alumacc.cc:512:replace_alu$728
+  creating $alu cell for $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50: $auto$alumacc.cc:512:replace_alu$731
+  creating $alu cell for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45: $auto$alumacc.cc:512:replace_alu$734
+  creating $alu cell for $flatten\u0.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50: $auto$alumacc.cc:512:replace_alu$737
+  creating $alu cell for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:27$3: $auto$alumacc.cc:512:replace_alu$740
+  creating $alu cell for $flatten\u3.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45: $auto$alumacc.cc:512:replace_alu$743
+  creating $alu cell for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45: $auto$alumacc.cc:512:replace_alu$746
+  creating $alu cell for $flatten\u1.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50: $auto$alumacc.cc:512:replace_alu$749
+  creating $alu cell for $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:75$50: $auto$alumacc.cc:512:replace_alu$752
+  creating $alu cell for $flatten\u2.$add$../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60$45: $auto$alumacc.cc:512:replace_alu$755
+  created 13 $alu and 0 $macc cells.
 
 11.21. Executing OPT pass (performing simple optimizations).
 
@@ -791,7 +905,7 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~30 debug messages>
+<suppressed ~16 debug messages>
 
 11.21.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
   Optimizing cells in module \booth_radix8_multiplier.
@@ -819,7 +933,7 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~30 debug messages>
+<suppressed ~16 debug messages>
 
 11.21.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
   Optimizing cells in module \booth_radix8_multiplier.
@@ -895,7 +1009,7 @@ No more expansions possible.
 
 11.27.1. Executing OPT_EXPR pass (perform const folding).
 Optimizing module booth_radix8_multiplier.
-<suppressed ~148 debug messages>
+<suppressed ~146 debug messages>
 
 11.27.2. Executing OPT_MERGE pass (detect identical cells).
 Finding identical cells in module `\booth_radix8_multiplier'.
@@ -927,7 +1041,7 @@ Running muxtree optimizer on module \booth_radix8_multiplier..
   Evaluating internal representation of mux trees.
   Analyzing evaluation results.
 Removed 0 multiplexer ports.
-<suppressed ~30 debug messages>
+<suppressed ~16 debug messages>
 
 11.29.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
   Optimizing cells in module \booth_radix8_multiplier.
@@ -993,63 +1107,73 @@ Using extmapper simplemap for cells of type $xor.
 Using extmapper simplemap for cells of type $or.
 Using extmapper simplemap for cells of type $and.
 Using template $paramod$ec32b97001540459632a2df9accd677d3703ea0f\_80_ice40_alu for cells of type $alu.
+Using template $paramod$3ef7d3dd227da7627a99c5e5a6a4deb817573e39\_80_ice40_alu for cells of type $alu.
 Using template $paramod$2ee99f7d34604d49220c508e2a022c99f49ec060\_80_ice40_alu for cells of type $alu.
 Using template $paramod$4036cc4bf4f6a71988372ada8c45973510ae050c\_80_ice40_alu for cells of type $alu.
 Using template $paramod$e82d3fc1811c5751348a3964470632b35a435fc7\_80_ice40_alu for cells of type $alu.
 Using template $paramod$5e21cfa2ff6d644e10a0fc1dcdb22e5eb183bcd3\_80_ice40_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $dffe.
+Using extmapper simplemap for cells of type $sdffce.
 Using extmapper simplemap for cells of type $adffe.
 Using extmapper simplemap for cells of type $reduce_and.
-Using extmapper simplemap for cells of type $mux.
-Using extmapper simplemap for cells of type $not.
-Using extmapper simplemap for cells of type $adff.
-Using extmapper simplemap for cells of type $logic_or.
-Using extmapper simplemap for cells of type $eq.
 Using extmapper simplemap for cells of type $ne.
 Using extmapper simplemap for cells of type $reduce_bool.
+Using extmapper simplemap for cells of type $logic_or.
+Using extmapper simplemap for cells of type $logic_not.
 Using extmapper simplemap for cells of type $logic_and.
+Using extmapper simplemap for cells of type $eq.
+Using extmapper simplemap for cells of type $mux.
+Using extmapper simplemap for cells of type $dff.
+Using extmapper simplemap for cells of type $not.
+Using extmapper simplemap for cells of type $sdffe.
+Using extmapper simplemap for cells of type $adff.
 Using extmapper simplemap for cells of type $pos.
 No more expansions possible.
-<suppressed ~449 debug messages>
+<suppressed ~504 debug messages>
 
 11.32. Executing OPT pass (performing simple optimizations).
 
 11.32.1. Executing OPT_EXPR pass (perform const folding).
 Optimizing module booth_radix8_multiplier.
-<suppressed ~342 debug messages>
+<suppressed ~387 debug messages>
 
 11.32.2. Executing OPT_MERGE pass (detect identical cells).
 Finding identical cells in module `\booth_radix8_multiplier'.
-<suppressed ~642 debug messages>
-Removed a total of 214 cells.
+<suppressed ~648 debug messages>
+Removed a total of 216 cells.
 
 11.32.3. Executing OPT_DFF pass (perform DFF optimizations).
 
 11.32.4. Executing OPT_CLEAN pass (remove unused cells and wires).
 Finding unused cells or wires in module \booth_radix8_multiplier..
-Removed 183 unused cells and 404 unused wires.
-<suppressed ~184 debug messages>
+Removed 202 unused cells and 497 unused wires.
+<suppressed ~203 debug messages>
 
 11.32.5. Finished fast OPT passes.
 
 11.33. Executing ICE40_OPT pass (performing simple optimizations).
 
 11.33.1. Running ICE40 specific optimizations.
-Optimized $__ICE40_CARRY_WRAPPER cell back to logic (without SB_CARRY) booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$641.slice[8].carry: CO=1'0
+Optimized $__ICE40_CARRY_WRAPPER cell back to logic (without SB_CARRY) booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$719.slice[0].carry: CO=\core_timer [0]
+Optimized $__ICE40_CARRY_WRAPPER cell back to logic (without SB_CARRY) booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$728.slice[8].carry: CO=1'0
+Optimized $__ICE40_CARRY_WRAPPER cell back to logic (without SB_CARRY) booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$731.slice[0].carry: CO=\u3.cycle_cnt [0]
+Optimized $__ICE40_CARRY_WRAPPER cell back to logic (without SB_CARRY) booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$737.slice[0].carry: CO=\u0.cycle_cnt [0]
+Optimized $__ICE40_CARRY_WRAPPER cell back to logic (without SB_CARRY) booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$749.slice[0].carry: CO=\u1.cycle_cnt [0]
+Optimized $__ICE40_CARRY_WRAPPER cell back to logic (without SB_CARRY) booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$752.slice[0].carry: CO=\u2.cycle_cnt [0]
 
 11.33.2. Executing OPT_EXPR pass (perform const folding).
 Optimizing module booth_radix8_multiplier.
-<suppressed ~12 debug messages>
+<suppressed ~36 debug messages>
 
 11.33.3. Executing OPT_MERGE pass (detect identical cells).
 Finding identical cells in module `\booth_radix8_multiplier'.
-<suppressed ~12 debug messages>
-Removed a total of 4 cells.
+Removed a total of 0 cells.
 
 11.33.4. Executing OPT_DFF pass (perform DFF optimizations).
 
 11.33.5. Executing OPT_CLEAN pass (remove unused cells and wires).
 Finding unused cells or wires in module \booth_radix8_multiplier..
-Removed 0 unused cells and 1 unused wires.
+Removed 0 unused cells and 5 unused wires.
 <suppressed ~1 debug messages>
 
 11.33.6. Rerunning OPT passes. (Removed registers in this run.)
@@ -1100,8 +1224,11 @@ Generating RTLIL representation for module `\$_SDFFCE_PP1P_'.
 Successfully finished Verilog frontend.
 
 11.35.2. Continuing TECHMAP pass.
-Using template \$_DFF_PP0_ for cells of type $_DFF_PP0_.
+Using template \$_DFF_P_ for cells of type $_DFF_P_.
+Using template \$_SDFFCE_PP0P_ for cells of type $_SDFFCE_PP0P_.
+Using template \$_DFFE_PP_ for cells of type $_DFFE_PP_.
 Using template \$_DFFE_PP0P_ for cells of type $_DFFE_PP0P_.
+Using template \$_DFF_PP0_ for cells of type $_DFF_PP0_.
 No more expansions possible.
 <suppressed ~306 debug messages>
 
@@ -1109,7 +1236,12 @@ No more expansions possible.
 Optimizing module booth_radix8_multiplier.
 
 11.37. Executing SIMPLEMAP pass (map simple cells to gate primitives).
-Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$641.slice[8].carry ($lut).
+Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$728.slice[8].carry ($lut).
+Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$731.slice[0].carry ($lut).
+Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$737.slice[0].carry ($lut).
+Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$749.slice[0].carry ($lut).
+Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$752.slice[0].carry ($lut).
+Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$719.slice[0].carry ($lut).
 
 11.38. Executing ICE40_OPT pass (performing simple optimizations).
 
@@ -1117,18 +1249,18 @@ Mapping booth_radix8_multiplier.$auto$alumacc.cc:512:replace_alu$641.slice[8].ca
 
 11.38.2. Executing OPT_EXPR pass (perform const folding).
 Optimizing module booth_radix8_multiplier.
-<suppressed ~69 debug messages>
+<suppressed ~85 debug messages>
 
 11.38.3. Executing OPT_MERGE pass (detect identical cells).
 Finding identical cells in module `\booth_radix8_multiplier'.
-<suppressed ~849 debug messages>
-Removed a total of 283 cells.
+<suppressed ~636 debug messages>
+Removed a total of 212 cells.
 
 11.38.4. Executing OPT_DFF pass (perform DFF optimizations).
 
 11.38.5. Executing OPT_CLEAN pass (remove unused cells and wires).
 Finding unused cells or wires in module \booth_radix8_multiplier..
-Removed 0 unused cells and 1983 unused wires.
+Removed 0 unused cells and 1853 unused wires.
 <suppressed ~1 debug messages>
 
 11.38.6. Rerunning OPT passes. (Removed registers in this run.)
@@ -1180,7 +1312,7 @@ Successfully finished Verilog frontend.
 Cleaned up 0 empty switches.
 
 11.41.3.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
-Marked 1 switch rules as full_case in process $proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$443 in module SB_DFFER.
+Marked 1 switch rules as full_case in process $proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$512 in module SB_DFFER.
 Removed a total of 0 dead cases.
 
 11.41.3.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
@@ -1188,33 +1320,33 @@ Removed 0 redundant assignments.
 Promoted 1 assignment to connection.
 
 11.41.3.4. Executing PROC_INIT pass (extract init attributes).
-Found init rule in `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:660$446'.
+Found init rule in `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:660$515'.
   Set init value: \Q = 1'0
 
 11.41.3.5. Executing PROC_ARST pass (detect async resets in processes).
-Found async reset \R in `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$443'.
+Found async reset \R in `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$512'.
 
 11.41.3.6. Executing PROC_ROM pass (convert switches to ROMs).
 Converted 0 switches.
 <suppressed ~1 debug messages>
 
 11.41.3.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
-Creating decoders for process `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:660$446'.
-Creating decoders for process `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$443'.
+Creating decoders for process `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:660$515'.
+Creating decoders for process `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$512'.
      1/1: $0\Q[0:0]
 
 11.41.3.8. Executing PROC_DLATCH pass (convert process syncs to latches).
 
 11.41.3.9. Executing PROC_DFF pass (convert process syncs to FFs).
-Creating register for signal `\SB_DFFER.\Q' using process `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$443'.
-  created $adff cell `$procdff$3956' with positive edge clock and positive level reset.
+Creating register for signal `\SB_DFFER.\Q' using process `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$512'.
+  created $adff cell `$procdff$4084' with positive edge clock and positive level reset.
 
 11.41.3.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
 
 11.41.3.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
-Removing empty process `SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:660$446'.
-Found and cleaned up 1 empty switch in `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$443'.
-Removing empty process `SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$443'.
+Removing empty process `SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:660$515'.
+Found and cleaned up 1 empty switch in `\SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$512'.
+Removing empty process `SB_DFFER.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:662$512'.
 Cleaned up 1 empty switch.
 
 11.41.4. Executing PROC pass (convert processes to netlists).
@@ -1223,7 +1355,7 @@ Cleaned up 1 empty switch.
 Cleaned up 0 empty switches.
 
 11.41.4.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
-Marked 1 switch rules as full_case in process $proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$427 in module SB_DFFR.
+Marked 1 switch rules as full_case in process $proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$496 in module SB_DFFR.
 Removed a total of 0 dead cases.
 
 11.41.4.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
@@ -1231,31 +1363,31 @@ Removed 1 redundant assignment.
 Promoted 1 assignment to connection.
 
 11.41.4.4. Executing PROC_INIT pass (extract init attributes).
-Found init rule in `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:404$429'.
+Found init rule in `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:404$498'.
   Set init value: \Q = 1'0
 
 11.41.4.5. Executing PROC_ARST pass (detect async resets in processes).
-Found async reset \R in `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$427'.
+Found async reset \R in `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$496'.
 
 11.41.4.6. Executing PROC_ROM pass (convert switches to ROMs).
 Converted 0 switches.
 
 11.41.4.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
-Creating decoders for process `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:404$429'.
-Creating decoders for process `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$427'.
+Creating decoders for process `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:404$498'.
+Creating decoders for process `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$496'.
      1/1: $0\Q[0:0]
 
 11.41.4.8. Executing PROC_DLATCH pass (convert process syncs to latches).
 
 11.41.4.9. Executing PROC_DFF pass (convert process syncs to FFs).
-Creating register for signal `\SB_DFFR.\Q' using process `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$427'.
-  created $adff cell `$procdff$3959' with positive edge clock and positive level reset.
+Creating register for signal `\SB_DFFR.\Q' using process `\SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$496'.
+  created $adff cell `$procdff$4087' with positive edge clock and positive level reset.
 
 11.41.4.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
 
 11.41.4.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
-Removing empty process `SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:404$429'.
-Removing empty process `SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$427'.
+Removing empty process `SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:404$498'.
+Removing empty process `SB_DFFR.$proc$/usr/local/bin/../share/yosys/ice40/cells_sim.v:406$496'.
 Cleaned up 0 empty switches.
 
 11.41.5. Executing SCC pass (detecting logic loops).
@@ -1354,7 +1486,7 @@ Successfully finished Verilog frontend.
 Using template SB_DFFR for cells of type SB_DFFR.
 Using template SB_DFFER for cells of type SB_DFFER.
 No more expansions possible.
-<suppressed ~288 debug messages>
+<suppressed ~164 debug messages>
 
 11.41.10. Executing Verilog-2005 frontend: /usr/local/bin/../share/yosys/abc9_model.v
 Parsing Verilog input from `/usr/local/bin/../share/yosys/abc9_model.v' to AST representation.
@@ -1366,7 +1498,7 @@ Generating RTLIL representation for module `$__DFF_P__$abc9_flop'.
 Successfully finished Verilog frontend.
 
 11.41.11. Executing ABC9_OPS pass (helper functions for ABC9).
-<suppressed ~2 debug messages>
+<suppressed ~176 debug messages>
 
 11.41.12. Executing ABC9_OPS pass (helper functions for ABC9).
 
@@ -1414,7 +1546,7 @@ Using extmapper simplemap for cells of type $mux.
 Using extmapper simplemap for cells of type $logic_and.
 Using extmapper simplemap for cells of type $logic_or.
 No more expansions possible.
-<suppressed ~151 debug messages>
+<suppressed ~153 debug messages>
 
 11.41.15. Executing OPT pass (performing simple optimizations).
 
@@ -1488,19 +1620,24 @@ Module booth_radix8_multiplier: replaced 7 cells with 43 new cells, skipped 11 c
        8 $specify2
 
 11.41.17. Executing AIGMAP pass (map logic to AIG).
-Module booth_radix8_multiplier: replaced 329 cells with 1559 new cells, skipped 977 cells.
+Module booth_radix8_multiplier: replaced 339 cells with 1593 new cells, skipped 993 cells.
   replaced 3 cell types:
-      39 $_MUX_
-     248 $_OR_
+      37 $_MUX_
+     260 $_OR_
       42 $_XOR_
-  not replaced 7 cell types:
-     220 $_AND_
-      85 $_NOT_
-       8 SB_DFFR
-     276 SB_DFFER
-       8 SB_DFFR_$abc9_byp
-     276 SB_DFFER_$abc9_byp
-     104 $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1
+  not replaced 12 cell types:
+     170 $_AND_
+      91 $_NOT_
+       4 SB_DFF
+      70 SB_DFFE
+       4 SB_DFFR
+      50 SB_DFFESR
+     156 SB_DFFER
+      50 $paramod$__ABC9_DELAY\DELAY=32'00000000000000000000000011001011
+     124 $paramod$__ABC9_DELAY\DELAY=32'00000000000000000000000000010101
+       4 SB_DFFR_$abc9_byp
+     156 SB_DFFER_$abc9_byp
+     114 $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1
 
 11.41.17.1. Executing ABC9_OPS pass (helper functions for ABC9).
 
@@ -1508,7 +1645,7 @@ Module booth_radix8_multiplier: replaced 329 cells with 1559 new cells, skipped 
 
 11.41.17.3. Executing XAIGER backend.
 <suppressed ~295 debug messages>
-Extracted 711 AND gates and 2768 wires from module `booth_radix8_multiplier' to a netlist network with 321 inputs and 260 outputs.
+Extracted 667 AND gates and 2878 wires from module `booth_radix8_multiplier' to a netlist network with 321 inputs and 346 outputs.
 
 11.41.17.4. Executing ABC9_EXE pass (technology mapping using ABC9).
 
@@ -1520,47 +1657,50 @@ ABC: + read_lut <abc-temp-dir>/input.lut
 ABC: + read_box <abc-temp-dir>/input.box 
 ABC: + &read <abc-temp-dir>/input.xaig 
 ABC: + &ps 
-ABC: <abc-temp-dir>/input : i/o =    321/    260  and =     704  lev =   11 (0.47)  mem = 0.04 MB  box = 388  bb = 284
+ABC: <abc-temp-dir>/input : i/o =    321/    346  and =     639  lev =   11 (0.70)  mem = 0.04 MB  box = 448  bb = 334
+ABC: Warning: AIG with boxes has internal fanout in 0 complex flops and 17 carries.
 ABC: + &scorr 
 ABC: Warning: The network is combinational.
 ABC: + &sweep 
 ABC: + &dc2 
 ABC: + &dch -f -r 
 ABC: + &ps 
-ABC: <abc-temp-dir>/input : i/o =    321/    260  and =     896  lev =    8 (0.38)  mem = 0.04 MB  ch =  101  box = 387  bb = 284
-ABC: cst =       0  cls =    101  lit =     101  unused =    1505  proof =     0
+ABC: <abc-temp-dir>/input : i/o =    321/    346  and =     731  lev =    8 (0.61)  mem = 0.04 MB  ch =   65  box = 447  bb = 334
+ABC: cst =       0  cls =     65  lit =      65  unused =    1482  proof =     0
+ABC: Warning: AIG with boxes has internal fanout in 0 complex flops and 17 carries.
 ABC: + &if -W 250 -v 
 ABC: K = 4. Memory (bytes): Truth =    0. Cut =   52. Obj =  136. Set =  564. CutMin = no
-ABC: Node =     896.  Ch =   101.  Total mem =    0.44 MB. Peak cut mem =    0.01 MB.
-ABC: P:  Del = 4572.00.  Ar =     279.0.  Edge =      910.  Cut =     6258.  T =     0.00 sec
-ABC: P:  Del = 4572.00.  Ar =     278.0.  Edge =      917.  Cut =     5704.  T =     0.00 sec
-ABC: P:  Del = 4572.00.  Ar =     274.0.  Edge =      829.  Cut =     6194.  T =     0.00 sec
-ABC: F:  Del = 4572.00.  Ar =     241.0.  Edge =      763.  Cut =     3078.  T =     0.00 sec
-ABC: A:  Del = 4572.00.  Ar =     239.0.  Edge =      751.  Cut =     3008.  T =     0.00 sec
-ABC: A:  Del = 4572.00.  Ar =     239.0.  Edge =      751.  Cut =     3023.  T =     0.00 sec
-ABC: Total time =     0.00 sec
+ABC: Node =     731.  Ch =    65.  Total mem =    0.44 MB. Peak cut mem =    0.01 MB.
+ABC: P:  Del = 3946.00.  Ar =     230.0.  Edge =      841.  Cut =     6421.  T =     0.00 sec
+ABC: P:  Del = 3946.00.  Ar =     224.0.  Edge =      820.  Cut =     5663.  T =     0.00 sec
+ABC: P:  Del = 3946.00.  Ar =     219.0.  Edge =      719.  Cut =     6167.  T =     0.00 sec
+ABC: F:  Del = 3946.00.  Ar =     191.0.  Edge =      655.  Cut =     4179.  T =     0.00 sec
+ABC: A:  Del = 3946.00.  Ar =     189.0.  Edge =      647.  Cut =     4205.  T =     0.00 sec
+ABC: A:  Del = 3946.00.  Ar =     189.0.  Edge =      647.  Cut =     4207.  T =     0.00 sec
+ABC: Total time =     0.01 sec
 ABC: + &write -n <abc-temp-dir>/output.aig 
 ABC: + &mfs 
 ABC: The network is not changed by "&mfs".
 ABC: + &ps -l 
-ABC: <abc-temp-dir>/input : i/o =    321/    260  and =     725  lev =    8 (0.38)  mem = 0.04 MB  box = 387  bb = 284
-ABC: Mapping (K=4)  :  lut =    239  edge =     751  lev =    3 (0.18)  levB =   25  mem = 0.02 MB
-ABC: LUT = 239 : 2=65 27.2 %  3=75 31.4 %  4=99 41.4 %  Ave = 3.14
+ABC: <abc-temp-dir>/input : i/o =    321/    346  and =     650  lev =    8 (0.61)  mem = 0.04 MB  box = 447  bb = 334
+ABC: Mapping (K=4)  :  lut =    189  edge =     647  lev =    4 (0.28)  levB =   25  mem = 0.02 MB
+ABC: LUT = 189 : 2=24 12.7 %  3=61 32.3 %  4=104 55.0 %  Ave = 3.42
+ABC: Warning: AIG with boxes has internal fanout in 0 complex flops and 17 carries.
 ABC: + &write -n <abc-temp-dir>/output.aig 
 ABC: + time 
 ABC: elapse: 0.10 seconds, total: 0.10 seconds
 
 11.41.17.6. Executing AIGER frontend.
-<suppressed ~1175 debug messages>
-Removed 979 unused cells and 3237 unused wires.
+<suppressed ~1347 debug messages>
+Removed 919 unused cells and 3200 unused wires.
 
 11.41.17.7. Executing ABC9_OPS pass (helper functions for ABC9).
-ABC RESULTS:              $lut cells:      244
-ABC RESULTS:   \SB_DFFR_$abc9_byp cells:        8
-ABC RESULTS:   \SB_DFFER_$abc9_byp cells:      276
-ABC RESULTS:   $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1 cells:      103
-ABC RESULTS:           input signals:      290
-ABC RESULTS:          output signals:       44
+ABC RESULTS:              $lut cells:      194
+ABC RESULTS:   \SB_DFFR_$abc9_byp cells:        4
+ABC RESULTS:   \SB_DFFER_$abc9_byp cells:      156
+ABC RESULTS:   $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1 cells:      113
+ABC RESULTS:           input signals:      184
+ABC RESULTS:          output signals:      204
 Removing temp directory.
 
 11.41.18. Executing TECHMAP pass (map to technology primitives).
@@ -1573,11 +1713,11 @@ Generating RTLIL representation for module `\$__ABC9_SCC_BREAKER'.
 Successfully finished Verilog frontend.
 
 11.41.18.2. Continuing TECHMAP pass.
-Using template SB_DFFER_$abc9_byp for cells of type SB_DFFER_$abc9_byp.
 Using template $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1 for cells of type $paramod$__ICE40_CARRY_WRAPPER\LUT=16'0110100110010110\I3_IS_CI=1'1.
+Using template SB_DFFER_$abc9_byp for cells of type SB_DFFER_$abc9_byp.
 Using template SB_DFFR_$abc9_byp for cells of type SB_DFFR_$abc9_byp.
 No more expansions possible.
-<suppressed ~395 debug messages>
+<suppressed ~281 debug messages>
 
 11.42. Executing ICE40_WRAPCARRY pass (wrap carries).
 
@@ -1611,39 +1751,39 @@ Successfully finished Verilog frontend.
 11.43.2. Continuing TECHMAP pass.
 No more expansions possible.
 <suppressed ~22 debug messages>
-Removed 60 unused cells and 6527 unused wires.
+Removed 81 unused cells and 5548 unused wires.
 
 11.44. Executing OPT_LUT pass (optimize LUTs).
 Discovering LUTs.
-Number of LUTs:      347
+Number of LUTs:      307
   1-LUT                5
-  2-LUT               65
-  3-LUT              178
-  4-LUT               99
-  with \SB_CARRY    (#0)   96
-  with \SB_CARRY    (#1)   95
+  2-LUT               29
+  3-LUT              169
+  4-LUT              104
+  with \SB_CARRY    (#0)  101
+  with \SB_CARRY    (#1)  100
 
 Eliminating LUTs.
-Number of LUTs:      347
+Number of LUTs:      307
   1-LUT                5
-  2-LUT               65
-  3-LUT              178
-  4-LUT               99
-  with \SB_CARRY    (#0)   96
-  with \SB_CARRY    (#1)   95
+  2-LUT               29
+  3-LUT              169
+  4-LUT              104
+  with \SB_CARRY    (#0)  101
+  with \SB_CARRY    (#1)  100
 
 Combining LUTs.
-Number of LUTs:      313
+Number of LUTs:      305
   1-LUT                5
-  2-LUT               31
-  3-LUT              144
-  4-LUT              133
-  with \SB_CARRY    (#0)   96
-  with \SB_CARRY    (#1)   95
+  2-LUT               26
+  3-LUT              169
+  4-LUT              105
+  with \SB_CARRY    (#0)  101
+  with \SB_CARRY    (#1)  100
 
 Eliminated 0 LUTs.
-Combined 34 LUTs.
-<suppressed ~2130 debug messages>
+Combined 2 LUTs.
+<suppressed ~1666 debug messages>
 
 11.45. Executing TECHMAP pass (map to technology primitives).
 
@@ -1656,56 +1796,46 @@ Successfully finished Verilog frontend.
 11.45.2. Continuing TECHMAP pass.
 Using template $paramod$fd904e9e35cfd343a9df248824bd3f1408724879\$lut for cells of type $lut.
 Using template $paramod$66caeb00a39d236782a97659e3bd99621b74681b\$lut for cells of type $lut.
-Using template $paramod$deb4f121bbf3d55ed9a98f692fd112e0918f51b5\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10111101 for cells of type $lut.
-Using template $paramod$b2e8d279775d333b39e310bd45fd5952acdde290\$lut for cells of type $lut.
-Using template $paramod$243fb93e736df5581df7bafa378886f2bdf5bea9\$lut for cells of type $lut.
 Using template $paramod$6f36f9d5871face0df32a42cfb901548ec3027d1\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10010101 for cells of type $lut.
-Using template $paramod$0de052767abdccc3aefc818722bdc3c7850d25d6\$lut for cells of type $lut.
-Using template $paramod$873c285bdccf0ac2b60d2304ea5cd14bf211d2a6\$lut for cells of type $lut.
-Using template $paramod$fca001e3e0b52158a872e76e56c01ec10dfbb1de\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0110 for cells of type $lut.
-Using template $paramod$011998c9bc40e79d3b9378981668ce5683b7cfe4\$lut for cells of type $lut.
-Using template $paramod$1e47b2c82141d6a54f09852fad33b92b9763040f\$lut for cells of type $lut.
-Using template $paramod$907f2d2c02ff149f00785eb99b3e2aa8a6a3fccd\$lut for cells of type $lut.
-Using template $paramod$35da37ed4f90fc5468f9505118750e88183291ab\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'01111000 for cells of type $lut.
-Using template $paramod$53a931967d4390280138fe919abce921b83af282\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'11100111 for cells of type $lut.
-Using template $paramod$024f437069ede126a08cbaf2540201977a378569\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0010 for cells of type $lut.
-Using template $paramod$6b0849254d6c87461fb93e37cc18f089f61eb912\$lut for cells of type $lut.
-Using template $paramod$5da5fc2bf61da4d6dac686c0b8a953173ac89c13\$lut for cells of type $lut.
-Using template $paramod$ca1d48527df516f209cb40a6149324209c84bc69\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'11011011 for cells of type $lut.
-Using template $paramod$bca5b6567f6770a6112e209ac4ad433e3ef55e27\$lut for cells of type $lut.
-Using template $paramod$4cf5305612d86489c1a6171729557670bf08582e\$lut for cells of type $lut.
-Using template $paramod$d7856980c8e3df62f97c26ab34037f33a9e831b5\$lut for cells of type $lut.
-Using template $paramod$f8f63b209b7230e81958663ff24fef1613156af7\$lut for cells of type $lut.
-Using template $paramod$aa9a0d77e33080834b117884290c5ddec27a803f\$lut for cells of type $lut.
+Using template $paramod$243fb93e736df5581df7bafa378886f2bdf5bea9\$lut for cells of type $lut.
+Using template $paramod$b2e8d279775d333b39e310bd45fd5952acdde290\$lut for cells of type $lut.
 Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1001 for cells of type $lut.
+Using template $paramod$4bfd45f02ed7fecec5d39674ef87475cddf8f14d\$lut for cells of type $lut.
+Using template $paramod$deb4f121bbf3d55ed9a98f692fd112e0918f51b5\$lut for cells of type $lut.
+Using template $paramod$f8f63b209b7230e81958663ff24fef1613156af7\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10111101 for cells of type $lut.
 Using template $paramod$04f19070e7c1672498283e3c11b8ccca37511acb\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1000 for cells of type $lut.
+Using template $paramod$873c285bdccf0ac2b60d2304ea5cd14bf211d2a6\$lut for cells of type $lut.
+Using template $paramod$cad45b6c9da81941161a13849773fe2ed4bc1c6f\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10010101 for cells of type $lut.
+Using template $paramod$daac9b1e7bb2ac018f7132a3fbe0026ddd7b1a71\$lut for cells of type $lut.
+Using template $paramod$907f2d2c02ff149f00785eb99b3e2aa8a6a3fccd\$lut for cells of type $lut.
+Using template $paramod$865395c0228487a64a8e4011cecafc2c64b79f2b\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0100 for cells of type $lut.
+Using template $paramod$e17ca7b5b5baeb7bbe89b75c90e4fdccce9e6c64\$lut for cells of type $lut.
 Using template $paramod$6c6a2bd642cb01e1632f2fbb472d40be3e6a2afe\$lut for cells of type $lut.
 Using template $paramod$5858bd6d78d6f4fef506811d9419710ec77e5fb5\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1000 for cells of type $lut.
+Using template $paramod$d21d214a5aa271f2d9da3f90f22432c0ecee130f\$lut for cells of type $lut.
+Using template $paramod$332a399730bfc61adea04021a76b1c4e4030f37d\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0010 for cells of type $lut.
+Using template $paramod$a59507d273cd827eb6c46c37820d50a1b717efdf\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10111000 for cells of type $lut.
 Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'1110 for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'00101110 for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'11001000 for cells of type $lut.
+Using template $paramod$193d365ba3260f56de4ca734b1cedcf9dc72302b\$lut for cells of type $lut.
 Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'11001010 for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'11100010 for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10101100 for cells of type $lut.
+Using template $paramod$bdef8a4236b2618ef82ff6d08787d9d3dfc92d2b\$lut for cells of type $lut.
 Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000001\LUT=2'01 for cells of type $lut.
-Using template $paramod$55c8b41162bae9ccba9478b8f5fd17695513cc6c\$lut for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'10000000 for cells of type $lut.
-Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'00001110 for cells of type $lut.
+Using template $paramod$6d6beead1425af15cf78b27fd9b11b41b5d4bce8\$lut for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000010\LUT=4'0001 for cells of type $lut.
+Using template $paramod\$lut\WIDTH=32'00000000000000000000000000000011\LUT=8'00101010 for cells of type $lut.
 No more expansions possible.
-<suppressed ~901 debug messages>
-Removed 0 unused cells and 789 unused wires.
+<suppressed ~763 debug messages>
+Removed 0 unused cells and 675 unused wires.
 
 11.46. Executing AUTONAME pass.
-Renamed 1030 objects in module booth_radix8_multiplier (194 iterations).
-<suppressed ~1030 debug messages>
+Renamed 1069 objects in module booth_radix8_multiplier (89 iterations).
+<suppressed ~1069 debug messages>
 
 11.47. Executing HIERARCHY pass (managing design hierarchy).
 Attribute `top' found on module `booth_radix8_multiplier'. Setting top module to booth_radix8_multiplier.
@@ -1723,17 +1853,20 @@ Removed 0 unused modules.
 
         +----------Local Count, excluding submodules.
         | 
-      430 wires
-     1854 wire bits
-      430 public wires
-     1854 public wire bits
+      478 wires
+     1659 wire bits
+      478 public wires
+     1659 public wire bits
         9 ports
        71 port bits
-      693 submodules
-       96   SB_CARRY
-      276   SB_DFFER
-        8   SB_DFFR
-      313   SB_LUT4
+      690 submodules
+      101   SB_CARRY
+        4   SB_DFF
+       70   SB_DFFE
+      156   SB_DFFER
+       50   SB_DFFESR
+        4   SB_DFFR
+      305   SB_LUT4
 
 === design hierarchy ===
 
@@ -1743,21 +1876,24 @@ Removed 0 unused modules.
 
         +----------Count including submodules.
         | 
-      430 wires
-     1854 wire bits
-      430 public wires
-     1854 public wire bits
+      478 wires
+     1659 wire bits
+      478 public wires
+     1659 public wire bits
         9 ports
        71 port bits
         - memories
         - memory bits
         - processes
         - cells
-      693 submodules
-       96   SB_CARRY
-      276   SB_DFFER
-        8   SB_DFFR
-      313   SB_LUT4
+      690 submodules
+      101   SB_CARRY
+        4   SB_DFF
+       70   SB_DFFE
+      156   SB_DFFER
+       50   SB_DFFESR
+        4   SB_DFFR
+      305   SB_LUT4
 
 11.49. Executing CHECK pass (checking for obvious problems).
 Checking module booth_radix8_multiplier...
@@ -1765,6 +1901,6 @@ Found and reported 0 problems.
 
 11.50. Executing JSON backend.
 
-End of script. Logfile hash: 68d7169844, CPU: user 1.18s system 0.05s, MEM: 39.78 MB peak
+End of script. Logfile hash: 1338602d07, CPU: user 1.10s system 0.02s, MEM: 37.89 MB peak
 Yosys 0.60+8 (git sha1 1cceaa2a8, g++ 12.2.0-14+deb12u1 -fPIC -O3)
-Time spent: 24% 21x read_verilog (0 sec), 9% 11x techmap (0 sec), ...
+Time spent: 25% 21x read_verilog (0 sec), 10% 1x abc9_exe (0 sec), ...
