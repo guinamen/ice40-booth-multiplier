@@ -11,7 +11,7 @@
 
 
 
-A highly optimized, soft-core 16-bit multiplier designed specifically for Lattice iCE40 FPGAs. Through deep architectural optimizations  (**Flattened Control Mux** and **Split-Adder Topology** ), this V2 core achieves **~145 MHz** performance and a deterministic latency of just **34.5ns**  (5 cycles), outperforming standard serial implementations by over 5x while consuming only ~5% of the FPGA resources.
+A highly optimized, soft-core 16-bit multiplier designed specifically for Lattice iCE40 FPGAs.
 
 ## 📊 High-Level Diagram
 ```mermaid
