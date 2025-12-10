@@ -178,10 +178,11 @@ The table below compares the three implementations. While the **Linear** version
 
 | Verilog Source File | Architecture | Latency (Cycles) | Max Freq ($F_{max}$) | Resources (LCs) | **Throughput (MOPS)** |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| `..._su_5_linear_146.v` | Iterative Linear | 5 | 149.10 MHz | **441 (5%)** | 29.8 |
+| `..._su_5_linear_146.v` | Iterative Linear | 5 | 149.10 MHz | **441 (5%)** | **29.8** |
 | `..._su_7_linear_155.v` | Registered I/O | 7 | **154.77 MHz** | 474 (6%) | 21.3 |
-| `..._su_4_pipeline_144.v` | **Decoupled Pipeline** | **4 (Sustained)** | 141.00 MHz | 463 (6%) | **35.2** |
+| `..._su_4_pipeline_144.v` | **Decoupled Pipeline** | **4 (Sustained)** | 141.00 MHz | 463 (6%) | R/T (24.2/37.5)* |
 
+* R for real throughput, T for theoretical throughput
 > **Definitions:**
 > *   **MOPS:** Million Operations Per Second (Calculated as $F_{max} / \text{Cycles per Op}$).
 > *   **Sustained Cycles:** The pipeline version has a longer absolute latency but accepts new data every **4 cycles**.
