@@ -191,7 +191,7 @@ The table below compares the three implementations. While the **Linear** version
 ### Pipeline
 
 ![Simulation Waveform](doc/booth_radix8_multiplier_su_4_pipeline_144_2.png?raw=true)
-![Simulation Waveform](doc/booth_radix8_multiplier_su_4_pipeline_144?raw=true)
+![Simulation Waveform](doc/booth_radix8_multiplier_su_4_pipeline_144.png?raw=true)
 
 
 ## 🚀 Key Features
