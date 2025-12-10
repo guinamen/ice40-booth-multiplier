@@ -81,8 +81,63 @@ graph LR
     style PARALLEL_CORES fill:#fff3e0,stroke:#e65100,stroke-width:2px
     style WIRE_FAST stroke:#00c853,stroke-width:4px
 ```
+```mermaid
 
+graph LR
+    %% Styles
+    classDef reg fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef logic fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
+    classDef core fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef control fill:#ffccbc,stroke:#d84315,stroke-width:2px;
 
+    %% --- STAGE 1: INPUT BUFFERING ---
+    subgraph Stage1 [Stage 1: Input Buffer & Flow Control]
+        direction TB
+        Pins[Input Pins] -->|start / data| InRegs(Input Registers)
+        InRegs -->|Load| Buffer[Data Buffer FIFO]
+        
+        %% Backpressure Logic
+        Buffer -.->|Full| BusyLogic{Busy Logic}
+        BusyLogic -->|busy signal| Pins
+        class InRegs,Buffer reg
+    end
+
+    %% --- STAGE 2: EXECUTION CORE ---
+    subgraph Stage2 [Stage 2: Core Execution - 4 Cycles]
+        direction TB
+        
+        Sequencer(Core Sequencer)
+        Buffer -->|fire_core| Sequencer
+        Sequencer -->|Load & Run| Cores
+        
+        subgraph Cores [Parallel Booth Cores]
+            u0[Core u0: Low/Low]
+            u1[Core u1: High/Low]
+            u2[Core u2: Low/High]
+            u3[Core u3: High/High]
+        end
+        
+        Buffer == Data ==> u0 & u1 & u2 & u3
+        class u0,u1,u2,u3 core
+        class Sequencer control
+    end
+
+    %% --- STAGE 3: OUTPUT RECONSTRUCTION ---
+    subgraph Stage3 [Stage 3: Reconstruction & Output]
+        direction TB
+        
+        u0 & u1 & u2 & u3 -->|valid_out pulse| PipeRegs(Pipeline Regs)
+        PipeRegs -->|Partial Sums| Adder(Split Adder)
+        Adder --> FinalReg(Product Register)
+        FinalReg --> Done[Output: Product & Done]
+        
+        class PipeRegs,FinalReg reg
+        class Adder logic
+    end
+
+    %% Internal Signals
+    Sequencer -.->|Ready| BusyLogic
+```
 ---
 
 ### Performance Comparison (Lattice iCE40)
