@@ -14,6 +14,8 @@
 A highly optimized, soft-core 16-bit multiplier designed specifically for Lattice iCE40 FPGAs.
 
 ## 📊 High-Level Diagram
+
+### Sequential
 ```mermaid
 graph LR
     subgraph INPUTS ["1. Input Decomposition"]
@@ -81,6 +83,8 @@ graph LR
     style PARALLEL_CORES fill:#fff3e0,stroke:#e65100,stroke-width:2px
     style WIRE_FAST stroke:#00c853,stroke-width:4px
 ```
+------
+### Pipeline
 ```mermaid
 
 graph LR
