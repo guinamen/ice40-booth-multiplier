@@ -177,8 +177,14 @@ The table below compares the three implementations. While the **Linear** version
 
 ## 📈 Waveform Verification
 
+### 5 Cicles
+
 ![Simulation Waveform](doc/waveform.png?raw=true))
 ![Simulation Waveform](doc/gtk_wave.png?raw=true)
+
+### 7 Cicles
+
+### Pipeline
 
 ## 🚀 Key Features
 
