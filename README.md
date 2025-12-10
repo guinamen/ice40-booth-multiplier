@@ -5,13 +5,34 @@
 # High-Performance 16-bit Mixed-Mode Booth Radix-8 Multiplier
 
 <div align="center">
-  <h2> (Optimized for Lattice iCE40 - Supports Signed & Unsigned Operations) </h2>
-  <h3>🚀 Now v2.0: Faster (145 MHz), Lower Latency (5 Cycles), and Smaller Area!</h3>
+  <h2> A highly optimized, soft-core 16-bit binary multiplier implemented in Verilog/VHDL using Booth's algorithm, optimized for Lattice iCE40 FPGA family. </h2>
 </div>
 
+## 📋 About The Project
 
+This project implements Booth's multiplication algorithm, an efficient method for multiplying signed binary numbers in two's complement notation. The implementation is optimized for low-power iCE40 FPGAs, making it ideal for embedded and IoT applications.
+Booth's Algorithm
+Booth's algorithm reduces the number of addition/subtraction operations required during multiplication by:
 
-A highly optimized, soft-core 16-bit multiplier designed specifically for Lattice iCE40 FPGAs.
+Detecting consecutive bit sequences (0s and 1s) in the multiplier
+Replacing chains of 1s with one subtraction and one addition
+Performing only shifts when encountering sequences of 0s
+
+Advantages:
+
+Fewer arithmetic operations
+Reduced logic resource consumption
+Better energy efficiency
+Native support for signed and unsigned numbers
+
+## 🎯 Features
+
+✅ Signed multiplication in two's complement
+✅ Optimized implementation for iCE40 (low LUT consumption)
+✅ Synchronous interface with clock
+✅ Parameterizable word size
+✅ Complete testbench included
+✅ Synthesis verified with open-source tools
 
 ## 📊 High-Level Diagram
 
