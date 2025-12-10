@@ -1,0 +1,4 @@
+VCD info: dumpfile booth_pipeline.vcd opened for output.
+=== INICIO TESTE COM VCD ===
+SUCESSO: VCD gerado. Abra 'booth_pipeline.vcd' no GTKWave.
+../tb/tb_booth_radix8_pipeline.v:122: $finish called at 3426524 (1ps)
