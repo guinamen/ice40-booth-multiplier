@@ -71,7 +71,7 @@ echo -ne "2. P&R (nextpnr)...   "
 PCF_OPT=""
 if [ -f "$PCF_FILE" ]; then PCF_OPT="--pcf $PCF_FILE"; fi
 
-nextpnr-ice40 --$DEVICE --package $PACKAGE --json $JSON_FILE $PCF_OPT --asc $ASC_FILE --log $LOG_FILE 2>&1
+nextpnr-ice40 --$DEVICE --package $PACKAGE --json $JSON_FILE $PCF_OPT --asc $ASC_FILE  --log $LOG_FILE 2>&1
 if [ $? -eq 0 ]; then echo -e "${GREEN}OK${NC}"; else echo -e "${RED}FALHA (Veja $LOG_FILE)${NC}"; exit 1; fi
 
 # 3. EXTRAÇÃO DE DADOS
