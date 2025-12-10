@@ -83,7 +83,37 @@ graph LR
 ```
 
 
+---
 
+### Performance Comparison (iCE40)
+
+This project provides three variations of the Booth Radix-8 multiplier, optimized for different constraints (Area, Latency, or Throughput). The synthesis results below target the **Lattice iCE40** architecture.
+
+| Source File | Architecture | Latency (Cycles) | Max Frequency | Resources (LCs) | Throughput (MOPS)* | Best Use Case |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| `..._su_5_linear_146.v` | Iterative (Linear) | 5 | **149.10 MHz** | **441 (5%)** | 29.8 | **Low Area**: Best for generic use where space is tight. |
+| `..._su_7_linear_155.v` | Linear + IO Regs | 7 | 149.10 MHz | 441 (5%) | 21.3 | **Robustness**: Registered I/O ensures easier timing closure in full designs. |
+| `..._su_4_pipeline_144.v` | Decoupled Pipeline | **4 (Sustained)** | 141.00 MHz | 463 (6%) | **35.2** | **High Throughput**: Best for DSP/Streaming (Audio, Video, Filters). |
+
+*\* **MOPS**: Million Operations Per Second (Calculated as $F_{max} / \text{Cycles per Op}$).*
+
+#### Detailed Analysis
+
+1.  **`_su_5_linear_146.v` (Standard)**
+    *   **Pros:** Lowest absolute latency (time from input to output). Smallest footprint.
+    *   **Cons:** Lack of input buffering may cause routing congestion or lower system frequency when integrated into larger designs.
+
+2.  **`_su_7_linear_155.v` (Registered I/O)**
+    *   **Pros:** Isolates the math core from the I/O pins. This makes the module very stable and predictable regardless of where it is placed on the FPGA.
+    *   **Cons:** Higher latency (7 cycles) results in lower overall throughput.
+
+3.  **`_su_4_pipeline_144.v` (Pipeline)**
+    *   **Pros:** **Highest Throughput.** Uses a decoupled input buffer and a sequencer. It can accept new data every 4 cycles while the previous calculation finishes in the background.
+    *   **Cons:** Slightly higher resource usage (+22 LCs) and a marginal drop in max frequency due to control logic complexity.
+
+#### Recommendation
+*   For **Stream Processing (DSP)**: Use the **Pipeline** version (`_su_4`).
+*   For **General Purpose/CPU**: Use the **Linear** version (`_su_5`).
 
 ## 📈 Waveform Verification
 
