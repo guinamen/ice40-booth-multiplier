@@ -185,10 +185,14 @@ The table below compares the three implementations. While the **Linear** version
 ### 7 Cicles
 
 ![Simulation Waveform](doc/booth_radix8_multiplier_su_7_linear_155_2.png?raw=true)
-![Simulation Waveform](doc/booth_radix8_multiplier_su_7_linear_155.png?raw=true))
+![Simulation Waveform](doc/booth_radix8_multiplier_su_7_linear_155.png?raw=true)
 
 
 ### Pipeline
+
+![Simulation Waveform](doc/booth_radix8_multiplier_su_4_pipeline_144_2.png?raw=true)
+![Simulation Waveform](doc/booth_radix8_multiplier_su_4_pipeline_144?raw=true)
+
 
 ## 🚀 Key Features
 
