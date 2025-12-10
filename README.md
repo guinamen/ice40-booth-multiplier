@@ -224,7 +224,7 @@ The table below compares the three implementations. While the **Linear** version
 
 ## 🚀 Key Features
 
-*   **Industrial Performance:** Achieves **144.9 MHz** on iCE40HX8K (Speed Grade 1).
+*   **Industrial Performance:** Achieves **144 MHz** and **155 MHz** on iCE40HX8K (Speed Grade 1).
 *   **Ultra-Low Latency:** Completes a 16x16 operation in just **5 clock cycles** (Total time: ~34.5ns).
 *   **PPA Optimized:** Faster *and* smaller than previous versions (~407 LCs).
 *   **Zero DSP Usage:** Implemented entirely in soft logic (LUTs/Carry Chains).
@@ -232,7 +232,7 @@ The table below compares the three implementations. While the **Linear** version
 *   **Advanced Optimization:** Implements **"Look-Ahead 3M"** + **"Flattened Control Logic"** to minimize logic levels.
 *   **Full Mode Support:** Supports Signed, Unsigned, and Mixed-mode (Signed × Unsigned) operations.
 *   **Pipeline Support**
-*   Frequency **> 155 MHz**
+
 
 ## 🛠️ Usage
 
