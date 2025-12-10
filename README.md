@@ -19,7 +19,7 @@ Detecting consecutive bit sequences (0s and 1s) in the multiplier
 Replacing chains of 1s with one subtraction and one addition
 Performing only shifts when encountering sequences of 0s
 
-Advantages:
+### Advantages:
 
 Fewer arithmetic operations
 Reduced logic resource consumption
