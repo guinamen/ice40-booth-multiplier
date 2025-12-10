@@ -89,7 +89,7 @@ graph LR
 
 The table below compares the three implementations. While the **Linear** version achieves a higher raw clock frequency, the **Pipeline** version delivers superior processing power (Throughput) by handling one operation every 4 cycles.
 
-| Verilog Source File | Architecture | Latency (Cycles) | Max Frequency ($F_{max}$) | Resources (LCs) | **Throughput (MOPS)** |
+| Verilog Source File | Architecture | Latency (Cycles) | Max Freq ($F_{max}$) | Resources (LCs) | **Throughput (MOPS)** |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | `..._su_5_linear_146.v` | Iterative Linear | 5 | 149.10 MHz | **441 (5%)** | 29.8 |
 | `..._su_7_linear_155.v` | Registered I/O | 7 | **154.77 MHz** | 474 (6%) | 21.3 |
