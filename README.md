@@ -251,6 +251,19 @@ booth_radix8_multiplier #(
     .busy(busy_signal)          // High while calculating
 );
 ```
+### Control Signals
+
+| Signal | Direction | Description |
+|--------|-----------|-------------|
+| `clk` | Input | System clock |
+| `rst_n` | Input | Asynchronous reset (active low) |
+| `start` | Input | Pulse to start operation |
+| `multiplicand` | Input | Multiplicand (signed or unsigned) |
+| `multiplier` | Input | Multiplier (signed or unsigned) |
+| `sign_mode` | Input | Signed x  Unsigned  |
+| `product` | Output | Multiplication result |
+| `done` | Output | Indicates operation completion |
+| `busy` | Output | Indicates operation calculating |
 ### Sign Modes (sign_mode)
 
 This core handles bit extension automatically based on the selected mode:
