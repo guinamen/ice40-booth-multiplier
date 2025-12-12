@@ -125,7 +125,7 @@ endmodule
 // Module: booth_radix8_multiplier (Top Level)
 // Optimization: Split Adder Tree (18-bit Intermediate + 24-bit Final)
 // ============================================================================
-module booth_radix8_multiplier #(
+module booth_radix8_multiplier_5 #(
     parameter integer WIDTH = 16
 )(
     input  wire                         clk,

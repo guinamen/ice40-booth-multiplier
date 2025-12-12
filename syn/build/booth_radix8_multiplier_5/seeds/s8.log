@@ -1,0 +1,328 @@
+Warning: No PCF file specified; IO pins will be placed automatically
+
+Info: Packing constants..
+Info: Packing IOs..
+Info: Packing LUT-FFs..
+Info:      230 LCs used as LUT4 only
+Info:      114 LCs used as LUT4 and DFF
+Info: Packing non-LUT FFs..
+Info:       87 LCs used as DFF only
+Info: Packing carries..
+Info:        3 LCs used as CARRY only
+Info: Packing indirect carry+LUT pairs...
+Info:        0 LUTs merged into carry LCs
+Info: Packing RAMs..
+Info: Placing PLLs..
+Info: Packing special functions..
+Info: Packing PLLs..
+Info: Promoting globals..
+Info: promoting clk$SB_IO_IN (fanout 201)
+Info: promoting rst_n_SB_LUT4_I3_O [reset] (fanout 201)
+Info: promoting busy_SB_LUT4_I0_O [cen] (fanout 32)
+Info: promoting busy_SB_LUT4_I0_I2_SB_LUT4_I3_1_O [cen] (fanout 21)
+Info: promoting busy_SB_LUT4_I0_I2_SB_LUT4_O_I1_SB_LUT4_I3_1_O [cen] (fanout 21)
+Info: promoting busy_SB_LUT4_I0_I2_SB_LUT4_O_I2_SB_LUT4_I3_O [cen] (fanout 21)
+Info: Constraining chains...
+Info:        5 LCs used to legalise carry chains.
+Info: Checksum: 0x1499a7c3
+
+Info: Annotating ports with timing budgets for target frequency 12.00 MHz
+Info: Checksum: 0xc2b08e2e
+
+Info: Device utilisation:
+Info: 	         ICESTORM_LC:   441/ 7680     5%
+Info: 	        ICESTORM_RAM:     0/   32     0%
+Info: 	               SB_IO:    71/  256    27%
+Info: 	               SB_GB:     6/    8    75%
+Info: 	        ICESTORM_PLL:     0/    2     0%
+Info: 	         SB_WARMBOOT:     0/    1     0%
+
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 363 cells, random placement wirelen = 13978.
+Info:     at initial placer iter 0, wirelen = 1928
+Info:     at initial placer iter 1, wirelen = 1864
+Info:     at initial placer iter 2, wirelen = 1823
+Info:     at initial placer iter 3, wirelen = 1822
+Info: Running main analytical placer.
+Info:     at iteration #1, type ALL: wirelen solved = 1810, spread = 3123, legal = 3345; time = 0.01s
+Info:     at iteration #2, type ALL: wirelen solved = 1880, spread = 2917, legal = 3085; time = 0.01s
+Info:     at iteration #3, type ALL: wirelen solved = 1923, spread = 2932, legal = 3056; time = 0.02s
+Info:     at iteration #4, type ALL: wirelen solved = 1986, spread = 2778, legal = 2993; time = 0.02s
+Info:     at iteration #5, type ALL: wirelen solved = 2030, spread = 2794, legal = 2945; time = 0.01s
+Info:     at iteration #6, type ALL: wirelen solved = 2088, spread = 2801, legal = 2931; time = 0.02s
+Info:     at iteration #7, type ALL: wirelen solved = 2084, spread = 2950, legal = 3116; time = 0.14s
+Info:     at iteration #8, type ALL: wirelen solved = 2150, spread = 2922, legal = 3093; time = 0.02s
+Info:     at iteration #9, type ALL: wirelen solved = 2184, spread = 2989, legal = 3161; time = 0.01s
+Info:     at iteration #10, type ALL: wirelen solved = 2277, spread = 3038, legal = 3119; time = 0.01s
+Info:     at iteration #11, type ALL: wirelen solved = 2379, spread = 2898, legal = 3038; time = 0.01s
+Info: HeAP Placer Time: 0.35s
+Info:   of which solving equations: 0.15s
+Info:   of which spreading cells: 0.01s
+Info:   of which strict legalisation: 0.14s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 27, wirelen = 2931
+Info:   at iteration #5: temp = 0.000000, timing cost = 38, wirelen = 2298
+Info:   at iteration #10: temp = 0.000000, timing cost = 34, wirelen = 2225
+Info:   at iteration #13: temp = 0.000000, timing cost = 35, wirelen = 2200 
+Info: SA placement time 0.19s
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 121.85 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 6.34 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 3.58 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 1 endpoint(s)
+Info:          + represents [1,1) endpoint(s)
+Info: [ 75126,  75464) |*************+
+Info: [ 75464,  75802) |***************************+
+Info: [ 75802,  76140) |*********+
+Info: [ 76140,  76478) | 
+Info: [ 76478,  76816) |*+
+Info: [ 76816,  77154) |**************+
+Info: [ 77154,  77492) |************************************************************ 
+Info: [ 77492,  77830) |*******************************************+
+Info: [ 77830,  78168) |*******************+
+Info: [ 78168,  78506) |********************+
+Info: [ 78506,  78844) |*******+
+Info: [ 78844,  79182) |**************************+
+Info: [ 79182,  79520) |**********+
+Info: [ 79520,  79858) |***************+
+Info: [ 79858,  80196) |***********************************+
+Info: [ 80196,  80534) |*******************************+
+Info: [ 80534,  80872) |**************************+
+Info: [ 80872,  81210) |*************************************+
+Info: [ 81210,  81548) |*******************+
+Info: [ 81548,  81886) |************************************************+
+Info: Checksum: 0x22f2af0a
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 1529 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       98        847 |   98   847 |       655|       0.17       0.17|
+Info:       1899 |      278       1552 |  180   705 |         0|       0.34       0.51|
+Info: Routing complete.
+Info: Router1 time 0.51s
+Info: Checksum: 0xf29cfed0
+
+Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
+Info: curr total
+Info:  0.5  0.5  Source sign_mode_SB_DFFER_D_Q_SB_LUT4_I2_O_SB_LUT4_O_8_LC.O
+Info:  1.3  1.9    Net busy_SB_LUT4_I0_I2_SB_LUT4_I3_1_O_SB_DFFER_E_Q[3] budget 40.998001 ns (13,9) -> (14,5)
+Info:                Sink res_upper_SB_LUT4_O_23_I1_SB_LUT4_I1_LC.I2
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.4  2.2  Source res_upper_SB_LUT4_O_23_I1_SB_LUT4_I1_LC.O
+Info:  0.6  2.8    Net res_upper_SB_LUT4_O_15_I1[2] budget 40.998001 ns (14,5) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_15_LC.I2
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.2  3.1  Source res_upper_SB_LUT4_O_15_LC.COUT
+Info:  0.0  3.1    Net res_upper_SB_LUT4_O_16_I1[3] budget 0.000000 ns (13,4) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_16_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  3.2  Source res_upper_SB_LUT4_O_16_LC.COUT
+Info:  0.0  3.2    Net res_upper_SB_LUT4_O_17_I1[3] budget 0.000000 ns (13,4) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_17_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  3.3  Source res_upper_SB_LUT4_O_17_LC.COUT
+Info:  0.0  3.3    Net res_upper_SB_LUT4_O_18_I1[3] budget 0.000000 ns (13,4) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_18_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  3.4  Source res_upper_SB_LUT4_O_18_LC.COUT
+Info:  0.0  3.4    Net res_upper_SB_LUT4_O_19_I1[3] budget 0.000000 ns (13,4) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_19_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  3.6  Source res_upper_SB_LUT4_O_19_LC.COUT
+Info:  0.0  3.6    Net res_upper_SB_LUT4_O_20_I1[3] budget 0.000000 ns (13,4) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_20_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  3.7  Source res_upper_SB_LUT4_O_20_LC.COUT
+Info:  0.0  3.7    Net res_upper_SB_LUT4_O_21_I1[3] budget 0.000000 ns (13,4) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_21_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  3.8  Source res_upper_SB_LUT4_O_21_LC.COUT
+Info:  0.0  3.8    Net res_upper_SB_LUT4_O_22_I1[3] budget 0.000000 ns (13,4) -> (13,4)
+Info:                Sink res_upper_SB_LUT4_O_22_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  3.9  Source res_upper_SB_LUT4_O_22_LC.COUT
+Info:  0.2  4.1    Net res_upper_SB_LUT4_O_1_I1[3] budget 0.190000 ns (13,4) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_1_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  4.3  Source res_upper_SB_LUT4_O_1_LC.COUT
+Info:  0.0  4.3    Net res_upper_SB_LUT4_O_2_I1[3] budget 0.000000 ns (13,5) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_2_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  4.4  Source res_upper_SB_LUT4_O_2_LC.COUT
+Info:  0.0  4.4    Net res_upper_SB_LUT4_O_3_I1[3] budget 0.000000 ns (13,5) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_3_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  4.5  Source res_upper_SB_LUT4_O_3_LC.COUT
+Info:  0.0  4.5    Net res_upper_SB_LUT4_O_4_I1[3] budget 0.000000 ns (13,5) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_4_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  4.6  Source res_upper_SB_LUT4_O_4_LC.COUT
+Info:  0.0  4.6    Net res_upper_SB_LUT4_O_5_I1[3] budget 0.000000 ns (13,5) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_5_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  4.8  Source res_upper_SB_LUT4_O_5_LC.COUT
+Info:  0.0  4.8    Net res_upper_SB_LUT4_O_6_I1[3] budget 0.000000 ns (13,5) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_6_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  4.9  Source res_upper_SB_LUT4_O_6_LC.COUT
+Info:  0.0  4.9    Net res_upper_SB_LUT4_O_7_I1[3] budget 0.000000 ns (13,5) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_7_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.0  Source res_upper_SB_LUT4_O_7_LC.COUT
+Info:  0.0  5.0    Net res_upper_SB_LUT4_O_8_I1[3] budget 0.000000 ns (13,5) -> (13,5)
+Info:                Sink res_upper_SB_LUT4_O_8_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.2  Source res_upper_SB_LUT4_O_8_LC.COUT
+Info:  0.2  5.3    Net res_upper_SB_LUT4_O_9_I1[3] budget 0.190000 ns (13,5) -> (13,6)
+Info:                Sink res_upper_SB_LUT4_O_9_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.5  Source res_upper_SB_LUT4_O_9_LC.COUT
+Info:  0.0  5.5    Net res_upper_SB_LUT4_O_10_I1[3] budget 0.000000 ns (13,6) -> (13,6)
+Info:                Sink res_upper_SB_LUT4_O_10_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.6  Source res_upper_SB_LUT4_O_10_LC.COUT
+Info:  0.0  5.6    Net res_upper_SB_LUT4_O_11_I1[3] budget 0.000000 ns (13,6) -> (13,6)
+Info:                Sink res_upper_SB_LUT4_O_11_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.7  Source res_upper_SB_LUT4_O_11_LC.COUT
+Info:  0.0  5.7    Net res_upper_SB_LUT4_O_12_I1[3] budget 0.000000 ns (13,6) -> (13,6)
+Info:                Sink res_upper_SB_LUT4_O_12_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.9  Source res_upper_SB_LUT4_O_12_LC.COUT
+Info:  0.0  5.9    Net res_upper_SB_LUT4_O_13_I1[3] budget 0.000000 ns (13,6) -> (13,6)
+Info:                Sink res_upper_SB_LUT4_O_13_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  6.0  Source res_upper_SB_LUT4_O_13_LC.COUT
+Info:  0.0  6.0    Net res_upper_SB_LUT4_O_14_I1[3] budget 0.000000 ns (13,6) -> (13,6)
+Info:                Sink res_upper_SB_LUT4_O_14_LC.CIN
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  6.1  Source res_upper_SB_LUT4_O_14_LC.COUT
+Info:  0.3  6.4    Net res_upper_SB_LUT4_O_I0[3] budget 0.260000 ns (13,6) -> (13,6)
+Info:                Sink res_upper_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.3  6.7  Setup res_upper_SB_LUT4_O_LC.I3
+Info: 4.1 ns logic, 2.6 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge clk$SB_IO_IN_$glb_clk':
+Info: curr total
+Info:  0.0  0.0  Source multiplicand[15]$sb_io.D_IN_0
+Info:  2.8  2.8    Net a_high[7] budget 27.136999 ns (9,33) -> (10,7)
+Info:                Sink mult1.sign_bit_a_SB_LUT4_O_LC.I2
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:134.41-134.53
+Info:  0.4  3.2  Source mult1.sign_bit_a_SB_LUT4_O_LC.O
+Info:  0.6  3.8    Net mult1.calc_3x[10] budget 27.136000 ns (10,7) -> (9,7)
+Info:                Sink mult1.calc_3x_SB_LUT4_O_8_LC.I1
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:178.17-182.6
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:34.10-34.20
+Info:  0.3  4.0  Source mult1.calc_3x_SB_LUT4_O_8_LC.COUT
+Info:  0.5  4.5    Net mult1.calc_3x_SB_LUT4_O_I3 budget 0.560000 ns (9,7) -> (9,8)
+Info:                Sink mult1.calc_3x_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:166.17-170.6
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:38.43-38.82
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.3  4.8  Source mult1.calc_3x_SB_LUT4_O_LC.O
+Info:  1.0  5.8    Net mult1.calc_3x[9] budget 27.136000 ns (9,8) -> (9,6)
+Info:                Sink mult1.sign_bit_a_SB_DFFER_D_Q_SB_LUT4_I0_3_O_SB_LUT4_O_I0_SB_DFFER_Q_1_DFFLC.I0
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:178.17-182.6
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:38.33-38.40
+Info:  0.5  6.2  Setup mult1.sign_bit_a_SB_DFFER_D_Q_SB_LUT4_I0_3_O_SB_LUT4_O_I0_SB_DFFER_Q_1_DFFLC.I0
+Info: 1.4 ns logic, 4.8 ns routing
+
+Info: Critical path report for cross-domain path 'posedge clk$SB_IO_IN_$glb_clk' -> '<async>':
+Info: curr total
+Info:  0.5  0.5  Source res_upper_SB_LUT4_O_5_LC.O
+Info:  3.5  4.0    Net product[21]$SB_IO_OUT budget 82.792999 ns (13,5) -> (11,33)
+Info:                Sink product[21]$sb_io.D_OUT_0
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:137.41-137.48
+Info: 0.5 ns logic, 3.5 ns routing
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 149.25 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 6.22 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 4.04 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 4 endpoint(s)
+Info:          + represents [1,4) endpoint(s)
+Info: [ 76633,  76900) |********+
+Info: [ 76900,  77167) |+
+Info: [ 77167,  77434) |**+
+Info: [ 77434,  77701) |*******+
+Info: [ 77701,  77968) |*******+
+Info: [ 77968,  78235) |*********+
+Info: [ 78235,  78502) |*********+
+Info: [ 78502,  78769) |*******+
+Info: [ 78769,  79036) |*******+
+Info: [ 79036,  79303) |*************+
+Info: [ 79303,  79570) |*****+
+Info: [ 79570,  79837) |**+
+Info: [ 79837,  80104) |****+
+Info: [ 80104,  80371) |************************************************************ 
+Info: [ 80371,  80638) |***********+
+Info: [ 80638,  80905) |**********+
+Info: [ 80905,  81172) |***********+
+Info: [ 81172,  81439) |*******+
+Info: [ 81439,  81706) |*****+
+Info: [ 81706,  81973) |***********************+
+1 warning, 0 errors
+
+Info: Program finished normally.

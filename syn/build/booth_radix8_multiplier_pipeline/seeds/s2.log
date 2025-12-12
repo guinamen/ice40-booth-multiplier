@@ -1,0 +1,234 @@
+Warning: No PCF file specified; IO pins will be placed automatically
+
+Info: Packing constants..
+Info: Packing IOs..
+Info: Packing LUT-FFs..
+Info:      163 LCs used as LUT4 only
+Info:      142 LCs used as LUT4 and DFF
+Info: Packing non-LUT FFs..
+Info:      142 LCs used as DFF only
+Info: Packing carries..
+Info:        4 LCs used as CARRY only
+Info: Packing indirect carry+LUT pairs...
+Info:        0 LUTs merged into carry LCs
+Info: Packing RAMs..
+Info: Placing PLLs..
+Info: Packing special functions..
+Info: Packing PLLs..
+Info: Promoting globals..
+Info: promoting clk$SB_IO_IN (fanout 284)
+Info: promoting rst_n_SB_LUT4_I3_O [reset] (fanout 160)
+Info: promoting busy_SB_LUT4_O_I2[1] [reset] (fanout 50)
+Info: promoting core_done_pulse [cen] (fanout 50)
+Info: promoting busy_SB_LUT4_O_I2_SB_LUT4_I1_O [cen] (fanout 34)
+Info: promoting start$SB_IO_IN [cen] (fanout 34)
+Info: promoting pipe_valid [cen] (fanout 32)
+Info: Constraining chains...
+Info:       10 LCs used to legalise carry chains.
+Info: Checksum: 0x6edf39d4
+
+Info: Annotating ports with timing budgets for target frequency 12.00 MHz
+Info: Checksum: 0x42cda603
+
+Info: Device utilisation:
+Info: 	         ICESTORM_LC:   463/ 7680     6%
+Info: 	        ICESTORM_RAM:     0/   32     0%
+Info: 	               SB_IO:    71/  256    27%
+Info: 	               SB_GB:     7/    8    87%
+Info: 	        ICESTORM_PLL:     0/    2     0%
+Info: 	         SB_WARMBOOT:     0/    1     0%
+
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 358 cells, random placement wirelen = 13531.
+Info:     at initial placer iter 0, wirelen = 1793
+Info:     at initial placer iter 1, wirelen = 1799
+Info:     at initial placer iter 2, wirelen = 1780
+Info:     at initial placer iter 3, wirelen = 1761
+Info: Running main analytical placer.
+Info:     at iteration #1, type ALL: wirelen solved = 1743, spread = 2902, legal = 3169; time = 0.02s
+Info:     at iteration #2, type ALL: wirelen solved = 1777, spread = 3090, legal = 3338; time = 0.02s
+Info:     at iteration #3, type ALL: wirelen solved = 1831, spread = 3083, legal = 3395; time = 0.02s
+Info:     at iteration #4, type ALL: wirelen solved = 1863, spread = 3048, legal = 3220; time = 0.02s
+Info:     at iteration #5, type ALL: wirelen solved = 1916, spread = 2941, legal = 3131; time = 0.02s
+Info:     at iteration #6, type ALL: wirelen solved = 1940, spread = 3298, legal = 3415; time = 0.02s
+Info:     at iteration #7, type ALL: wirelen solved = 1991, spread = 2719, legal = 3008; time = 0.02s
+Info:     at iteration #8, type ALL: wirelen solved = 2029, spread = 3120, legal = 3366; time = 0.02s
+Info:     at iteration #9, type ALL: wirelen solved = 2049, spread = 3194, legal = 3423; time = 0.02s
+Info:     at iteration #10, type ALL: wirelen solved = 2140, spread = 3240, legal = 3462; time = 0.02s
+Info:     at iteration #11, type ALL: wirelen solved = 2127, spread = 3121, legal = 3512; time = 0.02s
+Info:     at iteration #12, type ALL: wirelen solved = 2147, spread = 2969, legal = 3478; time = 0.02s
+Info: HeAP Placer Time: 0.28s
+Info:   of which solving equations: 0.15s
+Info:   of which spreading cells: 0.01s
+Info:   of which strict legalisation: 0.06s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 56, wirelen = 3008
+Info:   at iteration #5: temp = 0.000000, timing cost = 37, wirelen = 2187
+Info:   at iteration #10: temp = 0.000000, timing cost = 13, wirelen = 2045
+Info:   at iteration #15: temp = 0.000000, timing cost = 19, wirelen = 1970
+Info:   at iteration #18: temp = 0.000000, timing cost = 25, wirelen = 1953 
+Info: SA placement time 0.32s
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 120.11 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 8.42 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 4.00 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 2 endpoint(s)
+Info:          + represents [1,2) endpoint(s)
+Info: [ 74915,  75284) |******+
+Info: [ 75284,  75653) |******+
+Info: [ 75653,  76022) |**************+
+Info: [ 76022,  76391) |*************+
+Info: [ 76391,  76760) |*****+
+Info: [ 76760,  77129) |***+
+Info: [ 77129,  77498) |************************************+
+Info: [ 77498,  77867) |****************************************+
+Info: [ 77867,  78236) |*********************************+
+Info: [ 78236,  78605) |************************************+
+Info: [ 78605,  78974) |****************+
+Info: [ 78974,  79343) |*****************+
+Info: [ 79343,  79712) |***********+
+Info: [ 79712,  80081) |******+
+Info: [ 80081,  80450) |********+
+Info: [ 80450,  80819) |************+
+Info: [ 80819,  81188) |************************************************************ 
+Info: [ 81188,  81557) |*****************+
+Info: [ 81557,  81926) |*******************************************************+
+Info: [ 81926,  82295) |***+
+Info: Checksum: 0x67d645cf
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 1603 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |      101        838 |  101   838 |       726|       0.20       0.20|
+Info:       1943 |      267       1587 |  166   749 |         0|       0.31       0.51|
+Info: Routing complete.
+Info: Router1 time 0.51s
+Info: Checksum: 0x7e1adedd
+
+Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
+Info: curr total
+Info:  0.5  0.5  Source u1.prod_reg_SB_DFFE_Q_5_D_SB_LUT4_O_LC.O
+Info:  0.6  1.1    Net w_p1[2] budget 16.184000 ns (10,6) -> (10,5)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_9_D_SB_LUT4_O_I1_SB_LUT4_O_I2_SB_LUT4_O_I2_SB_LUT4_O_1_LC.I0
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:171.30-171.34
+Info:  0.4  1.6  Source u1.prod_reg_SB_DFFESR_Q_9_D_SB_LUT4_O_I1_SB_LUT4_O_I2_SB_LUT4_O_I2_SB_LUT4_O_1_LC.O
+Info:  0.6  2.2    Net u1.prod_reg_SB_DFFESR_Q_9_D_SB_LUT4_O_I1_SB_LUT4_O_I2_SB_LUT4_O_I2[0] budget 20.292999 ns (10,5) -> (9,4)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_I1_SB_LUT4_O_I2_SB_LUT4_O_LC.I2
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.4  2.5  Source u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_I1_SB_LUT4_O_I2_SB_LUT4_O_LC.O
+Info:  0.9  3.4    Net u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_I1_SB_LUT4_O_I2[1] budget 20.292000 ns (9,4) -> (7,4)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_I1_SB_LUT4_O_LC.I2
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.4  3.8  Source u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_I1_SB_LUT4_O_LC.O
+Info:  1.3  5.1    Net u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_I1[1] budget 20.292000 ns (7,4) -> (9,6)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_LC.I1
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:175.23-175.184
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60.47-60.103
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.3  5.4  Source u1.prod_reg_SB_DFFESR_Q_5_D_SB_LUT4_O_LC.COUT
+Info:  0.0  5.4    Net u1.prod_reg_SB_DFFESR_Q_4_D_SB_LUT4_O_I1[3] budget 0.000000 ns (9,6) -> (9,6)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_4_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:175.23-175.184
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60.47-60.103
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.5  Source u1.prod_reg_SB_DFFESR_Q_4_D_SB_LUT4_O_LC.COUT
+Info:  0.2  5.7    Net u1.prod_reg_SB_DFFESR_Q_3_D_SB_LUT4_O_I1[3] budget 0.190000 ns (9,6) -> (9,7)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_3_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:175.23-175.184
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60.47-60.103
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.8  Source u1.prod_reg_SB_DFFESR_Q_3_D_SB_LUT4_O_LC.COUT
+Info:  0.0  5.8    Net u1.prod_reg_SB_DFFESR_Q_2_D_SB_LUT4_O_I1[3] budget 0.000000 ns (9,7) -> (9,7)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_2_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:175.23-175.184
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60.47-60.103
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  5.9  Source u1.prod_reg_SB_DFFESR_Q_2_D_SB_LUT4_O_LC.COUT
+Info:  0.0  5.9    Net u1.prod_reg_SB_DFFESR_Q_1_D_SB_LUT4_O_I1[3] budget 0.000000 ns (9,7) -> (9,7)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_1_D_SB_LUT4_O_LC.CIN
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:175.23-175.184
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60.47-60.103
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.1  6.1  Source u1.prod_reg_SB_DFFESR_Q_1_D_SB_LUT4_O_LC.COUT
+Info:  0.3  6.3    Net u1.prod_reg_SB_DFFESR_Q_D_SB_LUT4_O_I1[3] budget 0.260000 ns (9,7) -> (9,7)
+Info:                Sink u1.prod_reg_SB_DFFESR_Q_D_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:175.23-175.184
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:60.47-60.103
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.3  6.7  Setup u1.prod_reg_SB_DFFESR_Q_D_SB_LUT4_O_LC.I3
+Info: 2.8 ns logic, 3.8 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge clk$SB_IO_IN_$glb_clk':
+Info: curr total
+Info:  0.0  0.0  Source start$sb_io.D_IN_0
+Info:  3.4  3.4    Net start$SB_IO_IN budget 41.307999 ns (0,12) -> (17,33)
+Info:                Sink $gbuf_start$SB_IO_IN_$glb_ce.USER_SIGNAL_TO_GLOBAL_BUFFER
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:85.41-85.46
+Info:  0.6  4.0  Source $gbuf_start$SB_IO_IN_$glb_ce.GLOBAL_BUFFER_OUTPUT
+Info:  0.6  4.6    Net start$SB_IO_IN_$glb_ce budget 41.307999 ns (17,33) -> (4,2)
+Info:                Sink r_mcand_in_SB_DFFER_Q_DFFLC.CEN
+Info:  0.1  4.7  Setup r_mcand_in_SB_DFFER_Q_DFFLC.CEN
+Info: 0.7 ns logic, 4.0 ns routing
+
+Info: Critical path report for cross-domain path 'posedge clk$SB_IO_IN_$glb_clk' -> '<async>':
+Info: curr total
+Info:  0.5  0.5  Source product_SB_DFFER_Q_D_SB_LUT4_O_1_LC.O
+Info:  3.1  3.7    Net product[17]$SB_IO_OUT budget 82.792999 ns (6,3) -> (5,33)
+Info:                Sink product[17]$sb_io.D_OUT_0
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_4_pipeline_144.v:89.41-89.48
+Info: 0.5 ns logic, 3.1 ns routing
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 150.35 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 4.72 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 3.65 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 4 endpoint(s)
+Info:          + represents [1,4) endpoint(s)
+Info: [ 76682,  76962) |**+
+Info: [ 76962,  77242) |**+
+Info: [ 77242,  77522) |***********+
+Info: [ 77522,  77802) |*****************+
+Info: [ 77802,  78082) |*********+
+Info: [ 78082,  78362) |*****+
+Info: [ 78362,  78642) |************+
+Info: [ 78642,  78922) |************+
+Info: [ 78922,  79202) |******************+
+Info: [ 79202,  79482) |**+
+Info: [ 79482,  79762) |**+
+Info: [ 79762,  80042) |***+
+Info: [ 80042,  80322) |***+
+Info: [ 80322,  80602) |**+
+Info: [ 80602,  80882) |********+
+Info: [ 80882,  81162) |************************************************************ 
+Info: [ 81162,  81442) |***************+
+Info: [ 81442,  81722) |*********+
+Info: [ 81722,  82002) |******************************+
+Info: [ 82002,  82282) |**+
+1 warning, 0 errors
+
+Info: Program finished normally.

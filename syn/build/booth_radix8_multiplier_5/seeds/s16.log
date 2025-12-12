@@ -1,0 +1,216 @@
+Warning: No PCF file specified; IO pins will be placed automatically
+
+Info: Packing constants..
+Info: Packing IOs..
+Info: Packing LUT-FFs..
+Info:      230 LCs used as LUT4 only
+Info:      114 LCs used as LUT4 and DFF
+Info: Packing non-LUT FFs..
+Info:       87 LCs used as DFF only
+Info: Packing carries..
+Info:        3 LCs used as CARRY only
+Info: Packing indirect carry+LUT pairs...
+Info:        0 LUTs merged into carry LCs
+Info: Packing RAMs..
+Info: Placing PLLs..
+Info: Packing special functions..
+Info: Packing PLLs..
+Info: Promoting globals..
+Info: promoting clk$SB_IO_IN (fanout 201)
+Info: promoting rst_n_SB_LUT4_I3_O [reset] (fanout 201)
+Info: promoting busy_SB_LUT4_I0_O [cen] (fanout 32)
+Info: promoting busy_SB_LUT4_I0_I2_SB_LUT4_I3_1_O [cen] (fanout 21)
+Info: promoting busy_SB_LUT4_I0_I2_SB_LUT4_O_I1_SB_LUT4_I3_1_O [cen] (fanout 21)
+Info: promoting busy_SB_LUT4_I0_I2_SB_LUT4_O_I2_SB_LUT4_I3_O [cen] (fanout 21)
+Info: Constraining chains...
+Info:        5 LCs used to legalise carry chains.
+Info: Checksum: 0x1499a7c3
+
+Info: Annotating ports with timing budgets for target frequency 12.00 MHz
+Info: Checksum: 0xc2b08e2e
+
+Info: Device utilisation:
+Info: 	         ICESTORM_LC:   441/ 7680     5%
+Info: 	        ICESTORM_RAM:     0/   32     0%
+Info: 	               SB_IO:    71/  256    27%
+Info: 	               SB_GB:     6/    8    75%
+Info: 	        ICESTORM_PLL:     0/    2     0%
+Info: 	         SB_WARMBOOT:     0/    1     0%
+
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 363 cells, random placement wirelen = 14242.
+Info:     at initial placer iter 0, wirelen = 2052
+Info:     at initial placer iter 1, wirelen = 1851
+Info:     at initial placer iter 2, wirelen = 1740
+Info:     at initial placer iter 3, wirelen = 1744
+Info: Running main analytical placer.
+Info:     at iteration #1, type ALL: wirelen solved = 1757, spread = 2945, legal = 3182; time = 0.01s
+Info:     at iteration #2, type ALL: wirelen solved = 1791, spread = 3014, legal = 3177; time = 0.11s
+Info:     at iteration #3, type ALL: wirelen solved = 1838, spread = 2915, legal = 3156; time = 0.02s
+Info:     at iteration #4, type ALL: wirelen solved = 1924, spread = 2986, legal = 3179; time = 0.02s
+Info:     at iteration #5, type ALL: wirelen solved = 1961, spread = 2982, legal = 3176; time = 0.02s
+Info:     at iteration #6, type ALL: wirelen solved = 2060, spread = 2934, legal = 3100; time = 0.02s
+Info:     at iteration #7, type ALL: wirelen solved = 2113, spread = 2989, legal = 3179; time = 0.02s
+Info:     at iteration #8, type ALL: wirelen solved = 2214, spread = 2912, legal = 3165; time = 0.02s
+Info:     at iteration #9, type ALL: wirelen solved = 2198, spread = 3022, legal = 3194; time = 0.02s
+Info:     at iteration #10, type ALL: wirelen solved = 2295, spread = 2816, legal = 3092; time = 0.02s
+Info:     at iteration #11, type ALL: wirelen solved = 2257, spread = 2869, legal = 2990; time = 0.02s
+Info:     at iteration #12, type ALL: wirelen solved = 2305, spread = 2859, legal = 3056; time = 0.51s
+Info:     at iteration #13, type ALL: wirelen solved = 2351, spread = 2861, legal = 3092; time = 0.02s
+Info:     at iteration #14, type ALL: wirelen solved = 2388, spread = 2931, legal = 3109; time = 0.02s
+Info:     at iteration #15, type ALL: wirelen solved = 2417, spread = 2851, legal = 3134; time = 0.02s
+Info:     at iteration #16, type ALL: wirelen solved = 2421, spread = 2976, legal = 3140; time = 0.02s
+Info: HeAP Placer Time: 0.93s
+Info:   of which solving equations: 0.20s
+Info:   of which spreading cells: 0.02s
+Info:   of which strict legalisation: 0.64s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 21, wirelen = 2990
+Info:   at iteration #5: temp = 0.000000, timing cost = 13, wirelen = 2028
+Info:   at iteration #10: temp = 0.000000, timing cost = 12, wirelen = 1781
+Info:   at iteration #15: temp = 0.000000, timing cost = 23, wirelen = 1731
+Info:   at iteration #19: temp = 0.000000, timing cost = 22, wirelen = 1718 
+Info: SA placement time 0.31s
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 82.77 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 6.40 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 3.51 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 2 endpoint(s)
+Info:          + represents [1,2) endpoint(s)
+Info: [ 71251,  71803) |**********+
+Info: [ 71803,  72355) |********+
+Info: [ 72355,  72907) |+
+Info: [ 72907,  73459) | 
+Info: [ 73459,  74011) | 
+Info: [ 74011,  74563) | 
+Info: [ 74563,  75115) | 
+Info: [ 75115,  75667) | 
+Info: [ 75667,  76219) |**** 
+Info: [ 76219,  76771) |************+
+Info: [ 76771,  77323) |*********************************+
+Info: [ 77323,  77875) |************************************************************ 
+Info: [ 77875,  78427) |****************+
+Info: [ 78427,  78979) |******** 
+Info: [ 78979,  79531) |*****************+
+Info: [ 79531,  80083) |*************************+
+Info: [ 80083,  80635) |****************************+
+Info: [ 80635,  81187) |**************************************+
+Info: [ 81187,  81739) |***************************+
+Info: [ 81739,  82291) |******************************+
+Info: Checksum: 0x0e26eaa1
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 1531 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       69        875 |   69   875 |       618|       0.17       0.17|
+Info:       1785 |      199       1517 |  130   642 |         0|       0.24       0.41|
+Info: Routing complete.
+Info: Router1 time 0.41s
+Info: Checksum: 0xe1473288
+
+Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):
+Info: curr total
+Info:  0.5  0.5  Source busy_SB_LUT4_I0_I2_SB_LUT4_O_I2_SB_LUT4_I3_I2_SB_DFFER_E_Q_SB_LUT4_I1_LC.O
+Info:  1.2  1.8    Net busy_SB_LUT4_I0_I2_SB_LUT4_O_I2_SB_LUT4_I3_I2_SB_DFFER_E_Q[2] budget 16.201000 ns (6,2) -> (9,2)
+Info:                Sink busy_SB_LUT4_I0_I2_SB_LUT4_O_I2_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.3  2.1  Source busy_SB_LUT4_I0_I2_SB_LUT4_O_I2_SB_LUT4_O_LC.O
+Info:  0.6  2.7    Net busy_SB_LUT4_I0_I2_SB_LUT4_O_I2[1] budget 16.201000 ns (9,2) -> (10,2)
+Info:                Sink busy_SB_LUT4_I0_I2_SB_LUT4_O_LC.I2
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.4  3.0  Source busy_SB_LUT4_I0_I2_SB_LUT4_O_LC.O
+Info:  0.6  3.6    Net busy_SB_LUT4_I0_I2[3] budget 16.201000 ns (10,2) -> (11,2)
+Info:                Sink busy_SB_LUT4_I0_LC.I3
+Info:                Defined in:
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_map.v:6.21-6.22
+Info:  0.3  3.9  Source busy_SB_LUT4_I0_LC.O
+Info:  3.1  7.0    Net busy_SB_LUT4_I0_O budget 16.201000 ns (11,2) -> (33,16)
+Info:                Sink $gbuf_busy_SB_LUT4_I0_O_$glb_ce.USER_SIGNAL_TO_GLOBAL_BUFFER
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:213.5-240.8
+Info:                  /usr/local/bin/../share/yosys/ice40/ff_map.v:14.63-14.116
+Info:                  /usr/local/bin/../share/yosys/ice40/cells_sim.v:656.8-656.9
+Info:  0.6  7.6  Source $gbuf_busy_SB_LUT4_I0_O_$glb_ce.GLOBAL_BUFFER_OUTPUT
+Info:  0.6  8.2    Net busy_SB_LUT4_I0_O_$glb_ce budget 16.201000 ns (33,16) -> (4,5)
+Info:                Sink res_upper_SB_LUT4_O_LC.CEN
+Info:  0.1  8.3  Setup res_upper_SB_LUT4_O_LC.CEN
+Info: 2.3 ns logic, 6.1 ns routing
+
+Info: Critical path report for cross-domain path '<async>' -> 'posedge clk$SB_IO_IN_$glb_clk':
+Info: curr total
+Info:  0.0  0.0  Source multiplicand[15]$sb_io.D_IN_0
+Info:  1.7  1.7    Net a_high[7] budget 27.136999 ns (12,0) -> (10,6)
+Info:                Sink mult1.sign_bit_a_SB_LUT4_O_LC.I2
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:134.41-134.53
+Info:  0.4  2.0  Source mult1.sign_bit_a_SB_LUT4_O_LC.O
+Info:  1.0  3.0    Net mult1.calc_3x[10] budget 27.136000 ns (10,6) -> (9,4)
+Info:                Sink mult1.calc_3x_SB_LUT4_O_8_LC.I1
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:178.17-182.6
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:34.10-34.20
+Info:  0.3  3.2  Source mult1.calc_3x_SB_LUT4_O_8_LC.COUT
+Info:  0.5  3.7    Net mult1.calc_3x_SB_LUT4_O_I3 budget 0.560000 ns (9,4) -> (9,5)
+Info:                Sink mult1.calc_3x_SB_LUT4_O_LC.I3
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:166.17-170.6
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:38.43-38.82
+Info:                  /usr/local/bin/../share/yosys/ice40/arith_map.v:62.5-70.4
+Info:                  /usr/local/bin/../share/yosys/ice40/abc9_model.v:4.9-4.11
+Info:  0.3  4.0  Source mult1.calc_3x_SB_LUT4_O_LC.O
+Info:  1.3  5.3    Net mult1.calc_3x[9] budget 27.136000 ns (9,5) -> (7,4)
+Info:                Sink mult1.sign_bit_a_SB_DFFER_D_Q_SB_LUT4_I0_3_O_SB_LUT4_O_I0_SB_DFFER_Q_1_DFFLC.I0
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:178.17-182.6
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:38.33-38.40
+Info:  0.5  5.8  Setup mult1.sign_bit_a_SB_DFFER_D_Q_SB_LUT4_I0_3_O_SB_LUT4_O_I0_SB_DFFER_Q_1_DFFLC.I0
+Info: 1.4 ns logic, 4.3 ns routing
+
+Info: Critical path report for cross-domain path 'posedge clk$SB_IO_IN_$glb_clk' -> '<async>':
+Info: curr total
+Info:  0.5  0.5  Source res_upper_SB_LUT4_O_9_LC.O
+Info:  2.2  2.7    Net product[25]$SB_IO_OUT budget 82.792999 ns (4,5) -> (33,5)
+Info:                Sink product[25]$sb_io.D_OUT_0
+Info:                Defined in:
+Info:                  ../rtl/booth_radix8_multiplier_su_5_linear_146.v:137.41-137.48
+Info: 0.5 ns logic, 2.2 ns routing
+
+Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 119.83 MHz (PASS at 12.00 MHz)
+
+Info: Max delay <async>                       -> posedge clk$SB_IO_IN_$glb_clk: 5.76 ns
+Info: Max delay posedge clk$SB_IO_IN_$glb_clk -> <async>                      : 2.75 ns
+
+Info: Slack histogram:
+Info:  legend: * represents 4 endpoint(s)
+Info:          + represents [1,4) endpoint(s)
+Info: [ 74988,  75353) |*******+
+Info: [ 75353,  75718) |*****+
+Info: [ 75718,  76083) | 
+Info: [ 76083,  76448) |*+
+Info: [ 76448,  76813) |***+
+Info: [ 76813,  77178) |**+
+Info: [ 77178,  77543) |****+
+Info: [ 77543,  77908) |****+
+Info: [ 77908,  78273) |************+
+Info: [ 78273,  78638) |+
+Info: [ 78638,  79003) |*********+
+Info: [ 79003,  79368) |*******************+
+Info: [ 79368,  79733) |*********+
+Info: [ 79733,  80098) |******+
+Info: [ 80098,  80463) |**********+
+Info: [ 80463,  80828) |********************+
+Info: [ 80828,  81193) |************************************************************ 
+Info: [ 81193,  81558) |*************+
+Info: [ 81558,  81923) |************************+
+Info: [ 81923,  82288) |*+
+1 warning, 0 errors
+
+Info: Program finished normally.

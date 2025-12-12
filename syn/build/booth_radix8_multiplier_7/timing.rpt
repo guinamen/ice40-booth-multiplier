@@ -1,0 +1,47 @@
+
+icetime topological timing analysis report
+==========================================
+
+Info: max_span_hack is enabled: estimate is conservative.
+
+Report for critical path:
+-------------------------
+
+        lc40_16_17_0 (LogicCell40) [clk] -> lcout: 0.640 ns
+     0.640 ns net_62558 (calc_sum_p1_p2_SB_LUT4_O_7_I1[0])
+        t1282 (LocalMux) I -> O: 0.330 ns
+        inmux_16_16_66560_66598 (InMux) I -> O: 0.260 ns
+        lc40_16_16_2 (LogicCell40) in1 -> lcout: 0.400 ns
+     1.629 ns net_62437 (calc_sum_p1_p2_SB_LUT4_O_10_I1_SB_LUT4_O_I2[3])
+        t1275 (LocalMux) I -> O: 0.330 ns
+        inmux_16_16_66562_66629 (InMux) I -> O: 0.260 ns
+        t300 (CascadeMux) I -> O: 0.000 ns
+        lc40_16_16_7 (LogicCell40) in2 -> lcout: 0.379 ns
+     2.597 ns net_62442 (calc_sum_p1_p2_SB_LUT4_O_10_I1_SB_LUT4_O_I1_SB_LUT4_I0_O[2])
+        t1279 (LocalMux) I -> O: 0.330 ns
+        inmux_16_16_66559_66622 (InMux) I -> O: 0.260 ns
+        lc40_16_16_6 (LogicCell40) in1 -> lcout: 0.400 ns
+     3.586 ns net_62441 (calc_sum_p1_p2_SB_LUT4_O_11_I1[1])
+        t1278 (LocalMux) I -> O: 0.330 ns
+        inmux_15_16_62506_62522 (InMux) I -> O: 0.260 ns
+        lc40_15_16_2 (LogicCell40) in1 -> lcout: 0.400 ns
+     4.575 ns net_58360 (sign_mode_SB_DFFER_D_1_Q_SB_LUT4_I2_1_O_SB_LUT4_O_14_I3[2])
+        odrv_15_16_58360_62345 (Odrv4) I -> O: 0.372 ns
+        t1152 (Span4Mux_h4) I -> O: 0.316 ns
+        t1151 (LocalMux) I -> O: 0.330 ns
+        inmux_18_17_74844_74897 (InMux) I -> O: 0.260 ns
+     5.851 ns net_74897 (sign_mode_SB_DFFER_D_1_Q_SB_LUT4_I2_1_O_SB_LUT4_O_14_I3[2])
+        lc40_18_17_6 (LogicCell40) in0 [setup]: 0.400 ns
+     6.251 ns net_70717 (calc_sum_p1_p2_SB_LUT4_O_I1[1])
+
+Resolvable net names on path:
+     0.640 ns ..  1.229 ns calc_sum_p1_p2_SB_LUT4_O_7_I1[0]
+     1.629 ns ..  2.218 ns calc_sum_p1_p2_SB_LUT4_O_10_I1_SB_LUT4_O_I2[3]
+     2.597 ns ..  3.186 ns calc_sum_p1_p2_SB_LUT4_O_10_I1_SB_LUT4_O_I1_SB_LUT4_I0_O[2]
+     3.586 ns ..  4.175 ns calc_sum_p1_p2_SB_LUT4_O_11_I1[1]
+     4.575 ns ..  5.851 ns sign_mode_SB_DFFER_D_1_Q_SB_LUT4_I2_1_O_SB_LUT4_O_14_I3[2]
+                  lcout -> calc_sum_p1_p2_SB_LUT4_O_I1[1]
+
+Total number of logic levels: 5
+Total path delay: 6.25 ns (159.98 MHz)
+

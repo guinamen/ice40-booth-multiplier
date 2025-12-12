@@ -102,7 +102,7 @@ endmodule
 // Module: booth_radix8_multiplier (Top Level)
 // Optimization: INPUT REGISTERS + PIPELINED ADDER
 // ============================================================================
-module booth_radix8_multiplier #(
+module booth_radix8_multiplier_7 #(
     parameter integer WIDTH = 16
 )(
     input  wire                         clk,

@@ -77,7 +77,7 @@ module booth_core_4cycle (
     end
 endmodule
 
-module booth_radix8_multiplier #(
+module booth_radix8_multiplier_pipeline #(
     parameter integer WIDTH = 16
 )(
     input  wire                         clk,
