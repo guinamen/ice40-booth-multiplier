@@ -1,13 +1,17 @@
 #!/bin/bash
 
 ###############################################################################
-# Script Otimizado iCE40 v2.4
-# - CORREÇÃO FINAL no Parser de Utilização (Espaços em branco)
-# - Funcionalidades: Build, Timing, Seed Test, Flash, PLL Gen
+# Script Otimizado iCE40 v2.7
+# - Múltiplos Arquivos Verilog
+# - Teste de Seeds Multi-Thread (Paralelo)
+# - Correção: Exibição detalhada do Caminho Crítico restaurada
 ###############################################################################
 
 # Configurações de Shell
 set -o pipefail
+
+# Trap para matar processos filhos se o script for interrompido (Ctrl+C)
+trap 'kill $(jobs -p) 2>/dev/null; exit 1' SIGINT SIGTERM
 
 # =====================
 # Definição de Cores
@@ -26,8 +30,8 @@ NC='\033[0m'          # No Color
 # =====================
 info()    { echo -e "${BLUE}==>${NC} ${BOLD}$1${NC}"; }
 success() { echo -e "${GREEN}==>${NC} ${BOLD}$1${NC}"; }
-warn()    { echo -e "${YELLOW}==> AVISO:${NC} $1"; }
-error()   { echo -e "${RED}==> ERRO:${NC} $1"; }
+warn()    { echo -e "${YELLOW}==> AVISO:${NC} $1${NC}"; }
+error()   { echo -e "${RED}==> ERRO:${NC} $1${NC}"; }
 
 check_status() {
     if [ $1 -ne 0 ]; then
@@ -56,6 +60,15 @@ USE_ABC2=false
 OPTIMIZE_TIMING=false
 DEVICE_TYPE="hx"
 
+# Detecção de CPUs para paralelismo
+if command -v nproc >/dev/null; then
+    CORES=$(nproc)
+elif command -v sysctl >/dev/null; then
+    CORES=$(sysctl -n hw.ncpu)
+else
+    CORES=1
+fi
+
 # Variáveis Opcionais
 FLASH_DEVICE=false
 GENERATE_PLL=false
@@ -75,7 +88,7 @@ done
 # =====================
 # Parsing de argumentos
 # =====================
-DESIGN_FILE=""
+DESIGN_FILES=()
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -108,29 +121,31 @@ while [[ $# -gt 0 ]]; do
                 error "Uso: --pll <in> <out>"; exit 1
             fi
             ;;
-        *) DESIGN_FILE="$1"; shift ;;
+        *) DESIGN_FILES+=("$1"); shift ;;
     esac
 done
 
 # =====================
-# Menu de Ajuda
+# Validação dos Arquivos
 # =====================
-if [ -z "$DESIGN_FILE" ] || [ ! -f "$DESIGN_FILE" ]; then
-    echo -e "${BOLD}Uso:${NC} $0 [opções] <arquivo.v>"
+if [ ${#DESIGN_FILES[@]} -eq 0 ]; then
+    echo -e "${BOLD}Uso:${NC} $0 [opções] <arquivo1.v> [arquivo2.v ...]"
     echo -e "  ${CYAN}--clean${NC}                Limpa build/"
-    echo -e "  ${CYAN}--flash${NC}                Grava na FPGA"
-    echo -e "  ${CYAN}--pcf <arq>${NC}            Arquivo de pinos"
-    echo -e "  ${CYAN}--pll <in> <out>${NC}       Gera PLL (Ex: 12 100)"
-    echo -e "  ${CYAN}--test-seeds [N]${NC}       Testa N seeds"
+    echo -e "  ${CYAN}--test-seeds [N]${NC}       Testa N seeds (Usa $CORES cores)"
     echo -e "  ${CYAN}--freq <MHz>${NC}           Define Freq Alvo"
     exit 1
 fi
 
+for file in "${DESIGN_FILES[@]}"; do
+    if [ ! -f "$file" ]; then error "Arquivo não encontrado: $file"; exit 1; fi
+done
+ALL_DESIGN_FILES="${DESIGN_FILES[*]}"
+
 # =====================
 # Início do Fluxo
 # =====================
-info "Analisando arquivo Verilog..."
-TOP_MODULE=$(yosys -Q -p "read_verilog $DESIGN_FILE; hierarchy -auto-top; stat" 2>&1 | grep 'Top module:' | head -n1 | awk '{print $3}' | sed -e 's/\\//')
+info "Analisando arquivos Verilog..."
+TOP_MODULE=$(yosys -Q -p "read_verilog $ALL_DESIGN_FILES; hierarchy -auto-top; stat" 2>&1 | grep 'Top module:' | head -n1 | awk '{print $3}' | sed -e 's/\\//')
 TOP_MODULE=$(echo "$TOP_MODULE" | tr -d '\r\n\t ')
 
 [ -z "$TOP_MODULE" ] && { error "Top module não detectado."; exit 1; }
@@ -164,7 +179,7 @@ info "1. Executando Síntese (Yosys)..."
 SYNTH_FLAGS="-abc9 -device $DEVICE_TYPE"
 [ "$USE_DSP" = true ] && SYNTH_FLAGS="$SYNTH_FLAGS -dsp"
 [ "$USE_ABC2" = true ] && SYNTH_FLAGS="$SYNTH_FLAGS -abc2"
-FILES_TO_READ="$DESIGN_FILE $EXTRA_VERILOG_FILES"
+FILES_TO_READ="$ALL_DESIGN_FILES $EXTRA_VERILOG_FILES"
 
 yosys -Q -l "$SYNTH_LOG" <<EOF > /dev/null 2>&1
 read_verilog $FILES_TO_READ
@@ -177,42 +192,79 @@ check_status $? "Síntese" "$SYNTH_LOG"
 success "Síntese concluída."
 
 # Auxiliares P&R
-run_pnr() {
-    local s=$1; local asc=$2; local log=$3; local OPTS=""
-    if [ -f "$PCF_FILE" ]; then OPTS="$OPTS --pcf $PCF_FILE"
-    elif [ "$CUSTOM_PCF" = true ]; then error "PCF '$PCF_FILE' não existe."; exit 1
-    else warn "Sem arquivo PCF. Pinos livres."; fi
-    [ -n "$TARGET_FREQ" ] && OPTS="$OPTS --freq $TARGET_FREQ"
-    [ "$OPTIMIZE_TIMING" = true ] && OPTS="$OPTS --opt-timing"
-    nextpnr-ice40 --$DEVICE --package $PACKAGE --json "$JSON_FILE" $OPTS --seed "$s" --asc "$asc" --log "$log" > /dev/null 2>&1
-    return $?
-}
-
 get_pnr_fmax() {
     local val=$(grep -F "Max frequency for clock" "$1" | tail -n 1 | awk -F " MHz" '{print $1}' | awk '{print $NF}')
     [ -z "$val" ] && echo "0" || echo "$val"
 }
 
-# 2. P&R
+run_pnr_cmd() {
+    local s=$1; local asc=$2; local log=$3
+    local OPTS=""
+    if [ -f "$PCF_FILE" ]; then OPTS="$OPTS --pcf $PCF_FILE"
+    elif [ "$CUSTOM_PCF" = true ]; then error "PCF '$PCF_FILE' não existe."; exit 1; fi
+    [ -n "$TARGET_FREQ" ] && OPTS="$OPTS --freq $TARGET_FREQ"
+    [ "$OPTIMIZE_TIMING" = true ] && OPTS="$OPTS --opt-timing"
+    
+    nextpnr-ice40 --$DEVICE --package $PACKAGE --json "$JSON_FILE" $OPTS --seed "$s" --asc "$asc" --log "$log" > /dev/null 2>&1
+    return $?
+}
+
+# 2. P&R (Com Multi-Threading)
 info "2. Executando Place & Route..."
 if [ "$TEST_SEEDS" = true ]; then
     SEEDS_DIR="$MODULE_BUILD/seeds"; mkdir -p "$SEEDS_DIR"
-    BEST_SEED=1; BEST_FMAX=0
-    echo -e "   ${BOLD}Testando $NUM_SEEDS_TO_TEST seeds:${NC}"
+    echo -e "   ${BOLD}Testando $NUM_SEEDS_TO_TEST seeds em $CORES threads...${NC}"
+
     for i in $(seq 1 $NUM_SEEDS_TO_TEST); do
-        LOG_TMP="$SEEDS_DIR/s$i.log"; ASC_TMP="$SEEDS_DIR/s$i.asc"
-        run_pnr "$i" "$ASC_TMP" "$LOG_TMP"
-        if [ $? -ne 0 ]; then printf "   Seed %2d: ${RED}FALHA${NC}\n" $i; continue; fi
-        CUR_FMAX=$(get_pnr_fmax "$LOG_TMP")
-        if (( $(echo "$CUR_FMAX > $BEST_FMAX" | bc -l) )); then
-            BEST_FMAX=$CUR_FMAX; BEST_SEED=$i
-            printf "   Seed %2d: ${GREEN}%-8s MHz${NC} (Novo Recorde)\n" $i $CUR_FMAX
-        else printf "   Seed %2d: %-8s MHz\n" $i $CUR_FMAX; fi
+        LOG_TMP="$SEEDS_DIR/s$i.log"
+        ASC_TMP="$SEEDS_DIR/s$i.asc"
+        
+        # Executa em background
+        (
+            run_pnr_cmd "$i" "$ASC_TMP" "$LOG_TMP"
+            RES=$?
+            if [ $RES -eq 0 ]; then
+                FMAX=$(get_pnr_fmax "$LOG_TMP")
+                echo -e "   Seed $i: Concluída -> Fmax: $FMAX MHz"
+            else
+                echo -e "   Seed $i: ${RED}Falhou${NC}"
+            fi
+        ) &
+
+        # Semáforo: Se numero de jobs >= CORES, espera um terminar
+        while (( $(jobs -r -p | wc -l) >= CORES )); do
+            wait -n 2>/dev/null || sleep 0.1
+        done
     done
-    cp "$SEEDS_DIR/s$BEST_SEED.asc" "$ASC_FILE"; cp "$SEEDS_DIR/s$BEST_SEED.log" "$LOG_FILE"; SEED=$BEST_SEED
+    
+    wait # Espera restantes
+
+    # Analisa vencedor
+    BEST_SEED=1; BEST_FMAX=0.0
+    info "Analisando resultados das seeds..."
+    for i in $(seq 1 $NUM_SEEDS_TO_TEST); do
+        LOG_TMP="$SEEDS_DIR/s$i.log"
+        [ -f "$LOG_TMP" ] && {
+            CUR_FMAX=$(get_pnr_fmax "$LOG_TMP")
+            if (( $(echo "$CUR_FMAX > $BEST_FMAX" | bc -l) )); then
+                BEST_FMAX=$CUR_FMAX; BEST_SEED=$i
+            fi
+        }
+    done
+    
+    if (( $(echo "$BEST_FMAX == 0" | bc -l) )); then
+        error "Todas as seeds falharam ou Fmax é 0."
+        exit 1
+    fi
+
+    echo -e "   ${GREEN}Melhor Seed: $BEST_SEED ($BEST_FMAX MHz)${NC}"
+    cp "$SEEDS_DIR/s$BEST_SEED.asc" "$ASC_FILE"
+    cp "$SEEDS_DIR/s$BEST_SEED.log" "$LOG_FILE"
+    SEED=$BEST_SEED
+
 else
     [ -z "$SEED" ] && SEED=1
-    run_pnr "$SEED" "$ASC_FILE" "$LOG_FILE"
+    run_pnr_cmd "$SEED" "$ASC_FILE" "$LOG_FILE"
     check_status $? "P&R" "$LOG_FILE"
 fi
 success "P&R finalizado (Seed: $SEED)."
@@ -246,29 +298,24 @@ if [ -n "$CRITICAL_LINE" ]; then
     echo -e "${BOLD}Sequência do Caminho Crítico:${NC}"
     echo -e "${GRAY} (Extraído de $RPT_FILE)${NC}"
     echo "--------------------------------------------------------"
-    grep -B 25 "Total path delay" "$RPT_FILE" | head -n -1 | sed 's/^/   /'
+    # Pega as 20 linhas antes de "Total path delay", remove a última (o próprio total) e indenta
+    grep -B 20 "Total path delay" "$RPT_FILE" | head -n -1 | sed 's/^/   /'
     echo "--------------------------------------------------------"
 else
     echo -e "${RED}Dados de timing não encontrados.${NC}"
 fi
 
-# C. Recursos (Corrigido para ignorar espaços extras)
-echo ""
-echo -e "${BOLD}Utilização (Recursos / Total %):${NC}"
-
+# C. Recursos
 get_usage() {
-    # 1. Busca nome do recurso (ex: ICESTORM_LC)
-    # 2. Garante que tem '/' para pegar a linha de contagem
-    # 3. Remove prefixos e espaços
     grep -F "$1" "$LOG_FILE" | grep "/" | tail -n 1 | sed 's/.*://' | sed 's/^[ \t]*//'
 }
-
 LC_USAGE=$(get_usage "ICESTORM_LC")
 RAM_USAGE=$(get_usage "ICESTORM_RAM")
 
+echo ""
+echo -e "${BOLD}Utilização:${NC}"
 echo -e "   Logic Cells: ${YELLOW}$LC_USAGE${NC}"
 echo -e "   Block RAMs:  ${YELLOW}$RAM_USAGE${NC}"
-echo ""
 echo -e "   Binário:     ${CYAN}$BIN_FILE${NC}"
 [ -f "$PCF_FILE" ] && echo -e "   Pinout:      ${CYAN}$PCF_FILE${NC}" || echo -e "   Pinout:      ${YELLOW}Float${NC}"
 echo ""
