@@ -178,9 +178,9 @@ The table below compares the three implementations. While the **Linear** version
 
 | Verilog Source File | Architecture | Latency (Cycles) | Max Freq ($F_{max}$) | Resources (LCs) | **Throughput (MOPS)** |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| `..._su_5_linear_146.v` | Iterative Linear | 5 | 149.10 MHz | **441 (5%)** | **29.8** |
-| `..._su_7_linear_155.v` | Registered I/O | 7 | **154.77 MHz** | 474 (6%) | 21.3 |
-| `..._su_4_pipeline_144.v` | **Decoupled Pipeline** | **4 (Sustained)** | 141.00 MHz | 463 (6%) | R/T (24.2/35.25)* |
+| `..._su_5_linear_146.v` | Iterative Linear | 5 | 150.05 MHz | **441 (5%)** | **29.8** |
+| `..._su_7_linear_155.v` | Registered I/O | 7 | **160.0 MHz** | 474 (6%) | 21.3 |
+| `..._su_4_pipeline_144.v` | **Decoupled Pipeline** | **4 (Sustained)** | 148.33 MHz | 463 (6%) | R/T (24.2/35.25)* |
 
 * R for real throughput, T for theoretical throughput
 > **Definitions:**
