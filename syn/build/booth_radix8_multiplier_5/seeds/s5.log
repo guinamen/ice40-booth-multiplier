@@ -66,7 +66,7 @@ Info:   at iteration #5: temp = 0.000000, timing cost = 40, wirelen = 2417
 Info:   at iteration #10: temp = 0.000000, timing cost = 30, wirelen = 2341
 Info:   at iteration #15: temp = 0.000000, timing cost = 31, wirelen = 2272
 Info:   at iteration #17: temp = 0.000000, timing cost = 32, wirelen = 2258 
-Info: SA placement time 0.27s
+Info: SA placement time 0.28s
 
 Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 119.23 MHz (PASS at 12.00 MHz)
 
@@ -103,10 +103,10 @@ Info: Setting up routing queue.
 Info: Routing 1540 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |      104        843 |  104   843 |       673|       0.16       0.16|
-Info:       1832 |      233       1530 |  129   687 |         0|       0.42       0.58|
+Info:       1000 |      104        843 |  104   843 |       673|       0.14       0.14|
+Info:       1832 |      233       1530 |  129   687 |         0|       0.36       0.50|
 Info: Routing complete.
-Info: Router1 time 0.58s
+Info: Router1 time 0.50s
 Info: Checksum: 0x40e80f4a
 
 Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):

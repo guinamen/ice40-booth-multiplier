@@ -45,7 +45,7 @@ Info:     at initial placer iter 2, wirelen = 1719
 Info:     at initial placer iter 3, wirelen = 1720
 Info: Running main analytical placer.
 Info:     at iteration #1, type ALL: wirelen solved = 1753, spread = 3035, legal = 3183; time = 0.01s
-Info:     at iteration #2, type ALL: wirelen solved = 1786, spread = 2826, legal = 2999; time = 0.01s
+Info:     at iteration #2, type ALL: wirelen solved = 1786, spread = 2826, legal = 2999; time = 0.02s
 Info:     at iteration #3, type ALL: wirelen solved = 1834, spread = 2859, legal = 2947; time = 0.02s
 Info:     at iteration #4, type ALL: wirelen solved = 1889, spread = 2805, legal = 2922; time = 0.01s
 Info:     at iteration #5, type ALL: wirelen solved = 1921, spread = 2747, legal = 2831; time = 0.02s
@@ -54,8 +54,8 @@ Info:     at iteration #7, type ALL: wirelen solved = 1978, spread = 2710, legal
 Info:     at iteration #8, type ALL: wirelen solved = 2035, spread = 2818, legal = 2908; time = 0.02s
 Info:     at iteration #9, type ALL: wirelen solved = 2105, spread = 2948, legal = 3079; time = 0.01s
 Info:     at iteration #10, type ALL: wirelen solved = 2174, spread = 3039, legal = 3138; time = 0.02s
-Info: HeAP Placer Time: 0.22s
-Info:   of which solving equations: 0.14s
+Info: HeAP Placer Time: 0.23s
+Info:   of which solving equations: 0.15s
 Info:   of which spreading cells: 0.01s
 Info:   of which strict legalisation: 0.03s
 
@@ -65,7 +65,7 @@ Info:   at iteration #5: temp = 0.000000, timing cost = 28, wirelen = 2305
 Info:   at iteration #10: temp = 0.000000, timing cost = 23, wirelen = 2256
 Info:   at iteration #15: temp = 0.000000, timing cost = 22, wirelen = 2183
 Info:   at iteration #18: temp = 0.000000, timing cost = 21, wirelen = 2152 
-Info: SA placement time 0.29s
+Info: SA placement time 0.27s
 
 Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 114.30 MHz (PASS at 12.00 MHz)
 
@@ -102,10 +102,10 @@ Info: Setting up routing queue.
 Info: Routing 1538 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |      118        828 |  118   828 |       681|       0.16       0.16|
-Info:       1931 |      308       1554 |  190   726 |         0|       0.33       0.49|
+Info:       1000 |      118        828 |  118   828 |       681|       0.15       0.15|
+Info:       1931 |      308       1554 |  190   726 |         0|       0.34       0.50|
 Info: Routing complete.
-Info: Router1 time 0.49s
+Info: Router1 time 0.50s
 Info: Checksum: 0x200a7444
 
 Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):

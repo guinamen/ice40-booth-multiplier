@@ -55,10 +55,10 @@ Info:     at iteration #8, type ALL: wirelen solved = 2039, spread = 2823, legal
 Info:     at iteration #9, type ALL: wirelen solved = 2097, spread = 2813, legal = 2974; time = 0.02s
 Info:     at iteration #10, type ALL: wirelen solved = 2144, spread = 2789, legal = 3045; time = 0.02s
 Info:     at iteration #11, type ALL: wirelen solved = 2193, spread = 2809, legal = 3051; time = 0.01s
-Info:     at iteration #12, type ALL: wirelen solved = 2277, spread = 2857, legal = 2999; time = 0.02s
-Info:     at iteration #13, type ALL: wirelen solved = 2288, spread = 2942, legal = 3201; time = 0.02s
+Info:     at iteration #12, type ALL: wirelen solved = 2277, spread = 2857, legal = 2999; time = 0.01s
+Info:     at iteration #13, type ALL: wirelen solved = 2288, spread = 2942, legal = 3201; time = 0.01s
 Info:     at iteration #14, type ALL: wirelen solved = 2374, spread = 2866, legal = 3194; time = 0.02s
-Info: HeAP Placer Time: 0.30s
+Info: HeAP Placer Time: 0.29s
 Info:   of which solving equations: 0.18s
 Info:   of which spreading cells: 0.02s
 Info:   of which strict legalisation: 0.04s
@@ -70,7 +70,7 @@ Info:   at iteration #10: temp = 0.000000, timing cost = 23, wirelen = 2079
 Info:   at iteration #15: temp = 0.000000, timing cost = 12, wirelen = 2047
 Info:   at iteration #20: temp = 0.000000, timing cost = 21, wirelen = 2001
 Info:   at iteration #24: temp = 0.000000, timing cost = 19, wirelen = 1995 
-Info: SA placement time 0.36s
+Info: SA placement time 0.35s
 
 Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 86.28 MHz (PASS at 12.00 MHz)
 
@@ -107,10 +107,10 @@ Info: Setting up routing queue.
 Info: Routing 1532 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |       69        877 |   69   877 |       624|       0.16       0.16|
-Info:       1786 |      189       1528 |  120   651 |         0|       0.34       0.50|
+Info:       1000 |       69        877 |   69   877 |       624|       0.14       0.14|
+Info:       1786 |      189       1528 |  120   651 |         0|       0.31       0.44|
 Info: Routing complete.
-Info: Router1 time 0.50s
+Info: Router1 time 0.44s
 Info: Checksum: 0xe393f8fc
 
 Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):

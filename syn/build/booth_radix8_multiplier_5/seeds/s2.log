@@ -53,7 +53,7 @@ Info:     at iteration #6, type ALL: wirelen solved = 2095, spread = 2916, legal
 Info:     at iteration #7, type ALL: wirelen solved = 2126, spread = 2978, legal = 3204; time = 0.01s
 Info:     at iteration #8, type ALL: wirelen solved = 2159, spread = 2911, legal = 3146; time = 0.02s
 Info:     at iteration #9, type ALL: wirelen solved = 2202, spread = 2925, legal = 3148; time = 0.02s
-Info:     at iteration #10, type ALL: wirelen solved = 2212, spread = 2862, legal = 3159; time = 0.02s
+Info:     at iteration #10, type ALL: wirelen solved = 2212, spread = 2862, legal = 3159; time = 0.01s
 Info: HeAP Placer Time: 0.23s
 Info:   of which solving equations: 0.14s
 Info:   of which spreading cells: 0.01s
@@ -65,7 +65,7 @@ Info:   at iteration #5: temp = 0.000000, timing cost = 12, wirelen = 2209
 Info:   at iteration #10: temp = 0.000000, timing cost = 12, wirelen = 2011
 Info:   at iteration #15: temp = 0.000000, timing cost = 13, wirelen = 1965
 Info:   at iteration #16: temp = 0.000000, timing cost = 11, wirelen = 1976 
-Info: SA placement time 0.26s
+Info: SA placement time 0.24s
 
 Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 92.99 MHz (PASS at 12.00 MHz)
 
@@ -102,10 +102,10 @@ Info: Setting up routing queue.
 Info: Routing 1551 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
-Info:       1000 |       83        862 |   83   862 |       663|       0.19       0.19|
-Info:       1801 |      199       1533 |  116   671 |         0|       0.27       0.46|
+Info:       1000 |       83        862 |   83   862 |       663|       0.17       0.17|
+Info:       1801 |      199       1533 |  116   671 |         0|       0.27       0.45|
 Info: Routing complete.
-Info: Router1 time 0.46s
+Info: Router1 time 0.45s
 Info: Checksum: 0x85fa4ae6
 
 Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):

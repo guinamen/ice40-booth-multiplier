@@ -44,12 +44,12 @@ Info:     at initial placer iter 1, wirelen = 1823
 Info:     at initial placer iter 2, wirelen = 1807
 Info:     at initial placer iter 3, wirelen = 1843
 Info: Running main analytical placer.
-Info:     at iteration #1, type ALL: wirelen solved = 1843, spread = 2953, legal = 3173; time = 0.01s
+Info:     at iteration #1, type ALL: wirelen solved = 1843, spread = 2953, legal = 3173; time = 0.02s
 Info:     at iteration #2, type ALL: wirelen solved = 1843, spread = 3101, legal = 3281; time = 0.02s
 Info:     at iteration #3, type ALL: wirelen solved = 1866, spread = 2945, legal = 3166; time = 0.02s
 Info:     at iteration #4, type ALL: wirelen solved = 1916, spread = 2834, legal = 3029; time = 0.02s
 Info:     at iteration #5, type ALL: wirelen solved = 1942, spread = 2863, legal = 3049; time = 0.02s
-Info:     at iteration #6, type ALL: wirelen solved = 2071, spread = 2897, legal = 3045; time = 0.01s
+Info:     at iteration #6, type ALL: wirelen solved = 2071, spread = 2897, legal = 3045; time = 0.02s
 Info:     at iteration #7, type ALL: wirelen solved = 2119, spread = 2754, legal = 3023; time = 0.01s
 Info:     at iteration #8, type ALL: wirelen solved = 2118, spread = 2806, legal = 3017; time = 0.01s
 Info:     at iteration #9, type ALL: wirelen solved = 2149, spread = 2877, legal = 3101; time = 0.02s
@@ -57,8 +57,8 @@ Info:     at iteration #10, type ALL: wirelen solved = 2241, spread = 2821, lega
 Info:     at iteration #11, type ALL: wirelen solved = 2238, spread = 2819, legal = 3095; time = 0.01s
 Info:     at iteration #12, type ALL: wirelen solved = 2272, spread = 2866, legal = 3125; time = 0.01s
 Info:     at iteration #13, type ALL: wirelen solved = 2329, spread = 2833, legal = 3041; time = 0.02s
-Info: HeAP Placer Time: 0.28s
-Info:   of which solving equations: 0.17s
+Info: HeAP Placer Time: 0.29s
+Info:   of which solving equations: 0.18s
 Info:   of which spreading cells: 0.02s
 Info:   of which strict legalisation: 0.04s
 
@@ -68,7 +68,7 @@ Info:   at iteration #5: temp = 0.000000, timing cost = 16, wirelen = 2184
 Info:   at iteration #10: temp = 0.000000, timing cost = 15, wirelen = 2075
 Info:   at iteration #15: temp = 0.000000, timing cost = 15, wirelen = 2033
 Info:   at iteration #15: temp = 0.000000, timing cost = 13, wirelen = 2035 
-Info: SA placement time 0.24s
+Info: SA placement time 0.25s
 
 Info: Max frequency for clock 'clk$SB_IO_IN_$glb_clk': 104.87 MHz (PASS at 12.00 MHz)
 
@@ -106,9 +106,9 @@ Info: Routing 1542 arcs.
 Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
 Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
 Info:       1000 |       85        859 |   85   859 |       652|       0.17       0.17|
-Info:       1792 |      201       1522 |  116   663 |         0|       0.31       0.48|
+Info:       1792 |      201       1522 |  116   663 |         0|       0.33       0.50|
 Info: Routing complete.
-Info: Router1 time 0.48s
+Info: Router1 time 0.50s
 Info: Checksum: 0xb4d4cf06
 
 Info: Critical path report for clock 'clk$SB_IO_IN_$glb_clk' (posedge -> posedge):

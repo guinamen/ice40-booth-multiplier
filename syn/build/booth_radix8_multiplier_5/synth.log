@@ -1500,7 +1500,7 @@ ABC: Mapping (K=4)  :  lut =    290  edge =     898  lev =    4 (0.31)  levB =  
 ABC: LUT = 290 : 2=75 25.9 %  3=112 38.6 %  4=103 35.5 %  Ave = 3.10
 ABC: + &write -n <abc-temp-dir>/output.aig 
 ABC: + time 
-ABC: elapse: 0.10 seconds, total: 0.10 seconds
+ABC: elapse: 0.11 seconds, total: 0.11 seconds
 
 10.41.17.6. Executing AIGER frontend.
 <suppressed ~881 debug messages>
@@ -1710,6 +1710,6 @@ Found and reported 0 problems.
 
 10.50. Executing JSON backend.
 
-End of script. Logfile hash: 40c959af45, CPU: user 1.12s system 0.03s, MEM: 39.48 MB peak
+End of script. Logfile hash: 7028ed46ca, CPU: user 1.11s system 0.02s, MEM: 39.24 MB peak
 Yosys 0.60+8 (git sha1 1cceaa2a8, g++ 12.2.0-14+deb12u1 -fPIC -O3)
-Time spent: 25% 21x read_verilog (0 sec), 10% 29x opt_clean (0 sec), ...
+Time spent: 25% 21x read_verilog (0 sec), 10% 1x abc9_exe (0 sec), ...
