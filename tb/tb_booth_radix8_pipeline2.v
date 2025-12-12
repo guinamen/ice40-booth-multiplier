@@ -11,7 +11,8 @@
 module tb_booth_diagnostic;
     
     parameter WIDTH = 16;
-    parameter CLK_PERIOD = 6.666;
+    //parameter CLK_PERIOD = 6.666;
+    parameter CLK_PERIOD = 7.09219858;
     
     reg clk, rst_n, start;
     reg signed [WIDTH-1:0] multiplicand, multiplier;
@@ -102,9 +103,9 @@ module tb_booth_diagnostic;
                 
                 $display("Latência Máxima:        %0d ciclos", max_latency);
                 $display("Latência Média:         %.2f ciclos", avg_latency);
-                $display("Throughput Real:        %.3f ops/ciclo (%.1f Mops/s @ 150MHz)", 
+                $display("Throughput Real:        %.3f ops/ciclo (%.1f Mops/s @ 141MHz)", 
                          throughput, throughput * 150.0);
-                $display("Throughput Teórico:     0.250 ops/ciclo (37.5 Mops/s @ 150MHz)");
+                $display("Throughput Teórico:     0.250 ops/ciclo (35.25 Mops/s @ 141MHz)");
                 $display("Eficiência:             %.1f%% (real/teórico)", efficiency);
             end
             $display("========================================");
