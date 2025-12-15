@@ -50,12 +50,14 @@ module booth_mult8 (
     wire s_bit_a_stored = r_sign_mode & r_mcand[WIDTH-1];
     wire signed [ACC_WIDTH-1:0] mcand_extended = { {(ACC_WIDTH-WIDTH){s_bit_a_stored}}, r_mcand };
 
+    // OTIMIZAÇÃO 3: Inicialização simplificada
+    // Remove replicação redundante: {(SHIFT_BITS-WIDTH){...}} = {(9-8){...}} = {1{...}}
     wire s_bit_b_in = sign_mode[0] & multiplier[WIDTH-1];
     wire [REG_WIDTH-1:0] prod_reg_init = {
-        {ACC_WIDTH{1'b0}},
-        {(SHIFT_BITS-WIDTH){s_bit_b_in}},
-        multiplier,
-        1'b0
+        {ACC_WIDTH{1'b0}},     // 11 zeros para acumulador
+        s_bit_b_in,            // 1 bit de extensão de sinal (equivalente a {1{s_bit_b_in}})
+        multiplier,            // 8 bits do multiplicador
+        1'b0                   // 1 bit extra Booth
     };
 
     // ------------------------------------------------------------------------
@@ -64,7 +66,7 @@ module booth_mult8 (
     wire [3:0] booth_bits = prod_reg[3:0];
     wire signed [ACC_WIDTH-1:0] acc_upper = prod_reg[REG_WIDTH-1 : SHIFT_BITS+1];
 
-    // OTIMIZAÇÃO: Recodificação para reduzir tamanho do Case
+    // Recodificação para reduzir tamanho do Case
     wire [2:0] recoded_bits;
     assign recoded_bits = booth_bits[2:0] ^ {3{booth_bits[3]}};
 
@@ -80,14 +82,13 @@ module booth_mult8 (
             3'b001, 3'b010: sel_1x = 1'b1;
             3'b011, 3'b100: sel_2x = 1'b1;
             3'b101, 3'b110: sel_3x = 1'b1;
-            3'b111:         sel_4x = 1'b1; // CORREÇÃO: Removemos 3'b000 daqui
-            default:        ;              // 000 (caso zero) não seleciona nada
+            3'b111:         sel_4x = 1'b1;
+            default:        ;
         endcase
     end
 
     // Detecção se devemos subtrair (número negativo ou parte negativa do Booth)
     // Cuidado: 1111 (zero) não deve subtrair.
-    // Lógica: Se bit[3] é 1, subtrai, EXCETO se for o caso 1111 (que é zero).
     wire inv = booth_bits[3] & ~(&booth_bits[2:0]);
 
     reg signed [ACC_WIDTH-1:0] mag_sel;
@@ -130,4 +131,3 @@ module booth_mult8 (
 
 endmodule
 `default_nettype wire
-
