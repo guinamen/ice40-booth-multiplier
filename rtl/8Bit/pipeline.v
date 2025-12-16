@@ -28,71 +28,7 @@ module booth_mult8_core_pipelined #(
     // ------------------------------------------------------------------------
     // FUNÇÕES (Reutilizadas)
     // ------------------------------------------------------------------------
-    function automatic [ACC_WIDTH-1:0] f_calc_3x;
-        input [WIDTH-1:0] val_in;
-        input             s_bit;
-        reg [ACC_WIDTH-1:0] val_ext;
-    begin
-        val_ext = { {(ACC_WIDTH-WIDTH){s_bit}}, val_in };
-        f_calc_3x = val_ext + (val_ext <<< 1);
-    end
-    endfunction
-
-    function automatic [ACC_WIDTH-1:0] f_extend_mcand;
-        input [WIDTH-1:0] val_in;
-        input             s_bit;
-    begin
-        f_extend_mcand = { {(ACC_WIDTH-WIDTH){s_bit}}, val_in };
-    end
-    endfunction
-
-    function automatic [REG_WIDTH-1:0] f_init_prod_reg;
-        input [WIDTH-1:0] mult_in;
-        input             s_bit;
-    begin
-        f_init_prod_reg = {
-            {ACC_WIDTH{1'b0}},
-            s_bit,
-            mult_in,
-            1'b0
-        };
-    end
-    endfunction
-
-    function automatic [4:0] f_booth_decoder;
-        input [3:0] window;
-        reg [2:0] recoded;
-    begin
-        recoded = window[2:0] ^ {3{window[3]}};
-        f_booth_decoder[4]   = window[3] & ~(&window[2:0]); // Inv bit
-        f_booth_decoder[3:0] = 4'b0000;
-        case (recoded)
-            3'b001, 3'b010: f_booth_decoder[0] = 1'b1;
-            3'b011, 3'b100: f_booth_decoder[1] = 1'b1;
-            3'b101, 3'b110: f_booth_decoder[2] = 1'b1;
-            3'b111:         f_booth_decoder[3] = 1'b1;
-            default:        ;
-        endcase
-    end
-    endfunction
-
-    // Nova Função: Apenas seleciona o operando (SEM SOMAR)
-    function automatic [ACC_WIDTH-1:0] f_select_op;
-        input [ACC_WIDTH-1:0] val_1x;
-        input [ACC_WIDTH-1:0] val_3x;
-        input [4:0]           ctrl;
-        reg [ACC_WIDTH-1:0]   magnitude;
-    begin
-        // Apenas Mux, sem soma. Muito rápido.
-        magnitude = ({ACC_WIDTH{ctrl[0]}} & val_1x) |
-                    ({ACC_WIDTH{ctrl[1]}} & (val_1x <<< 1)) |
-                    ({ACC_WIDTH{ctrl[2]}} & val_3x) |
-                    ({ACC_WIDTH{ctrl[3]}} & (val_1x <<< 2));
-
-        // Aplica inversão condicional (Complemento de 1)
-        f_select_op = magnitude ^ {ACC_WIDTH{ctrl[4]}};
-    end
-    endfunction
+    
 
     // ------------------------------------------------------------------------
     // REGISTRADORES
