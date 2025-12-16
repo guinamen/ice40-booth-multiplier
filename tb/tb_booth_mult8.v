@@ -6,7 +6,9 @@
 // - Timeout esperando done
 `timescale 1ns/1ps
 
-module tb_booth_mult8;
+module tb_booth_mult8 #(
+    parameter integer DUT_SEL = 0
+);
 
     // --- clock / reset / control signals ---
     reg clk;
@@ -21,19 +23,43 @@ module tb_booth_mult8;
     // --- DUT outputs ---
     wire signed [15:0] product;
     wire done;
-
+   // ============================================================
+    // Geração condicional do DUT
+    // ============================================================
+    generate
+        if (DUT_SEL == 0) begin : GEN_DUT_A
+    		booth_mult8_core dut (
+		        .clk(clk),
+		        .rst_n(rst_n),
+		        .start(start),
+		        .multiplicand(multiplicand_i),
+		        .multiplier(multiplier_i),
+		        .sign_mode(sign_mode),
+		        .product(product),
+		        .done(done)
+    		);
+	end
+        else if (DUT_SEL == 1) begin : GEN_DUT_B
+           booth_mult8_isolated dut (
+		        .clk(clk),
+		        .rst_n(rst_n),
+		        .start(start),
+		        .multiplicand(multiplicand_i),
+		        .multiplier(multiplier_i),
+		        .sign_mode(sign_mode),
+		        .product(product),
+		        .done(done)
+    		);
+        end
+        else begin : GEN_DUT_INVALID
+            initial begin
+                $error("Valor invalido para DUT_SEL = %0d", DUT_SEL);
+                $finish;
+            end
+        end
+    endgenerate
     // Instantiate DUT (assumes module name and ports as provided)
-    booth_mult8 dut (
-        .clk(clk),
-        .rst_n(rst_n),
-        .start(start),
-        .multiplicand(multiplicand_i),
-        .multiplier(multiplier_i),
-        .sign_mode(sign_mode),
-        .product(product),
-        .done(done)
-    );
-
+   
     // --- testbench helpers / bookkeeping ---
     integer i;
     integer seed;

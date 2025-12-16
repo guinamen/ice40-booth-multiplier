@@ -10,7 +10,7 @@
 // Suporta operações: signed×signed, unsigned×unsigned, signed×unsigned
 // =============================================================================
 
-module booth_mult8 #(
+module booth_mult8_core #(
     parameter integer WIDTH = 8  // Largura dos operandos (padrão: 8 bits)
 )(
     // Sinais de controle
