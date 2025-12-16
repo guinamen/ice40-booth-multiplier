@@ -21,6 +21,8 @@ module tb_booth_radix8_multiplier;
     // Contadores para estatísticas
     integer pass_count = 0;
     integer fail_count = 0;
+    integer clock_count = 0;  // Contador de clocks
+    integer operation_count = 0;  // Contador de operações
 
     // ========================================================================
     // Instância do DUT (Device Under Test)
@@ -130,6 +132,9 @@ module tb_booth_radix8_multiplier;
         $display("RESULTADO FINAL:");
         $display("Passaram: %0d", pass_count);
         $display("Falharam: %0d", fail_count);
+        $display("Clocks: %0d", clock_count);
+        $display("Operações: %0d", operation_count);
+        $display("Throughput (operações por clock): %0.2f", (operation_count / clock_count) * 100.0);
         $display("=======================================================");
 
         if (fail_count == 0)
@@ -197,9 +202,14 @@ module tb_booth_radix8_multiplier;
                 pass_count = pass_count + 1;
             end
 
+            // Incrementar os contadores de clocks e operações
+            clock_count = clock_count + 1;
+            operation_count = operation_count + 1;
+
             // Pequeno atraso entre testes
             repeat(2) @(posedge clk);
         end
     endtask
 
 endmodule
+

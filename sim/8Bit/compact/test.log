@@ -1,0 +1,16 @@
+
+=== Running tests for sign_mode = 0 (multiplicand_signed=0, multiplier_signed=0) ===
+
+=== Running tests for sign_mode = 1 (multiplicand_signed=0, multiplier_signed=1) ===
+[PROGRESS] tests so far=834 pass=833 fail=0
+
+=== Running tests for sign_mode = 10 (multiplicand_signed=1, multiplier_signed=0) ===
+[PROGRESS] tests so far=1667 pass=1666 fail=0
+
+=== Running tests for sign_mode = 11 (multiplicand_signed=1, multiplier_signed=1) ===
+[PROGRESS] tests so far=2500 pass=2499 fail=0
+------------------------------------------------------------
+TEST SUMMARY: total=2576  PASS=2576  FAIL=0
+RESULT: ALL TESTS PASSED
+------------------------------------------------------------
+../../../tb/tb_booth_mult8.v:90: $finish called at 154625000 (1ps)
