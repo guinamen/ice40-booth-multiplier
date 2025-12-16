@@ -77,49 +77,62 @@ begin
 end
 endfunction
 
-// -------------------------------------------------------------------------
-// UNIDADE ARITMÉTICA (ALU)
-// Executa: acumulador ± (magnitude do multiplicando)
-// -------------------------------------------------------------------------
-function automatic [ACC_WIDTH-1:0] f_alu_calc;
-    input [ACC_WIDTH-1:0] acc_val;  // Valor atual do acumulador
-    input [ACC_WIDTH-1:0] val_1x;   // Multiplicando (1x)
-    input [ACC_WIDTH-1:0] val_3x;   // Multiplicando pré-calculado (3x)
-    input [4:0]           ctrl;     // Controle do decodificador Booth
+// =========================================================================
+// FUNÇÕES ARITMÉTICAS MODULARIZADAS
+// =========================================================================
 
-    reg [ACC_WIDTH-1:0] magnitude;      // Magnitude selecionada
-    reg [ACC_WIDTH-1:0] operand_final;  // Operando com sinal aplicado
-    reg                 inv;            // Flag de inversão (subtração)
+// -------------------------------------------------------------------------
+// 1. FUNÇÃO BASE (KERNEL) - O que há de comum
+// Realiza apenas a seleção (MUX) e a inversão (XOR)
+// -------------------------------------------------------------------------
+function automatic [ACC_WIDTH-1:0] f_booth_mux_inv;
+    input [ACC_WIDTH-1:0] val_1x;
+    input [ACC_WIDTH-1:0] val_3x;
+    input [4:0]           ctrl;   // {inv, sel_4x, sel_3x, sel_2x, sel_1x}
+    reg [ACC_WIDTH-1:0]   magnitude;
 begin
-    inv = ctrl[4];  // Extrai bit de sinal
+    // Lógica de Seleção (Mux One-Hot)
+    magnitude = ({ACC_WIDTH{ctrl[0]}} & val_1x)          | // 1x
+                ({ACC_WIDTH{ctrl[1]}} & (val_1x <<< 1))  | // 2x
+                ({ACC_WIDTH{ctrl[2]}} & val_3x)          | // 3x
+                ({ACC_WIDTH{ctrl[3]}} & (val_1x <<< 2));   // 4x
 
-    // Seleciona magnitude usando multiplexador one-hot
-    magnitude = ({ACC_WIDTH{ctrl[0]}} & val_1x)            |  // 1x
-                ({ACC_WIDTH{ctrl[1]}} & (val_1x <<< 1))    |  // 2x
-                ({ACC_WIDTH{ctrl[2]}} & val_3x)            |  // 3x
-                ({ACC_WIDTH{ctrl[3]}} & (val_1x <<< 2));      // 4x
-
-    // Aplica complemento de 2 se subtração (inv XOR + carry)
-    operand_final = magnitude ^ {ACC_WIDTH{inv}};
-
-    // Soma: acc + operando + carry_in(=inv)
-    f_alu_calc = acc_val + operand_final + { {(ACC_WIDTH-1){1'b0}}, inv };
+    // Lógica de Inversão (Complemento de 1)
+    // Se ctrl[4] for 1, inverte todos os bits.
+    f_booth_mux_inv = magnitude ^ {ACC_WIDTH{ctrl[4]}};
 end
 endfunction
 
+// -------------------------------------------------------------------------
+// 2. FUNÇÃO SELECT OP (Para Pipeline)
+// Wrapper simples: Apenas retorna o operando preparado.
+// -------------------------------------------------------------------------
 function automatic [ACC_WIDTH-1:0] f_select_op;
-        input [ACC_WIDTH-1:0] val_1x;
-        input [ACC_WIDTH-1:0] val_3x;
-        input [4:0]           ctrl;
-        reg [ACC_WIDTH-1:0]   magnitude;
-    begin
-        // Apenas Mux, sem soma. Muito rápido.
-        magnitude = ({ACC_WIDTH{ctrl[0]}} & val_1x) |
-                    ({ACC_WIDTH{ctrl[1]}} & (val_1x <<< 1)) |
-                    ({ACC_WIDTH{ctrl[2]}} & val_3x) |
-                    ({ACC_WIDTH{ctrl[3]}} & (val_1x <<< 2));
+    input [ACC_WIDTH-1:0] val_1x;
+    input [ACC_WIDTH-1:0] val_3x;
+    input [4:0]           ctrl;
+begin
+    // Reutiliza a lógica comum
+    f_select_op = f_booth_mux_inv(val_1x, val_3x, ctrl);
+end
+endfunction
 
-        // Aplica inversão condicional (Complemento de 1)
-        f_select_op = magnitude ^ {ACC_WIDTH{ctrl[4]}};
-    end
-    endfunction
+// -------------------------------------------------------------------------
+// 3. FUNÇÃO ALU CALC (Para Ciclo Único / V3)
+// Obtém o operando da função base e realiza a soma completa.
+// -------------------------------------------------------------------------
+function automatic [ACC_WIDTH-1:0] f_alu_calc;
+    input [ACC_WIDTH-1:0] acc_val;
+    input [ACC_WIDTH-1:0] val_1x;
+    input [ACC_WIDTH-1:0] val_3x;
+    input [4:0]           ctrl;
+    reg [ACC_WIDTH-1:0]   operand_prepared;
+begin
+    // Passo 1: Obtém o operando (Mux + Inversão) da função comum
+    operand_prepared = f_booth_mux_inv(val_1x, val_3x, ctrl);
+
+    // Passo 2: Soma Final (Acumulador + Operando + Carry In)
+    // O bit 'ctrl[4]' (inv) age como o +1 do Complemento de 2
+    f_alu_calc = acc_val + operand_prepared + { {(ACC_WIDTH-1){1'b0}}, ctrl[4] };
+end
+endfunction
