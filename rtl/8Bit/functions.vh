@@ -106,3 +106,20 @@ begin
     f_alu_calc = acc_val + operand_final + { {(ACC_WIDTH-1){1'b0}}, inv };
 end
 endfunction
+
+function automatic [ACC_WIDTH-1:0] f_select_op;
+        input [ACC_WIDTH-1:0] val_1x;
+        input [ACC_WIDTH-1:0] val_3x;
+        input [4:0]           ctrl;
+        reg [ACC_WIDTH-1:0]   magnitude;
+    begin
+        // Apenas Mux, sem soma. Muito rápido.
+        magnitude = ({ACC_WIDTH{ctrl[0]}} & val_1x) |
+                    ({ACC_WIDTH{ctrl[1]}} & (val_1x <<< 1)) |
+                    ({ACC_WIDTH{ctrl[2]}} & val_3x) |
+                    ({ACC_WIDTH{ctrl[3]}} & (val_1x <<< 2));
+
+        // Aplica inversão condicional (Complemento de 1)
+        f_select_op = magnitude ^ {ACC_WIDTH{ctrl[4]}};
+    end
+    endfunction
