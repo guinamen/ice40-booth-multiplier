@@ -210,6 +210,8 @@ module tb_booth_mult8;
 
     // Monitor progress periodically
     initial begin
+	$dumpfile("simulation.vcd");
+	$dumpvars(0,tb_booth_mult8);
         forever begin
             #50000; // every some simulated time show progress
             $display("[PROGRESS] tests so far=%0d pass=%0d fail=%0d", total_tests, pass_count, fail_count);

@@ -10,7 +10,7 @@
 // Suporta operações: signed×signed, unsigned×unsigned, signed×unsigned
 // =============================================================================
 
-module booth_mult8_core #(
+module booth_mult8 #(
     parameter integer WIDTH = 8  // Largura dos operandos (padrão: 8 bits)
 )(
     // Sinais de controle
@@ -27,11 +27,6 @@ module booth_mult8_core #(
     output wire signed [(2*WIDTH)-1:0] product,      // Produto final (A × B)
     output reg                         done          // Sinaliza conclusão
 );
-    // =========================================================================
-    // FUNÇÕES AUXILIARES
-    // =========================================================================
-
-    `include "functions.vh"
     // =========================================================================
     // PARÂMETROS INTERNOS
     // =========================================================================
@@ -62,6 +57,13 @@ module booth_mult8_core #(
     // Determina se cada operando é com sinal baseado em sign_mode
     wire w_sign_bit_a = sign_mode[1] & multiplicand[WIDTH-1];  // MSB de A se signed
     wire w_sign_bit_b = sign_mode[0] & multiplier[WIDTH-1];    // MSB de B se signed
+   
+    // =========================================================================
+    // FUNÇÕES AUXILIARES
+    // =========================================================================
+
+    `include "functions.vh"
+
 
     // =========================================================================
     // DATAPATH COMBINACIONAL

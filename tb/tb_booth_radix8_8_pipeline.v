@@ -1,17 +1,19 @@
 `timescale 1ns / 1ps
 
-module tb_booth_mult8_pipeline_opt;
+module tb_booth_handshake;
 
     // ------------------------------------------------------------------------
-    // Sinais e Constantes
+    // Sinais
     // ------------------------------------------------------------------------
     reg clk;
     reg rst_n;
+    reg start;                  // ADICIONADO: Sinal Start
     reg signed [7:0] mcand_in;
     reg signed [7:0] mult_in;
     reg [1:0] sign_mode_in;
-    
+
     wire signed [15:0] product_out;
+    wire done;                  // ADICIONADO: Sinal Done
 
     integer errors = 0;
     integer tests_run = 0;
@@ -21,44 +23,28 @@ module tb_booth_mult8_pipeline_opt;
     localparam MODE_SU = 2'b10;
     localparam MODE_SS = 2'b11;
 
-    // ATENÇÃO: Latência atualizada para 4 ciclos (Retiming para 223 MHz)
-    localparam LATENCY = 4;
-
-    // Arrays para pipeline de verificação
-    reg signed [15:0] expected_pipe [0:LATENCY];
-    reg [15:0]        debug_a_pipe  [0:LATENCY];
-    reg [15:0]        debug_b_pipe  [0:LATENCY];
-    reg [1:0]         debug_mode_pipe [0:LATENCY];
-    reg               valid_pipe    [0:LATENCY];
-
     // ------------------------------------------------------------------------
-    // GERAÇÃO DE VCD
+    // DUT (Device Under Test)
     // ------------------------------------------------------------------------
-    initial begin
-        $dumpfile("booth_opt_223mhz.vcd");
-        $dumpvars(0, tb_booth_mult8_pipeline_opt);
-    end
-
-    // ------------------------------------------------------------------------
-    // Instanciação do DUT Otimizado
-    // ------------------------------------------------------------------------
-    booth_mult8_pipeline_opt dut (
+    booth_mult8_core_pipelined dut (
         .clk(clk),
         .rst_n(rst_n),
+        .start(start),          // CONECTADO
         .multiplicand(mcand_in),
         .multiplier(mult_in),
         .sign_mode(sign_mode_in),
-        .product(product_out)
+        .product(product_out),
+        .done(done)             // CONECTADO
     );
 
     // ------------------------------------------------------------------------
-    // Clock (Simulando alta frequência, embora funcionalmente não mude a lógica)
+    // Clock
     // ------------------------------------------------------------------------
     initial clk = 0;
-    always #2.23 clk = ~clk; // ~224 MHz period (apenas cosmético na simulação funcional)
+    always #2.23 clk = ~clk; 
 
     // ------------------------------------------------------------------------
-    // Golden Model
+    // Golden Model (Cálculo Esperado)
     // ------------------------------------------------------------------------
     function signed [15:0] calc_expected;
         input [7:0] a, b;
@@ -74,87 +60,92 @@ module tb_booth_mult8_pipeline_opt;
     endfunction
 
     // ------------------------------------------------------------------------
-    // Verificação e Shift Register
-    // ------------------------------------------------------------------------
-    integer k;
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            for (k=0; k<=LATENCY; k=k+1) valid_pipe[k] <= 0;
-        end else begin
-            // 1. Verificação (LATENCY-1 devido ao atraso do NBA <=)
-            if (valid_pipe[LATENCY-1]) begin
-                if (product_out !== expected_pipe[LATENCY-1]) begin
-                    $display("ERRO Time %0t | Mode %b | A: %h B: %h", $time, 
-                             debug_mode_pipe[LATENCY-1], debug_a_pipe[LATENCY-1], debug_b_pipe[LATENCY-1]);
-                    $display("    Exp: %h (%d) | Obt: %h (%d)", 
-                             expected_pipe[LATENCY-1], expected_pipe[LATENCY-1], 
-                             product_out, product_out);
-                    errors = errors + 1;
-                end
-                tests_run = tests_run + 1;
-            end
-
-            // 2. Shift Register
-            for (k = LATENCY; k > 0; k = k - 1) begin
-                expected_pipe[k]   <= expected_pipe[k-1];
-                debug_a_pipe[k]    <= debug_a_pipe[k-1];
-                debug_b_pipe[k]    <= debug_b_pipe[k-1];
-                debug_mode_pipe[k] <= debug_mode_pipe[k-1];
-                valid_pipe[k]      <= valid_pipe[k-1];
-            end
-
-            // 3. Load Input
-            expected_pipe[0]   <= calc_expected(mcand_in, mult_in, sign_mode_in);
-            debug_a_pipe[0]    <= {8'b0, mcand_in};
-            debug_b_pipe[0]    <= {8'b0, mult_in};
-            debug_mode_pipe[0] <= sign_mode_in;
-            valid_pipe[0]      <= 1'b1;
-        end
-    end
-
-    // ------------------------------------------------------------------------
-    // Sequência de Teste
+    // Sequência de Teste Principal
     // ------------------------------------------------------------------------
     reg [7:0] corners [0:7];
     initial begin
+        $dumpfile("booth_handshake.vcd");
+        $dumpvars(0, tb_booth_handshake);
+
+        // Casos de canto (Corner cases)
         corners[0]=8'h00; corners[1]=8'h01; corners[2]=8'h7F; corners[3]=8'h80;
         corners[4]=8'hFF; corners[5]=8'hAA; corners[6]=8'h55; corners[7]=8'h02;
 
-        rst_n = 0; mcand_in = 0; mult_in = 0; sign_mode_in = 0;
-        #20; @(posedge clk); rst_n = 1;
+        // Inicialização
+        rst_n = 0; start = 0; mcand_in = 0; mult_in = 0; sign_mode_in = 0;
+        #20; 
+        @(posedge clk); 
+        rst_n = 1;
+        #20;
 
-        $display("=== INICIANDO VERIFICACAO (LATENCY=4) ===");
-        run_phase(MODE_UU, "UU");
-        run_phase(MODE_US, "US");
-        run_phase(MODE_SU, "SU");
-        run_phase(MODE_SS, "SS");
+        $display("=== INICIANDO VERIFICACAO (HANDSHAKE) ===");
+        run_phase(MODE_UU, "UU (Unsigned x Unsigned)");
+        run_phase(MODE_US, "US (Unsigned x Signed)");
+        run_phase(MODE_SU, "SU (Signed x Unsigned)");
+        run_phase(MODE_SS, "SS (Signed x Signed)");
 
-        repeat(6) @(posedge clk); // Drain pipe (4+2 ciclos)
-        
-        if (errors == 0) 
-            $display("\nSUCESSO TOTAL: %0d testes passaram. Arquitetura Solida!", tests_run);
-        else 
+        if (errors == 0)
+            $display("\nSUCESSO TOTAL: %0d testes passaram.", tests_run);
+        else
             $display("\nFALHA: %0d erros encontrados.", errors);
-            
+
         $finish;
     end
 
+    // Tarefa para rodar um grupo de testes
     task run_phase;
         input [1:0] mode;
-        input [15:0] name;
+        input [25*8:1] name; // String name
         integer i, j;
     begin
         $display("Testando %s...", name);
-        for(i=0;i<8;i=i+1) for(j=0;j<8;j=j+1) drive(corners[i], corners[j], mode);
-        for(i=0;i<100;i=i+1) drive($random, $random, mode);
+        // Teste exaustivo dos corners
+        for(i=0;i<8;i=i+1) 
+            for(j=0;j<8;j=j+1) 
+                check_transaction(corners[i], corners[j], mode);
+        
+        // Testes aleatórios
+        for(i=0;i<50;i=i+1) 
+            check_transaction($random, $random, mode);
     end
     endtask
 
-    task drive;
+    // ------------------------------------------------------------------------
+    // Transação Individual (O SEGREDO ESTÁ AQUI)
+    // ------------------------------------------------------------------------
+    task check_transaction;
         input [7:0] a, b;
-        input [1:0] m;
+        input [1:0] mode;
+        reg signed [15:0] expected;
     begin
-        mcand_in <= a; mult_in <= b; sign_mode_in <= m;
+        // 1. Configura as entradas
+        @(posedge clk);
+        mcand_in <= a; 
+        mult_in <= b; 
+        sign_mode_in <= mode;
+        
+        // 2. Pulsa o START
+        start <= 1;
+        @(posedge clk);
+        start <= 0;
+
+        // 3. Espera pelo DONE (Handshake)
+        // O hardware leva vários ciclos. Esperamos até 'done' subir.
+        @(posedge done); 
+        
+        // 4. Verifica o resultado (na borda seguinte para estabilizar)
+        expected = calc_expected(a, b, mode);
+        
+        // Pequeno delay delta para garantir leitura correta
+        #1; 
+        if (product_out !== expected) begin
+            $display("ERRO | Mode %b | A: %h (%d) B: %h (%d)", mode, a, $signed(a), b, $signed(b));
+            $display("       Exp: %h (%d) | Obt: %h (%d)", expected, expected, product_out, product_out);
+            errors = errors + 1;
+        end
+        tests_run = tests_run + 1;
+        
+        // Espera um ciclo antes da próxima transação (opcional)
         @(posedge clk);
     end
     endtask

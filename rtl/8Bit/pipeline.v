@@ -30,25 +30,6 @@ module booth_mult8_core_pipelined #(
     // ------------------------------------------------------------------------
     `include "functions.vh"
 
-    // -------------------------------------------------------------------------
-    // 3. FUNÇÃO ALU CALC (Para Ciclo Único / V3)
-    // Obtém o operando da função base e realiza a soma completa.
-    // -------------------------------------------------------------------------
-    function automatic [ACC_WIDTH-1:0] f_alu_calc;
-        input [ACC_WIDTH-1:0] acc_val;
-        input [ACC_WIDTH-1:0] val_1x;
-        input [ACC_WIDTH-1:0] val_3x;
-        input [4:0]           ctrl;
-        reg [ACC_WIDTH-1:0]   operand_prepared;
-        begin
-            // Passo 1: Obtém o operando (Mux + Inversão) da função comum
-            operand_prepared = f_booth_mux_inv(val_1x, val_3x, ctrl);
-    
-            // Passo 2: Soma Final (Acumulador + Operando + Carry In)
-            // O bit 'ctrl[4]' (inv) age como o +1 do Complemento de 2
-            f_alu_calc = acc_val + operand_prepared + { {(ACC_WIDTH-1){1'b0}}, ctrl[4] };
-        end
-    endfunction
     // ------------------------------------------------------------------------
     // REGISTRADORES
     // ------------------------------------------------------------------------
