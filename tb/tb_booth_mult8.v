@@ -36,7 +36,16 @@ module tb_booth_rigorous;
                 .multiplicand(mcand_in), .multiplier(mult_in),
                 .sign_mode(sign_mode), .product(product), .done(done)
             );
-        end else begin
+        end 
+	else if (DUT_TYPE == 1) begin
+    	   booth_mult8_isolated  dut (
+                .clk(clk), .rst_n(rst_n), .start(start),
+                .multiplicand(mcand_in), .multiplier(mult_in),
+                .sign_mode(sign_mode), .product(product), .done(done)
+            );
+ 
+	end
+	else begin
             // Caso queira testar o V3
             booth_mult8_core dut (
                 .clk(clk), .rst_n(rst_n), .start(start),
