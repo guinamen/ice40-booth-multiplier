@@ -1,279 +1,132 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-/*
- * ============================================================================
- * Módulo: booth_mult8_fastest_gold
- * Arquitetura: Radix-4 Booth Pipelined
- * Estratégia: "Invert-and-Add" (Zero Carry Delay na entrada)
- * Latência: 6 Ciclos
- * Frequência Alvo: > 250 MHz (Lattice iCE40)
- * ============================================================================
- */
-
-module booth_mult8_fastest_gold #(
-    parameter integer WIDTH = 8
-)(
-    input  wire                  clk,
-    input  wire                  rst_n,
-    input  wire                  valid_in,
-    input  wire signed [WIDTH-1:0] multiplicand,
-    input  wire signed [WIDTH-1:0] multiplier,
-    input  wire [1:0]            sign_mode, // [1]=Signed Mcand, [0]=Signed Mult
-    
-    output reg  signed [(2*WIDTH)-1:0] product,
-    output reg                   valid_out
+module booth_core_250mhz (
+    input  wire        clk,
+    input  wire        v_in,
+    input  wire [7:0]  a,
+    input  wire [7:0]  b,
+    input  wire [1:0]  sm,
+    output reg  [15:0] p,
+    output reg         v_out
 );
 
-    // ------------------------------------------------------------------------
-    // DEFINIÇÃO DE LARGURAS
-    // ------------------------------------------------------------------------
-    // OP_W: 10 bits. 
-    // Necessário para acomodar o maior negativo (-128) e a operação 2x sem overflow
-    // e também para converter Unsigned (255) em Signed positivo (0_1111_1111).
-    localparam OP_W  = WIDTH + 2; 
-    
-    // SUM_W: 24 bits.
-    // O resultado final é 16 bits, mas as somas parciais precisam de "guard bits"
-    // para evitar overflow intermediário antes da redução final.
-    localparam SUM_W = (2 * WIDTH) + 8;
+    // S1: Entrada
+    reg signed [9:0]  s1_a;
+    reg        [10:0] s1_b;
+    reg               s1_v;
 
-    // ------------------------------------------------------------------------
-    // FUNÇÕES AUXILIARES
-    // ------------------------------------------------------------------------
-    function automatic [2:0] f_booth_enc;
-        input [2:0] code;
-    begin
-        // Decodificador Booth Radix-4 Padrão
-        case (code)
-            3'b000: f_booth_enc = 3'b000; //  0
-            3'b001: f_booth_enc = 3'b001; // +1
-            3'b010: f_booth_enc = 3'b001; // +1
-            3'b011: f_booth_enc = 3'b011; // +2
-            3'b100: f_booth_enc = 3'b100; // -2
-            3'b101: f_booth_enc = 3'b010; // -1
-            3'b110: f_booth_enc = 3'b010; // -1
-            3'b111: f_booth_enc = 3'b000; // -0
-            default: f_booth_enc = 3'b000;
+    // S2: Multiples + Booth Decodification
+    reg signed [9:0]  s2_p1, s2_p2, s2_m1, s2_m2;
+    reg               s2_v;
+    reg [2:0]         s2_t0, s2_t1, s2_t2, s2_t3, s2_t4; // Tripletos individuais
+    reg [4:0]         s2_neg;
+
+    // S3: Selection Mux (Agora apenas 10 bits para atingir >250MHz)
+    reg signed [9:0]  s3_pp [0:4];
+    reg [4:0]         s3_neg;
+    reg               s3_v;
+
+    // S4: Sign Extension Manual + Adder Level 1 (20 bits)
+    reg signed [19:0] s4_sum01, s4_sum23, s4_pp4, s4_corr;
+    reg               s4_v;
+
+    // S5: Adder Level 2
+    reg signed [19:0] s5_sumA, s5_sumB;
+    reg               s5_v;
+
+    integer i;
+
+    always @(posedge clk) begin
+        // --- S1: Normalização ---
+        s1_a <= sm[1] ? $signed({{2{a[7]}}, a}) : $signed({2'b00, a});
+        s1_b <= { (sm[0] ? {2{b[7]}} : 2'b00), b, 1'b0 };
+        s1_v <= v_in;
+
+        // --- S2: Geração de Múltiplos e Registro de Tripletos ---
+        s2_v  <= s1_v;
+        s2_p1 <= s1_a;
+        s2_p2 <= s1_a <<< 1;
+        s2_m1 <= ~s1_a;
+        s2_m2 <= ~(s1_a <<< 1);
+
+        s2_t0 <= s1_b[2:0];
+        s2_t1 <= s1_b[4:2];
+        s2_t2 <= s1_b[6:4];
+        s2_t3 <= s1_b[8:6];
+        s2_t4 <= s1_b[10:8];
+
+        for (i=0; i<5; i=i+1) begin
+            s2_neg[i] <= s1_b[2*i+2] & ~(s1_b[2*i+1] & s1_b[2*i]);
+        end
+
+        // --- S3: Selection (10 bits - Caminho Crítico Otimizado) ---
+        s3_v   <= s2_v;
+        s3_neg <= s2_neg;
+
+        // Mux 0
+        case (s2_t0)
+            3'b001, 3'b010: s3_pp[0] <= s2_p1;
+            3'b011:         s3_pp[0] <= s2_p2;
+            3'b100:         s3_pp[0] <= s2_m2;
+            3'b101, 3'b110: s3_pp[0] <= s2_m1;
+            default:        s3_pp[0] <= 10'sh0;
         endcase
+        // Mux 1
+        case (s2_t1)
+            3'b001, 3'b010: s3_pp[1] <= s2_p1;
+            3'b011:         s3_pp[1] <= s2_p2;
+            3'b100:         s3_pp[1] <= s2_m2;
+            3'b101, 3'b110: s3_pp[1] <= s2_m1;
+            default:        s3_pp[1] <= 10'sh0;
+        endcase
+        // Mux 2
+        case (s2_t2)
+            3'b001, 3'b010: s3_pp[2] <= s2_p1;
+            3'b011:         s3_pp[2] <= s2_p2;
+            3'b100:         s3_pp[2] <= s2_m2;
+            3'b101, 3'b110: s3_pp[2] <= s2_m1;
+            default:        s3_pp[2] <= 10'sh0;
+        endcase
+        // Mux 3
+        case (s2_t3)
+            3'b001, 3'b010: s3_pp[3] <= s2_p1;
+            3'b011:         s3_pp[3] <= s2_p2;
+            3'b100:         s3_pp[3] <= s2_m2;
+            3'b101, 3'b110: s3_pp[3] <= s2_m1;
+            default:        s3_pp[3] <= 10'sh0;
+        endcase
+        // Mux 4
+        case (s2_t4)
+            3'b001, 3'b010: s3_pp[4] <= s2_p1;
+            3'b011:         s3_pp[4] <= s2_p2;
+            3'b100:         s3_pp[4] <= s2_m2;
+            3'b101, 3'b110: s3_pp[4] <= s2_m1;
+            default:        s3_pp[4] <= 10'sh0;
+        endcase
+
+        // --- S4: Extensão Manual + Soma (20 bits) ---
+        s4_v     <= s3_v;
+        // Extensão de sinal manual + Shift via concatenação
+        s4_sum01 <= { {10{s3_pp[0][9]}}, s3_pp[0] } +
+                    { {8{s3_pp[1][9]}}, s3_pp[1], 2'b00 };
+
+        s4_sum23 <= { {6{s3_pp[2][9]}}, s3_pp[2], 4'b0000 } +
+                    { {4{s3_pp[3][9]}}, s3_pp[3], 6'b000000 };
+
+        s4_pp4   <= { {2{s3_pp[4][9]}}, s3_pp[4], 8'b00000000 };
+
+        s4_corr  <= (s3_neg[0]) + (s3_neg[1] << 2) + (s3_neg[2] << 4) +
+                    (s3_neg[3] << 6) + (s3_neg[4] << 8);
+
+        // --- S5: Soma Nível 2 ---
+        s5_v    <= s4_v;
+        s5_sumA <= s4_sum01 + s4_sum23;
+        s5_sumB <= s4_pp4 + s4_corr;
+
+        // --- S6: Saída ---
+        v_out <= s5_v;
+        p     <= (s5_sumA + s5_sumB);
     end
-    endfunction
-
-    // ------------------------------------------------------------------------
-    // ESTÁGIO 1: Registro de Entrada e Extensão de Sinal
-    // ------------------------------------------------------------------------
-    reg signed [OP_W-1:0] s1_a_reg, s1_b_reg;
-    reg s1_valid;
-    reg signed [OP_W-1:0] w_a_ext, w_b_ext;
-
-    always @* begin
-        // Extensão Inteligente:
-        // Se Signed: Repete o bit de sinal.
-        // Se Unsigned: Preenche com zeros à esquerda.
-        if (sign_mode[1]) w_a_ext = { {2{multiplicand[WIDTH-1]}}, multiplicand };
-        else              w_a_ext = { 2'b00, multiplicand };
-
-        if (sign_mode[0]) w_b_ext = { {2{multiplier[WIDTH-1]}}, multiplier };
-        else              w_b_ext = { 2'b00, multiplier };
-    end
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin s1_a_reg <= 0; s1_b_reg <= 0; s1_valid <= 0; end
-        else begin
-            s1_valid <= valid_in;
-            s1_a_reg <= w_a_ext;
-            s1_b_reg <= w_b_ext;
-        end
-    end
-
-    // ------------------------------------------------------------------------
-    // ESTÁGIO 2: Pré-Cálculo Otimizado (Zero Carry Delay)
-    // ------------------------------------------------------------------------
-    // Em vez de calcular -A (que exige somar 1 e propagar carry),
-    // calculamos apenas ~A (inversão bit a bit). O "+1" é somado lá no final.
-    
-    // Duplicação de registros (LO/HI) para reduzir Fan-Out e ajudar o Roteador
-    reg signed [OP_W-1:0] s2_a_lo, s2_inv_a_lo, s2_2a_lo, s2_inv_2a_lo;
-    reg signed [OP_W-1:0] s2_a_hi, s2_inv_a_hi, s2_2a_hi, s2_inv_2a_hi;
-
-    // Sinais de Controle "One-Hot" (Decodificados agora para simplificar o próximo estágio)
-    reg [3:0] s2_sel_p1; // Select +1A
-    reg [3:0] s2_sel_m1; // Select ~1A
-    reg [3:0] s2_sel_p2; // Select +2A
-    reg [3:0] s2_sel_m2; // Select ~2A
-    
-    // Bits de Correção: Se a operação for negativa, precisamos somar +1 depois
-    reg [4:0] s2_neg_bit; 
-
-    // Sinais dedicados ao Produto Parcial 4 (PP4)
-    reg s2_sel_p1_pp4, s2_sel_m1_pp4, s2_sel_p2_pp4, s2_sel_m2_pp4;
-
-    reg s2_valid;
-    wire [10:0] w_b_vec = {s1_b_reg, 1'b0}; // Vetor B com zero implícito
-    reg [2:0] w_c0, w_c1, w_c2, w_c3, w_c4;
-
-    always @* begin
-        // Booth Encoding (Combinacional rápido)
-        w_c0 = f_booth_enc(w_b_vec[2:0]);
-        w_c1 = f_booth_enc(w_b_vec[4:2]);
-        w_c2 = f_booth_enc(w_b_vec[6:4]);
-        w_c3 = f_booth_enc(w_b_vec[8:6]);
-        w_c4 = f_booth_enc(w_b_vec[10:8]);
-    end
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            s2_a_lo <= 0; s2_inv_a_lo <= 0; s2_2a_lo <= 0; s2_inv_2a_lo <= 0;
-            s2_a_hi <= 0; s2_inv_a_hi <= 0; s2_2a_hi <= 0; s2_inv_2a_hi <= 0;
-            s2_sel_p1 <= 0; s2_sel_m1 <= 0; s2_sel_p2 <= 0; s2_sel_m2 <= 0;
-            s2_neg_bit <= 0;
-            s2_sel_p1_pp4 <= 0; s2_sel_m1_pp4 <= 0; s2_sel_p2_pp4 <= 0; s2_sel_m2_pp4 <= 0;
-            s2_valid <= 0;
-        end else begin
-            s2_valid <= s1_valid;
-
-            // Operações Bitwise (Muito rápidas, sem carry)
-            s2_a_lo <= s1_a_reg; s2_inv_a_lo <= ~s1_a_reg; s2_2a_lo <= s1_a_reg << 1; s2_inv_2a_lo <= ~(s1_a_reg << 1);
-            s2_a_hi <= s1_a_reg; s2_inv_a_hi <= ~s1_a_reg; s2_2a_hi <= s1_a_reg << 1; s2_inv_2a_hi <= ~(s1_a_reg << 1);
-
-            // Geração One-Hot e Bit de Correção
-            // Grupo 0
-            s2_sel_p1[0] <= (w_c0 == 3'b001); s2_sel_p2[0] <= (w_c0 == 3'b011);
-            s2_sel_m1[0] <= (w_c0 == 3'b010); s2_sel_m2[0] <= (w_c0 == 3'b100);
-            s2_neg_bit[0] <= (w_c0 == 3'b010) || (w_c0 == 3'b100);
-
-            // Grupo 1
-            s2_sel_p1[1] <= (w_c1 == 3'b001); s2_sel_p2[1] <= (w_c1 == 3'b011);
-            s2_sel_m1[1] <= (w_c1 == 3'b010); s2_sel_m2[1] <= (w_c1 == 3'b100);
-            s2_neg_bit[1] <= (w_c1 == 3'b010) || (w_c1 == 3'b100);
-
-            // Grupo 2
-            s2_sel_p1[2] <= (w_c2 == 3'b001); s2_sel_p2[2] <= (w_c2 == 3'b011);
-            s2_sel_m1[2] <= (w_c2 == 3'b010); s2_sel_m2[2] <= (w_c2 == 3'b100);
-            s2_neg_bit[2] <= (w_c2 == 3'b010) || (w_c2 == 3'b100);
-
-            // Grupo 3
-            s2_sel_p1[3] <= (w_c3 == 3'b001); s2_sel_p2[3] <= (w_c3 == 3'b011);
-            s2_sel_m1[3] <= (w_c3 == 3'b010); s2_sel_m2[3] <= (w_c3 == 3'b100);
-            s2_neg_bit[3] <= (w_c3 == 3'b010) || (w_c3 == 3'b100);
-
-            // Grupo 4
-            s2_sel_p1_pp4 <= (w_c4 == 3'b001); s2_sel_p2_pp4 <= (w_c4 == 3'b011);
-            s2_sel_m1_pp4 <= (w_c4 == 3'b010); s2_sel_m2_pp4 <= (w_c4 == 3'b100);
-            s2_neg_bit[4] <= (w_c4 == 3'b010) || (w_c4 == 3'b100);
-        end
-    end
-
-    // ------------------------------------------------------------------------
-    // ESTÁGIO 3: Seleção (AND-OR) e Montagem do Vetor de Correção
-    // ------------------------------------------------------------------------
-    reg signed [SUM_W-1:0] s3_pp0, s3_pp1, s3_pp2, s3_pp3, s3_pp4;
-    reg [SUM_W-1:0] s3_correction; 
-    reg s3_valid;
-    
-    reg signed [OP_W-1:0] w_pp0, w_pp1, w_pp2, w_pp3, w_pp4;
-
-    always @* begin
-        // Seleção via Lógica Booleana (Muito eficiente em LUTs de 4 entradas)
-        // Grupo LO -> PP0, PP1
-        w_pp0 = (s2_a_lo & {OP_W{s2_sel_p1[0]}}) | (s2_inv_a_lo & {OP_W{s2_sel_m1[0]}}) | 
-                (s2_2a_lo & {OP_W{s2_sel_p2[0]}}) | (s2_inv_2a_lo & {OP_W{s2_sel_m2[0]}});
-                
-        w_pp1 = (s2_a_lo & {OP_W{s2_sel_p1[1]}}) | (s2_inv_a_lo & {OP_W{s2_sel_m1[1]}}) | 
-                (s2_2a_lo & {OP_W{s2_sel_p2[1]}}) | (s2_inv_2a_lo & {OP_W{s2_sel_m2[1]}});
-
-        // Grupo HI -> PP2, PP3, PP4
-        w_pp2 = (s2_a_hi & {OP_W{s2_sel_p1[2]}}) | (s2_inv_a_hi & {OP_W{s2_sel_m1[2]}}) | 
-                (s2_2a_hi & {OP_W{s2_sel_p2[2]}}) | (s2_inv_2a_hi & {OP_W{s2_sel_m2[2]}});
-                
-        w_pp3 = (s2_a_hi & {OP_W{s2_sel_p1[3]}}) | (s2_inv_a_hi & {OP_W{s2_sel_m1[3]}}) | 
-                (s2_2a_hi & {OP_W{s2_sel_p2[3]}}) | (s2_inv_2a_hi & {OP_W{s2_sel_m2[3]}});
-                
-        w_pp4 = (s2_a_hi & {OP_W{s2_sel_p1_pp4}})| (s2_inv_a_hi & {OP_W{s2_sel_m1_pp4}})| 
-                (s2_2a_hi & {OP_W{s2_sel_p2_pp4}})| (s2_inv_2a_hi & {OP_W{s2_sel_m2_pp4}});
-    end
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            s3_pp0 <= 0; s3_pp1 <= 0; s3_pp2 <= 0; s3_pp3 <= 0; s3_pp4 <= 0; 
-            s3_correction <= 0; s3_valid <= 0;
-        end else begin
-            s3_valid <= s2_valid;
-            
-            // Hardwired Shift: Apenas "fios", custo zero de lógica
-            s3_pp0 <= w_pp0;
-            s3_pp1 <= w_pp1 <<< 2;
-            s3_pp2 <= w_pp2 <<< 4;
-            s3_pp3 <= w_pp3 <<< 6;
-            s3_pp4 <= w_pp4 <<< 8;
-
-            // Vetor de Correção:
-            // Consolida todos os bits "+1" em um único número para ser somado depois.
-            // Os índices [0, 2, 4, 6, 8] correspondem ao LSB de cada PP deslocado.
-            s3_correction <= 0; 
-            s3_correction[0] <= s2_neg_bit[0]; 
-            s3_correction[2] <= s2_neg_bit[1]; 
-            s3_correction[4] <= s2_neg_bit[2]; 
-            s3_correction[6] <= s2_neg_bit[3]; 
-            s3_correction[8] <= s2_neg_bit[4]; 
-        end
-    end
-
-    // ------------------------------------------------------------------------
-    // ESTÁGIO 4: Árvore de Soma - Nível 1
-    // ------------------------------------------------------------------------
-    reg signed [SUM_W-1:0] s4_sumAB, s4_sumCD, s4_sumEF;
-    reg s4_valid;
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            s4_sumAB <= 0; s4_sumCD <= 0; s4_sumEF <= 0; s4_valid <= 0;
-        end else begin
-            s4_valid <= s3_valid;
-            // Somando pares. 
-            // O vetor de correção entra aqui como o 6º operando, "de carona" com PP4.
-            s4_sumAB <= s3_pp0 + s3_pp1;
-            s4_sumCD <= s3_pp2 + s3_pp3;
-            s4_sumEF <= s3_pp4 + s3_correction; 
-        end
-    end
-
-    // ------------------------------------------------------------------------
-    // ESTÁGIO 5: Árvore de Soma - Nível 2
-    // ------------------------------------------------------------------------
-    reg signed [SUM_W-1:0] s5_total_AD, s5_pass_EF;
-    reg s5_valid;
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            s5_total_AD <= 0; s5_pass_EF <= 0; s5_valid <= 0;
-        end else begin
-            s5_valid <= s4_valid;
-            s5_total_AD <= s4_sumAB + s4_sumCD;
-            s5_pass_EF  <= s4_sumEF;
-        end
-    end
-
-    // ------------------------------------------------------------------------
-    // ESTÁGIO 6: Soma Final (Caminho Crítico)
-    // ------------------------------------------------------------------------
-    reg signed [SUM_W-1:0] s6_final;
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            product   <= 0;
-            valid_out <= 0;
-        end else begin
-            valid_out <= s5_valid;
-            if (s5_valid) begin
-                // Soma de 24 bits usando a Carry Chain.
-                // Como não há lógica combinacional complexa antes deste adder neste ciclo,
-                // o sinal tem o período inteiro do clock para se propagar.
-                s6_final = s5_total_AD + s5_pass_EF;
-                product  <= s6_final[(2*WIDTH)-1:0];
-            end
-        end
-    end
-
 endmodule
 `default_nettype wire
