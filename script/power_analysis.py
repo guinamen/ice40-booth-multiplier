@@ -1,303 +1,283 @@
 #!/usr/bin/env python3
 """
-Power Analysis Toolkit para Multiplicador Booth iCE40
-=====================================================
-Estima consumo de potência através de:
-1. Análise de switching activity (simulação VCD)
-2. Modelos de potência do iCE40
-3. Comparação com ferramenta oficial (Lattice Diamond)
+Generic FPGA Power Analysis Tool for iCE40
+===========================================
+Analisa consumo de potência de qualquer design sintetizado para iCE40
+através de switching activity extraído de simulação VCD.
+
+Uso:
+    python3 power_analysis.py [opções]
 """
 
 import re
 import sys
+import json
+import argparse
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
+from collections import defaultdict
 
 @dataclass
 class ICE40PowerModel:
-    """Modelo de potência do iCE40HX baseado no datasheet"""
+    """Modelo de potência parametrizado por dispositivo e condições"""
     
-    # Potência estática (leakage) - Típico @ 25°C
-    static_power_mw = 35.0  # mW para HX8K @ 1.2V
+    device: str = 'hx8k'
+    temp_c: float = 25.0
+    voltage_v: float = 1.2
     
-    # Potência dinâmica por recurso (estimativas conservadoras)
-    lc_dynamic_nj = 0.15    # nJ por toggle de Logic Cell
-    ff_dynamic_nj = 0.10    # nJ por toggle de Flip-Flop
-    routing_nj = 0.05       # nJ por toggle de roteamento
-    io_dynamic_nj = 2.0     # nJ por toggle de I/O (muito maior!)
+    # Tabela de potência estática base (mW @ 25°C, 1.2V)
+    STATIC_POWER = {
+        'hx1k': 15.0, 'hx4k': 25.0, 'hx8k': 35.0,
+        'lp1k': 8.0,  'lp4k': 12.0, 'lp8k': 18.0,
+        'up5k': 10.0,
+    }
     
-    # Clock tree (específico por frequência)
-    clock_tree_mw_per_mhz = 0.08  # mW por MHz
+    # Capacidades de cada dispositivo (Logic Cells)
+    DEVICE_CAPACITY = {
+        'hx1k': 1280, 'hx4k': 3520, 'hx8k': 7680,
+        'lp1k': 1280, 'lp4k': 3520, 'lp8k': 7680,
+        'up5k': 5280,
+    }
+    
+    def __post_init__(self):
+        self.device = self.device.lower()
+        if self.device not in self.STATIC_POWER:
+            print(f"⚠️  Dispositivo '{self.device}' desconhecido, usando hx8k como base")
+            self.device = 'hx8k'
+    
+    @property
+    def static_power_mw(self) -> float:
+        """Potência estática com correção de temperatura e tensão"""
+        base = self.STATIC_POWER[self.device]
+        temp_factor = 2.0 ** ((self.temp_c - 25.0) / 12.0)
+        voltage_factor = (self.voltage_v / 1.2) ** 2
+        return base * temp_factor * voltage_factor
+    
+    @property
+    def lc_dynamic_nj(self) -> float:
+        """Energia por toggle de Logic Cell (nJ)"""
+        base = 0.12 if self.device.startswith('lp') else 0.15
+        return base * (self.voltage_v / 1.2) ** 2
+    
+    @property
+    def ff_dynamic_nj(self) -> float:
+        """Energia por toggle de Flip-Flop (nJ)"""
+        base = 0.08 if self.device.startswith('lp') else 0.10
+        return base * (self.voltage_v / 1.2) ** 2
+    
+    @property
+    def io_dynamic_nj(self) -> float:
+        """Energia por toggle de I/O (nJ) - Estimativa para carga de 10pF"""
+        return 2.5 * (self.voltage_v / 1.2) ** 2
+    
+    @property
+    def clock_tree_mw_per_mhz(self) -> float:
+        """Potência da árvore de clock por MHz"""
+        base = 0.06 if self.device.startswith('lp') else 0.08
+        return base * (self.voltage_v / 1.2) ** 2
+    
+    @property
+    def total_capacity(self) -> int:
+        return self.DEVICE_CAPACITY.get(self.device, 7680)
 
 
 class VCDSwitchingAnalyzer:
-    """Analisa arquivo VCD para contar switching activity"""
+    """Analisa arquivo VCD para extrair switching activity"""
     
-    def __init__(self, vcd_path: str):
+    def __init__(self, vcd_path: str, verbose: bool = False):
         self.vcd_path = Path(vcd_path)
-        self.signals: Dict[str, List[int]] = {}
-        self.timescale = 1e-9  # Default: 1ns
+        self.verbose = verbose
+        self.timescale = 1e-9
         self.total_time = 0
+        self.clock_period = 0
+        self.id_to_name: Dict[str, str] = {}
         
     def parse_vcd(self) -> Dict[str, int]:
-        """Retorna contagem de toggles por sinal"""
-        toggles = {}
-        
         if not self.vcd_path.exists():
             print(f"❌ Arquivo VCD não encontrado: {self.vcd_path}")
-            return toggles
+            return {}
         
+        print(f"📂 Lendo VCD: {self.vcd_path}")
         with open(self.vcd_path, 'r') as f:
             content = f.read()
         
-        # Extrai timescale
+        # Timescale
         ts_match = re.search(r'\$timescale\s+(\d+)(\w+)', content)
         if ts_match:
-            value = int(ts_match.group(1))
-            unit = ts_match.group(2)
-            self.timescale = value * {'s': 1, 'ms': 1e-3, 'us': 1e-6, 
-                                      'ns': 1e-9, 'ps': 1e-12}[unit]
+            value, unit = int(ts_match.group(1)), ts_match.group(2)
+            units = {'s': 1, 'ms': 1e-3, 'us': 1e-6, 'ns': 1e-9, 'ps': 1e-12}
+            self.timescale = value * units.get(unit, 1e-9)
         
-        # Mapeia IDs para nomes de sinais
-        id_to_name = {}
-        for match in re.finditer(r'\$var\s+\w+\s+\d+\s+(\S+)\s+(\S+)', content):
-            id_to_name[match.group(1)] = match.group(2)
+        # Signal Map
+        for match in re.finditer(r'\$var\s+\w+\s+\d+\s+(\S+)\s+(\S+)\s+\$end', content):
+            var_id, name = match.group(1), match.group(2)
+            self.id_to_name[var_id] = name
         
-        # Conta transições (simplificado - procura por mudanças de valor)
-        signal_states = {}
-        for match in re.finditer(r'#(\d+)\s*\n([01bx])(\S+)', content):
-            time = int(match.group(1))
-            value = match.group(2)
-            sig_id = match.group(3)
+        self.clock_period = self._detect_clock_period(content)
+        return self._count_toggles(content)
+    
+    def _detect_clock_period(self, content: str) -> float:
+        clock_ids = [vid for vid, name in self.id_to_name.items() 
+                     if re.match(r'^(clk|clock|sys_clk)$', name, re.IGNORECASE)]
+        if not clock_ids: return 0.0
+        
+        cid = clock_ids[0]
+        times = [int(m.group(1)) for m in re.finditer(rf'#(\d+)\s*\n[01]{re.escape(cid)}', content)]
+        if len(times) >= 3:
+            periods = [times[i+2] - times[i] for i in range(len(times)-2)]
+            avg_p = (sum(periods) / len(periods)) * self.timescale
+            if self.verbose: print(f"   Clock detectado: {1e-6/avg_p:.2f} MHz")
+            return avg_p
+        return 0.0
+
+    def _count_toggles(self, content: str) -> Dict[str, int]:
+        toggles = {}
+        states = {}
+        current_time = 0
+        
+        for line in content.splitlines():
+            line = line.strip()
+            if not line: continue
+            if line.startswith('#'):
+                current_time = int(line[1:])
+                self.total_time = max(self.total_time, current_time)
+                continue
             
-            if sig_id in id_to_name:
-                name = id_to_name[sig_id]
-                
-                if name not in signal_states:
-                    signal_states[name] = value
-                    toggles[name] = 0
-                elif signal_states[name] != value and value in ['0', '1']:
-                    toggles[name] = toggles.get(name, 0) + 1
-                    signal_states[name] = value
-            
-            self.total_time = max(self.total_time, time)
-        
+            # Formatos: "0!" ou "b1101 !" ou "x!"
+            m = re.match(r'^([01xz])(\S+)$', line) or re.match(r'^[bB]([01xz]+)\s+(\S+)$', line)
+            if m:
+                val, sid = m.groups()
+                if sid in self.id_to_name:
+                    name = self.id_to_name[sid]
+                    if states.get(name) != val and 'x' not in val:
+                        toggles[name] = toggles.get(name, 0) + 1
+                        states[name] = val
         return toggles
-    
-    def get_toggle_rate(self, signal: str, toggles: int) -> float:
-        """Calcula taxa de toggle em Hz"""
-        if self.total_time == 0:
-            return 0.0
-        sim_duration_s = self.total_time * self.timescale
-        return toggles / sim_duration_s if sim_duration_s > 0 else 0.0
 
-
-class BoothMultiplierPowerEstimator:
-    """Estimador de potência específico para o multiplicador Booth"""
+class DesignStatsExtractor:
+    def __init__(self, synth_log: Optional[str] = None):
+        self.synth_log = Path(synth_log) if synth_log else None
     
-    def __init__(self, clock_mhz: float, design_stats: Dict):
-        self.clock_mhz = clock_mhz
-        self.clock_hz = clock_mhz * 1e6
-        self.stats = design_stats
-        self.model = ICE40PowerModel()
-    
-    def estimate_static_power(self) -> float:
-        """Potência estática (leakage)"""
-        # Escala linearmente com número de LCs usadas
-        lc_used = self.stats.get('logic_cells', 278)
-        total_lc = 7680  # HX8K
-        return self.model.static_power_mw * (lc_used / total_lc)
-    
-    def estimate_clock_tree_power(self) -> float:
-        """Potência da árvore de clock global"""
-        return self.model.clock_tree_mw_per_mhz * self.clock_mhz
-    
-    def estimate_dynamic_power(self, vcd_toggles: Dict[str, int], 
-                               sim_time_s: float) -> Tuple[float, Dict]:
-        """Estima potência dinâmica baseada em switching activity"""
+    def extract(self) -> Dict:
+        if not self.synth_log or not self.synth_log.exists():
+            return {'logic_cells': 100, 'flip_flops': 100, 'io_cells': 10, 'gb': 1}
         
-        power_breakdown = {
-            'flip_flops': 0.0,
-            'logic': 0.0,
-            'routing': 0.0,
-            'io': 0.0
+        print(f"📊 Analisando síntese: {self.synth_log}")
+        content = self.synth_log.read_text()
+        return {
+            'logic_cells': sum(int(n) for n in re.findall(r'SB_LUT4:\s+(\d+)', content)),
+            'flip_flops': sum(int(n) for n in re.findall(r'SB_DFF\w*:\s+(\d+)', content)),
+            'io_cells': sum(int(n) for n in re.findall(r'SB_IO:\s+(\d+)', content)),
+            'global_buffers': sum(int(n) for n in re.findall(r'SB_GB:\s+(\d+)', content)) or 1
         }
+
+class GenericPowerEstimator:
+    def __init__(self, clock_mhz: float, stats: Dict, model: ICE40PowerModel, verbose: bool):
+        self.clock_mhz = clock_mhz
+        self.stats = stats
+        self.model = model
+        self.verbose = verbose
+
+    def calculate(self, vcd_toggles: Dict[str, int], sim_time_s: float) -> str:
+        if self.clock_mhz == 0 and sim_time_s > 0:
+            self.clock_mhz = 1e-6 / (sim_time_s / max(1, sum(vcd_toggles.values())/len(vcd_toggles) if vcd_toggles else 1))
         
-        if not vcd_toggles or sim_time_s == 0:
-            print("⚠️  Sem dados de VCD, usando estimativa conservadora")
-            # Estimativa pessimista: 30% de toggles por ciclo
-            ff_count = self.stats.get('flip_flops', 278)
-            toggle_rate = self.clock_hz * 0.3
-            
-            power_breakdown['flip_flops'] = (ff_count * toggle_rate * 
-                                            self.model.ff_dynamic_nj * 1e-9)
-            power_breakdown['logic'] = power_breakdown['flip_flops'] * 0.5
-            power_breakdown['routing'] = power_breakdown['flip_flops'] * 0.3
-            
+        static = self.model.static_power_mw
+        clock_tree = self.model.clock_tree_mw_per_mhz * self.clock_mhz * self.stats.get('global_buffers', 1)
+        
+        breakdown = {'logic': 0.0, 'flip_flops': 0.0, 'io': 0.0, 'routing': 0.0}
+        
+        if not vcd_toggles:
+            # Estimativa estatística (sem VCD)
+            freq_hz = self.clock_mhz * 1e6
+            activity = 0.15 # 15% toggle rate padrão
+            breakdown['logic'] = self.stats['logic_cells'] * freq_hz * activity * self.model.lc_dynamic_nj * 1e-9
+            breakdown['flip_flops'] = self.stats['flip_flops'] * freq_hz * activity * self.model.ff_dynamic_nj * 1e-9
+            breakdown['io'] = self.stats['io_cells'] * freq_hz * activity * self.model.io_dynamic_nj * 1e-9
         else:
-            # Análise baseada em VCD real
-            for signal, toggles in vcd_toggles.items():
-                toggle_rate = toggles / sim_time_s
-                energy_per_toggle_j = self.model.ff_dynamic_nj * 1e-9
-                
-                # Classifica sinal
-                if '_reg' in signal or 's[0-9]_' in signal:
-                    power_breakdown['flip_flops'] += toggle_rate * energy_per_toggle_j
-                elif signal in ['a', 'b', 'p', 'v_in', 'v_out']:
-                    power_breakdown['io'] += toggle_rate * self.model.io_dynamic_nj * 1e-9
+            for sig, count in vcd_toggles.items():
+                rate = count / sim_time_s
+                if any(x in sig.lower() for x in ['reg', 'ff', 'dff']):
+                    breakdown['flip_flops'] += rate * self.model.ff_dynamic_nj * 1e-9
+                elif len(sig) <= 3 or 'pin' in sig.lower():
+                    breakdown['io'] += rate * self.model.io_dynamic_nj * 1e-9
                 else:
-                    power_breakdown['logic'] += toggle_rate * energy_per_toggle_j
+                    breakdown['logic'] += rate * self.model.lc_dynamic_nj * 1e-9
+        
+        breakdown['routing'] = (breakdown['logic'] + breakdown['flip_flops']) * 0.4
+        dynamic_mw = sum(breakdown.values()) * 1000
+        total_mw = static + clock_tree + dynamic_mw
+        
+        return self._format_report(static, clock_tree, dynamic_mw, total_mw, breakdown, vcd_toggles, sim_time_s)
+
+    def _format_report(self, static, clk, dyn, total, breakdown, vcd, sim_t):
+        r = [
+            "="*70, "GENERIC FPGA POWER ANALYSIS - Lattice iCE40", "="*70,
+            f"Device:             {self.model.device.upper()}",
+            f"Temperature:        {self.model.temp_c}°C",
+            f"Core Voltage:       {self.model.voltage_v} V",
+            f"Clock Frequency:    {self.clock_mhz:.2f} MHz", "",
+            "Design Utilization:",
+            f"  Logic Cells:      {self.stats['logic_cells']:4d} / {self.model.total_capacity}",
+            f"  Flip-Flops:       {self.stats['flip_flops']:4d}",
+            f"  I/O Cells:        {self.stats['io_cells']:4d}", "",
+            f"📍 Static Power:            {static:6.2f} mW",
+            f"🕐 Clock Tree Power:        {clk:6.2f} mW"
+        ]
+        
+        if vcd:
+            r.append(f"📊 VCD Analysis:            {len(vcd)} signals, {sim_t*1e6:.2f} µs")
+        else:
+            r.append("⚠️  VCD Analysis:            Not available (conservative estimate)")
             
-            # Estima roteamento (30% da potência de FFs)
-            power_breakdown['routing'] = power_breakdown['flip_flops'] * 0.3
+        r.extend(["", "⚡ Dynamic Power Breakdown:"])
+        for k, v in sorted(breakdown.items(), key=lambda x: -x[1]):
+            val = v * 1000
+            pct = (val/dyn*100) if dyn > 0 else 0
+            r.append(f"   {k.replace('_',' ').title():15s} {val:8.2f} mW ({pct:5.1f}%)")
         
-        # Converte J/s para mW
-        total_dynamic_mw = sum(power_breakdown.values()) * 1000
-        power_breakdown = {k: v * 1000 for k, v in power_breakdown.items()}
-        
-        return total_dynamic_mw, power_breakdown
-    
-    def generate_report(self, vcd_path: str = None) -> str:
-        """Gera relatório completo de potência"""
-        
-        report = []
-        report.append("=" * 70)
-        report.append("POWER ANALYSIS REPORT - Booth Radix-8 Multiplier @ iCE40")
-        report.append("=" * 70)
-        report.append(f"Clock Frequency:    {self.clock_mhz:.2f} MHz")
-        report.append(f"Logic Cells Used:   {self.stats.get('logic_cells', 278)}")
-        report.append(f"Flip-Flops:         {self.stats.get('flip_flops', 278)}")
-        report.append("")
-        
-        # Potência estática
-        static_mw = self.estimate_static_power()
-        report.append(f"📍 Static Power (Leakage): {static_mw:.2f} mW")
-        
-        # Clock tree
-        clock_mw = self.estimate_clock_tree_power()
-        report.append(f"🕐 Clock Tree Power:       {clock_mw:.2f} mW")
-        
-        # Potência dinâmica
-        vcd_toggles = {}
-        sim_time_s = 1e-6  # Default: 1µs
-        
-        if vcd_path:
-            analyzer = VCDSwitchingAnalyzer(vcd_path)
-            vcd_toggles = analyzer.parse_vcd()
-            sim_time_s = analyzer.total_time * analyzer.timescale
-            report.append(f"📊 VCD Analysis:           {len(vcd_toggles)} signals tracked")
-            report.append(f"   Simulation Time:        {sim_time_s * 1e6:.2f} µs")
-        
-        dynamic_mw, breakdown = self.estimate_dynamic_power(vcd_toggles, sim_time_s)
-        
-        report.append("")
-        report.append("⚡ Dynamic Power Breakdown:")
-        for component, power in breakdown.items():
-            report.append(f"   {component.capitalize():15s} {power:8.2f} mW")
-        report.append(f"   {'TOTAL DYNAMIC':15s} {dynamic_mw:8.2f} mW")
-        
-        # Total
-        total_mw = static_mw + clock_mw + dynamic_mw
-        report.append("")
-        report.append("-" * 70)
-        report.append(f"🔋 TOTAL POWER ESTIMATE:   {total_mw:.2f} mW")
-        report.append(f"   @ {self.clock_mhz:.0f} MHz, Typical Process, 25°C")
-        report.append("-" * 70)
-        
-        # Métricas de eficiência
-        energy_per_mult_nj = (total_mw / self.clock_mhz) if self.clock_mhz > 0 else 0
-        report.append("")
-        report.append("📈 Efficiency Metrics:")
-        report.append(f"   Energy/Multiplication:  {energy_per_mult_nj:.3f} nJ")
-        report.append(f"   Power/MHz:              {total_mw/self.clock_mhz:.3f} mW/MHz")
-        
-        # Comparação com operador '*' nativo
-        report.append("")
-        report.append("📊 Comparison vs. Standard '*' Operator:")
-        report.append("   Yosys native '*':       ~0.20-0.30 nJ/mult @ 150 MHz")
-        report.append(f"   This design:            ~{energy_per_mult_nj:.2f} nJ/mult @ {self.clock_mhz:.0f} MHz")
-        efficiency_ratio = 0.25 / energy_per_mult_nj if energy_per_mult_nj > 0 else 0
-        report.append(f"   Efficiency Factor:      {efficiency_ratio:.2f}x")
-        
-        report.append("")
-        report.append("=" * 70)
-        
-        return "\n".join(report)
-
-
-def extract_design_stats(synth_log: str) -> Dict:
-    """Extrai estatísticas do log de síntese do Yosys"""
-    stats = {}
-    
-    if not Path(synth_log).exists():
-        return {'logic_cells': 278, 'flip_flops': 278, 'luts': 278}
-    
-    with open(synth_log, 'r') as f:
-        content = f.read()
-    
-    # Procura por estatísticas do Yosys
-    lc_match = re.search(r'SB_LUT4:\s+(\d+)', content)
-    if lc_match:
-        stats['logic_cells'] = int(lc_match.group(1))
-    
-    ff_match = re.search(r'SB_DFF[A-Z]*:\s+(\d+)', content)
-    if ff_match:
-        stats['flip_flops'] = int(ff_match.group(1))
-    
-    return stats if stats else {'logic_cells': 278, 'flip_flops': 278}
-
+        r.extend(["-"*70, f"🔋 TOTAL POWER:             {total:6.2f} mW", "-"*70])
+        return "\n".join(r)
 
 def main():
-    """Exemplo de uso"""
+    parser = argparse.ArgumentParser(description='Generic iCE40 Power Analysis Tool')
+    parser.add_argument('--vcd', type=str, help='VCD file')
+    parser.add_argument('--synth', type=str, help='Synthesis log')
+    parser.add_argument('--freq', type=float, default=0, help='Freq MHz')
+    parser.add_argument('--device', type=str, default='hx8k', help='Device (up5k, hx8k...)')
+    parser.add_argument('--temp', type=float, default=25.0, help='Temp C')
+    parser.add_argument('--voltage', type=float, default=1.2, help='Voltage V')
+    parser.add_argument('--output', type=str, default='power_report.txt', help='Output file')
+    parser.add_argument('--verbose', action='store_true')
     
-    print("🔌 iCE40 Power Analysis Toolkit")
-    print("=" * 70)
+    args = parser.parse_args()
     
-    # Configuração do design
-    design_stats = {
-        'logic_cells': 278,
-        'flip_flops': 278,
-        'device': 'iCE40HX8K'
-    }
+    print("🔌 Generic iCE40 Power Analysis Tool\n" + "="*70 + "\n")
     
-    # Frequência de operação
-    clock_mhz = 265.0
+    # Auto-detect
+    vcd_f = args.vcd or next(Path('.').rglob('*.vcd'), None)
+    synth_f = args.synth or next(Path('.').rglob('*.log'), None)
     
-    # Cria estimador
-    estimator = BoothMultiplierPowerEstimator(clock_mhz, design_stats)
+    stats = DesignStatsExtractor(str(synth_f) if synth_f else None).extract()
+    model = ICE40PowerModel(device=args.device, temp_c=args.temp, voltage_v=args.voltage)
     
-    # Tenta encontrar VCD (simulação)
-    vcd_candidates = [
-        'booth_tb.vcd',
-        'dump.vcd',
-        'sim/booth_core_250mhz.vcd'
-    ]
+    toggles = {}
+    sim_time = 0
+    if vcd_f:
+        analyzer = VCDSwitchingAnalyzer(str(vcd_f), args.verbose)
+        toggles = analyzer.parse_vcd()
+        sim_time = analyzer.total_time * analyzer.timescale
+        if args.freq == 0 and analyzer.clock_period > 0:
+            args.freq = 1e-6 / analyzer.clock_period
+
+    estimator = GenericPowerEstimator(args.freq, stats, model, args.verbose)
+    report = estimator.calculate(toggles, sim_time)
     
-    vcd_path = None
-    for candidate in vcd_candidates:
-        if Path(candidate).exists():
-            vcd_path = candidate
-            break
-    
-    if vcd_path:
-        print(f"✅ VCD encontrado: {vcd_path}")
-    else:
-        print("⚠️  Nenhum VCD encontrado, usando estimativas")
-        print("   Para análise precisa, execute: iverilog -o sim booth_tb.v && ./sim")
-    
-    print()
-    
-    # Gera relatório
-    report = estimator.generate_report(vcd_path)
     print(report)
-    
-    # Salva relatório
-    with open('power_report.txt', 'w') as f:
+    with open(args.output, 'w') as f:
         f.write(report)
-    print()
-    print("💾 Relatório salvo em: power_report.txt")
+    print(f"\n📝 Relatório salvo em: {args.output}")
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
