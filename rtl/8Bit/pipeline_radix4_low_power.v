@@ -12,25 +12,32 @@ module booth_core_250mhz (
 );
 
     //==========================================================================
-    // ESTÁGIO 1: Extensão de Operandos com Clock Gating
+    // ESTÁGIO 1: Extensão de Operandos
+    // - Propaga ZERO quando v_in = 0 (operand isolation)
+    // - Clock gating: só atualiza quando v_in = 1
     //==========================================================================
     reg signed [9:0]  s1_a;
     reg        [10:0] s1_b;
     reg               s1_v;
 
-    // Clock gating: apenas atualiza quando v_in = 1
     always @(posedge clk) begin
         s1_v <= v_in;
         
         if (v_in) begin
+            // Operação normal quando válido
             s1_a <= sm[1] ? $signed({{2{a[7]}}, a}) : $signed({2'b00, a});
             s1_b <= {(sm[0] ? {2{b[7]}} : 2'b00), b, 1'b0};
+        end else begin
+            // Propaga ZERO quando inválido
+            s1_a <= 10'sd0;
+            s1_b <= 11'd0;
         end
-        // Quando v_in=0, registros mantêm valor (sem toggle desnecessário)
     end
 
     //==========================================================================
-    // ESTÁGIO 2: Decodificação Booth com Gating
+    // ESTÁGIO 2: Decodificação Booth
+    // - Clock gating: só atualiza quando s1_v = 1
+    // - Zeros propagados automaticamente geram seletores = 0
     //==========================================================================
     reg signed [9:0]  s2_p1, s2_p2;
     reg [4:0]         s2_sel1x, s2_sel2x, s2_neg;
@@ -50,10 +57,13 @@ module booth_core_250mhz (
                 s2_neg[i]   <= s1_b[2*i+2];
             end
         end
+        // Quando s1_v=0, mantém valores anteriores (clock gating)
     end
 
     //==========================================================================
-    // ESTÁGIO 3: Produtos Parciais com Gating
+    // ESTÁGIO 3: Produtos Parciais
+    // - Clock gating: só atualiza quando s2_v = 1
+    // - Com zeros propagados, PPs serão zero automaticamente
     //==========================================================================
     reg [9:0] s3_pp0, s3_pp1, s3_pp2, s3_pp3;
     reg [7:0] s3_pp4;
@@ -74,7 +84,8 @@ module booth_core_250mhz (
     end
 
     //==========================================================================
-    // ESTÁGIO 4: Primeira Redução com Gating
+    // ESTÁGIO 4: Primeira Redução
+    // - Clock gating: só atualiza quando s3_v = 1
     //==========================================================================
     reg signed [15:0] s4_sum01;
     reg signed [15:0] s4_sum23;
@@ -99,7 +110,8 @@ module booth_core_250mhz (
     end
 
     //==========================================================================
-    // ESTÁGIO 5: Segunda Redução com Gating
+    // ESTÁGIO 5: Segunda Redução
+    // - Clock gating: só atualiza quando s4_v = 1
     //==========================================================================
     reg signed [15:0] s5_sum0123;
     reg signed [15:0] s5_pp4_corr;
@@ -118,7 +130,9 @@ module booth_core_250mhz (
     end
 
     //==========================================================================
-    // ESTÁGIO 6: Soma Final com Gating
+    // ESTÁGIO 6: Soma Final
+    // - Clock gating: só atualiza quando s5_v = 1
+    // - Resultado será ZERO quando pipeline vazio
     //==========================================================================
     always @(posedge clk) begin
         v_out <= s5_v;
