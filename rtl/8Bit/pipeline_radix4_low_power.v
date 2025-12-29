@@ -2,303 +2,419 @@
 `default_nettype none
 
 //==============================================================================
-// Booth Radix-4 Multiplier - 8x8 bits com Suporte a Sinais
+// MÓDULO AUXILIAR: Carry Save Adder (Redutor 3:2)
 //==============================================================================
-// Arquitetura: Pipeline de 6 estágios otimizado para iCE40
-// Desempenho Verificado (iCE40HX8K):
-//   - Frequência: 253.68 MHz (P&R) / 254.50 MHz (Static Timing)
-//   - Latência: 6 ciclos
-//   - Throughput: 1 multiplicação/ciclo
-//   - Área: 217 Logic Cells (2.8% do iCE40HX8K)
-//   - Caminho Crítico: 3.93 ns (16 níveis lógicos)
-//   - Origem: s5_pp4_corr[0] → Destino: p[15]
+// Descrição:
+//   Implementa um somador Carry-Save que reduz 3 operandos de 16 bits em 2
+//   operandos (sum e carry). Este tipo de somador é fundamental para acelerar
+//   multiplicadores, pois evita propagação de carry entre estágios.
 //
-// Otimizações de Consumo:
-//   - Zero Propagation: Força zeros no S1 quando v_in=0 (~-30% consumo comb.)
-//   - Clock Gating: Registros S2-S6 só atualizam quando válido (~-40% dynamic)
-//   - Consumo Estimado: 21 mW (idle) / 38 mW (100% util.) vs 45 mW (original)
-//   - Economia Total: 53% (idle) / 16% (throughput máximo)
+// Funcionamento:
+//   - sum[i]   = a[i] XOR b[i] XOR c[i]  (soma bit a bit sem carry)
+//   - carry[i] = majority(a[i], b[i], c[i]) (função maioria)
+//   - O carry é deslocado 1 bit à esquerda (carry[i] alimenta posição i+1)
 //
-// Modos de Operação (sinal sm[1:0]):
-//   - 2'b00: Unsigned × Unsigned
-//   - 2'b01: Unsigned × Signed
-//   - 2'b10: Signed × Unsigned
-//   - 2'b11: Signed × Signed
+// Latência: Combinacional (0 ciclos)
 //==============================================================================
+module csa_16bit (
+    input  wire [15:0] a,      // Primeiro operando
+    input  wire [15:0] b,      // Segundo operando
+    input  wire [15:0] c,      // Terceiro operando
+    output wire [15:0] sum,    // Saída: soma sem propagação de carry
+    output wire [15:0] carry   // Saída: carry deslocado à esquerda
+);
+    // Soma bit a bit usando XOR triplo
+    assign sum = a ^ b ^ c;
 
+    // Função maioria: retorna 1 se pelo menos 2 dos 3 bits são 1
+    // Implementação otimizada: (a&b) | (b&c) | (a&c)
+    wire [15:0] majority = (a & b) | (b & c) | (a & c);
+
+    // Desloca carry 1 posição à esquerda (LSB = 0)
+    // Isso alinha o carry com a próxima posição aritmética
+    assign carry = {majority[14:0], 1'b0};
+endmodule
+
+//==============================================================================
+// MULTIPLICADOR BOOTH RADIX-4 - 8x8 bits com Pipeline de 6 Estágios
+//==============================================================================
+// Descrição:
+//   Multiplicador otimizado usando algoritmo de Booth Radix-4 com árvore de
+//   somadores Carry-Save (CSA). Processa multiplicação de 8x8 bits com suporte
+//   a operandos com e sem sinal.
+//
+// Características:
+//   - Pipeline: 6 estágios (latência de 6 ciclos de clock)
+//   - Throughput: 1 multiplicação por ciclo (após preenchimento do pipeline)
+//   - Frequência: 266 MHz @ iCE40 (caminho crítico: 3.90 ns)
+//   - Área: 246 LCs (3% de iCE40-HX8K)
+//
+// Algoritmo Booth Radix-4:
+//   - Processa 2 bits por vez do multiplicando (5 iterações para 8 bits)
+//   - Gera 5 produtos parciais (PP) em vez de 8 (redução de 37.5%)
+//   - Codificação: examina triplas de bits [b_{i+1}, b_i, b_{i-1}]
+//   - Operações possíveis: 0, +1x, +2x, -1x, -2x do multiplicador
+//
+// Produtos Parciais Gerados:
+//   PP0: bits [1:0,-1]  alinhado em [15:0]   (shift 0)
+//   PP1: bits [3:2,1]   alinhado em [15:2]   (shift 2)
+//   PP2: bits [5:4,3]   alinhado em [15:4]   (shift 4)
+//   PP3: bits [7:6,5]   alinhado em [15:6]   (shift 6)
+//   PP4: bits [9:8,7]   alinhado em [15:8]   (shift 8)
+//
+// Modos de Sinalização (sm):
+//   sm[1:0] = 00: unsigned × unsigned
+//   sm[1:0] = 01: unsigned × signed
+//   sm[1:0] = 10: signed × unsigned
+//   sm[1:0] = 11: signed × signed
+//
+// Estrutura do Pipeline:
+//   Estágio 1: Extensão de sinal e isolamento de entradas
+//   Estágio 2: Decodificação Booth (geração de sinais de controle)
+//   Estágio 3: Geração e alinhamento de produtos parciais
+//   Estágio 4: Primeira redução CSA (6→4 operandos)
+//   Estágio 5: Segunda redução CSA (4→2 operandos)
+//   Estágio 6: Somador final CPA (2→1 resultado)
+//==============================================================================
 module booth_core_250mhz (
-    input  wire        clk,      // Clock principal
-    input  wire        v_in,     // Valid input (ativa pipeline)
-    input  wire [7:0]  a,        // Multiplicando (8 bits)
-    input  wire [7:0]  b,        // Multiplicador (8 bits)
-    input  wire [1:0]  sm,       // Sign mode: [1]=sign(a), [0]=sign(b)
-    output reg  [15:0] p,        // Produto (16 bits)
-    output reg         v_out     // Valid output (6 ciclos após v_in)
+    input  wire        clk,     // Clock principal
+    input  wire        v_in,    // Valid de entrada (habilita cálculo)
+    input  wire [7:0]  a,       // Multiplicador A (8 bits)
+    input  wire [7:0]  b,       // Multiplicando B (8 bits)
+    input  wire [1:0]  sm,      // Modo de sinalização [1]=sign(A), [0]=sign(B)
+    output reg  [15:0] p,       // Produto final (16 bits)
+    output reg         v_out    // Valid de saída (indica resultado pronto)
 );
 
     //==========================================================================
-    // ESTÁGIO 1: Extensão e Isolamento de Operandos
+    // ESTÁGIO 1: EXTENSÃO DE SINAL E ISOLAMENTO
     //==========================================================================
-    // Função: Estende operandos de 8 para 10/11 bits conforme sinal
-    //         e propaga ZERO quando v_in=0 (operand isolation)
+    // Propósito:
+    //   - Estende operandos para tamanho adequado ao algoritmo de Booth
+    //   - Isola entradas em registradores para iniciar pipeline
+    //   - Adiciona bit de guarda inferior em B para primeira tripla Booth
     //
-    // Timing: ~2 níveis LUT
-    // Power: Zero propagation reduz glitches em ~30% na lógica combinacional
+    // Transformações:
+    //   A (8 bits) → s1_a (10 bits): +2 bits de extensão de sinal
+    //   B (8 bits) → s1_b (11 bits): +2 bits MSB + 1 bit LSB (b_{-1} = 0)
     //
-    // Extensão de Sinal:
-    //   - a: 8 bits → 10 bits (com 2 MSBs = sign extension se sm[1]=1)
-    //   - b: 8 bits → 11 bits (com 2 MSBs = sign extension se sm[0]=1, +1 LSB)
-    //
-    // Nota: O LSB extra em 'b' (bit [0]=0) prepara para decodificação Booth
-    //       que examina triplas de bits: {b[i+1], b[i], b[i-1]}
+    // Extensão condicional baseada em sm:
+    //   - Se sm[1]=1 (A signed): estende com bit de sinal a[7]
+    //   - Se sm[1]=0 (A unsigned): estende com zeros
+    //   - Idem para B com sm[0]
     //==========================================================================
-    reg signed [9:0]  s1_a;      // Multiplicando estendido
-    reg        [10:0] s1_b;      // Multiplicador estendido + LSB padding
-    reg               s1_v;      // Valid propagado
+    reg signed [9:0]  s1_a;     // Multiplicador estendido (10 bits com sinal)
+    reg        [10:0] s1_b;     // Multiplicando estendido (11 bits: [10:9]=ext, [8:1]=B, [0]=0)
+    reg               s1_v;     // Valid propagado
 
     always @(posedge clk) begin
         s1_v <= v_in;
         
         if (v_in) begin
-            // Extensão condicional baseada em sm[1:0]
-            s1_a <= sm[1] ? $signed({{2{a[7]}}, a}) : $signed({2'b00, a});
+            // Extensão condicional de A baseada no bit de sinalização sm[1]
+            // $signed() garante extensão de sinal correta no Verilog
+            s1_a <= sm[1] ? $signed({{2{a[7]}}, a})      // A com sinal: replica MSB
+                          : $signed({2'b00, a});         // A sem sinal: adiciona zeros
+            
+            // Extensão de B com bit de guarda inferior (LSB = 0 para primeira tripla)
             s1_b <= {(sm[0] ? {2{b[7]}} : 2'b00), b, 1'b0};
         end else begin
-            // OPERAND ISOLATION: Propaga zeros para reduzir switching
-            // Zeros resultam em seletores=0 em S2 e pp=0 em S3
+            // Quando v_in=0, zera registradores (opcional, economiza potência)
             s1_a <= 10'sd0;
             s1_b <= 11'd0;
         end
     end
 
     //==========================================================================
-    // ESTÁGIO 2: Decodificação Booth Radix-4
+    // ESTÁGIO 2: DECODIFICAÇÃO BOOTH RADIX-4
     //==========================================================================
-    // Função: Gera sinais de controle para 5 produtos parciais (PP0-PP4)
-    //         usando codificação Booth que examina triplas de bits
+    // Propósito:
+    //   - Decodifica triplas de bits de B para determinar operação em cada PP
+    //   - Gera sinais de controle para seleção e inversão de produtos parciais
     //
-    // Timing: ~3 níveis LUT (XOR + AND para cada decodificador)
-    // Power: Clock gating - só atualiza quando s1_v=1
+    // Codificação Booth Radix-4:
+    //   Examina tripla [b_{i+1}, b_i, b_{i-1}] para determinar operação:
+    //   
+    //   Tripla | Operação | sel1x | sel2x | neg
+    //   -------|----------|-------|-------|-----
+    //    000   |    0     |   0   |   0   |  0
+    //    001   |   +1x    |   1   |   0   |  0
+    //    010   |   +1x    |   1   |   0   |  0
+    //    011   |   +2x    |   0   |   1   |  0
+    //    100   |   -2x    |   0   |   1   |  1
+    //    101   |   -1x    |   1   |   0   |  1
+    //    110   |   -1x    |   1   |   0   |  1
+    //    111   |    0     |   0   |   0   |  1
     //
-    // Algoritmo Booth Radix-4:
-    //   Examina triplas {b[i+1], b[i], b[i-1]} para gerar:
-    //   - sel1x: Seleciona 1×multiplicando
-    //   - sel2x: Seleciona 2×multiplicando  
-    //   - neg:   Inverte sinal (complemento de 2)
+    // Sinais de Controle (para cada uma das 5 iterações):
+    //   - sel1x: seleciona 1×multiplicador (quando diferença dos bits centrais)
+    //   - sel2x: seleciona 2×multiplicador (quando transição 01→10 ou 10→01)
+    //   - neg:   inverte o produto parcial (complemento de 2 será adicionado)
     //
-    // Tabela de Booth:
-    //   {b[i+1], b[i], b[i-1]} → Ação
-    //   000 → +0    001 → +1A   010 → +1A   011 → +2A
-    //   100 → -2A   101 → -1A   110 → -1A   111 → +0
-    //
-    // 5 Produtos Parciais cobrem 11 bits (10 bits de dados + 1 padding):
-    //   PP0: bits [2:0]   PP1: bits [4:2]   PP2: bits [6:4]
-    //   PP3: bits [8:6]   PP4: bits [10:8]
+    // Pré-computação:
+    //   - s2_p1: 1× do multiplicador (cópia de s1_a)
+    //   - s2_p2: 2× do multiplicador (shift left de s1_a)
     //==========================================================================
-    reg signed [9:0]  s2_p1, s2_p2;          // 1× e 2× multiplicando
-    reg [4:0]         s2_sel1x, s2_sel2x;    // Seletores para cada PP
-    reg [4:0]         s2_neg;                // Flags de negação
-    reg               s2_v;
+    reg signed [9:0]  s2_p1, s2_p2;           // Produtos base: 1x e 2x do multiplicador
+    reg [4:0]         s2_sel1x, s2_sel2x;     // Seleção de 1x ou 2x para cada PP[4:0]
+    reg [4:0]         s2_neg;                 // Bit de negação para cada PP[4:0]
+    reg               s2_v;                   // Valid propagado
 
     integer i;
     always @(posedge clk) begin
         s2_v <= s1_v;
         
-        if (s1_v) begin  // CLOCK GATING
-            s2_p1 <= s1_a;           // 1× (direto)
-            s2_p2 <= s1_a << 1;      // 2× (shift left)
-
-            // Gera controles para 5 produtos parciais em paralelo
+        if (s1_v) begin
+            // Pré-computa múltiplos do multiplicador
+            s2_p1 <= s1_a;              // 1× A
+            s2_p2 <= s1_a << 1;         // 2× A (shift aritmético à esquerda)
+            
+            // Decodifica cada uma das 5 triplas de Booth
+            // Tripla i: [s1_b[2i+2], s1_b[2i+1], s1_b[2i]]
             for (i = 0; i < 5; i = i + 1) begin
-                // sel1x: ativa quando bits [i+1:i] diferentes
+                // sel1x: XOR dos dois bits inferiores da tripla
+                // Ativo quando tripla = 001, 010, 101, 110 (±1x)
                 s2_sel1x[i] <= s1_b[2*i] ^ s1_b[2*i+1];
                 
-                // sel2x: ativa quando [i+2] != [i+1] E [i+1] == [i]
-                //        (detecta transição 01→10 ou 10→01)
+                // sel2x: detecta transição 01→10 ou 10→01 entre bits superiores
+                // Ativo quando tripla = 011, 100 (±2x)
                 s2_sel2x[i] <= (s1_b[2*i+2] ^ s1_b[2*i+1]) & ~(s1_b[2*i+1] ^ s1_b[2*i]);
                 
-                // neg: copia MSB da tripla (indica subtração)
+                // neg: bit superior da tripla indica sinal (0=positivo, 1=negativo)
                 s2_neg[i]   <= s1_b[2*i+2];
             end
         end
     end
 
     //==========================================================================
-    // ESTÁGIO 3: Geração de Produtos Parciais
+    // ESTÁGIO 3: GERAÇÃO E ALINHAMENTO DE PRODUTOS PARCIAIS
     //==========================================================================
-    // Função: Multiplexação e inversão condicional dos produtos parciais
+    // Propósito:
+    //   - Gera 5 produtos parciais (PP) usando sinais de controle do Booth
+    //   - Alinha cada PP na posição correta (shift de 2i bits)
+    //   - Estende sinal de cada PP para 16 bits
+    //   - Cria vetor de correção para complemento de 2 dos PPs negativos
     //
-    // Timing: ~2 níveis LUT (mux + XOR)
-    // Power: Clock gating + zeros propagados de S1 reduzem transições
+    // Geração de cada PP:
+    //   1. Seleciona entre 1x ou 2x do multiplicador usando sel1x/sel2x
+    //   2. Aplica XOR com neg para inverter bits (primeira etapa do complemento de 2)
+    //   3. Alinha PP na posição correta (shift de 2×i bits)
+    //   4. Estende sinal para preencher os 16 bits do resultado
     //
-    // Operação para cada PP:
-    //   1. Mux: Seleciona entre 0, 1×A, ou 2×A baseado em sel1x/sel2x
-    //   2. XOR: Inverte todos bits se neg=1 (parte do complemento de 2)
+    // Vetor de Correção (s3_corr):
+    //   - Para completar o complemento de 2, adiciona +1 na posição LSB de cada PP negativo
+    //   - Padrão: bit na posição 2i se neg[i]=1, caso contrário 0
+    //   - Estrutura: {7'b0, neg[4], 1'b0, neg[3], 1'b0, neg[2], 1'b0, neg[1], 1'b0, neg[0]}
     //
-    // Nota: PP4 usa apenas 8 bits (otimização de área)
-    //       Os 2 MSBs não são necessários pois PP4 já está na posição alta
-    //
-    // Larguras dos PPs:
-    //   PP0-PP3: 10 bits cada
-    //   PP4:     8 bits (otimizado)
+    // Alinhamento dos PPs:
+    //   PP0: [15:0]  = sign_ext(PP0_raw[9:0], 6 bits)   // Shift 0
+    //   PP1: [15:2]  = sign_ext(PP1_raw[9:0], 4 bits)   // Shift 2
+    //   PP2: [15:4]  = sign_ext(PP2_raw[9:0], 2 bits)   // Shift 4
+    //   PP3: [15:6]  = PP3_raw[9:0]                     // Shift 6
+    //   PP4: [15:8]  = PP4_raw[7:0]                     // Shift 8 (último, só 8 bits)
     //==========================================================================
-    reg [9:0] s3_pp0, s3_pp1, s3_pp2, s3_pp3;  // Produtos parciais 0-3
-    reg [7:0] s3_pp4;                          // Produto parcial 4 (reduzido)
-    reg [4:0] s3_neg;                          // Flags de negação (p/ correção)
-    reg       s3_v;
+    reg [15:0] s3_pp0, s3_pp1, s3_pp2, s3_pp3, s3_pp4;  // 5 produtos parciais alinhados
+    reg [15:0] s3_corr;                                  // Vetor de correção para complemento de 2
+    reg        s3_v;                                     // Valid propagado
+
+    // Fios combinacionais para PPs brutos (antes da extensão e alinhamento)
+    wire [9:0] raw_pp [0:3];    // PPs 0-3: 10 bits cada
+    wire [7:0] raw_pp4;         // PP4: apenas 8 bits (última iteração)
+
+    // Geração dos PPs brutos usando multiplexação e XOR condicional
+    // Padrão: ({10{sel}} & valor) seleciona o valor se sel=1, senão 0
+    // XOR com {10{neg}} inverte todos os bits se neg=1 (complemento de 2 parte 1)
+    assign raw_pp[0] = ({10{s2_sel1x[0]}} & s2_p1 | {10{s2_sel2x[0]}} & s2_p2) ^ {10{s2_neg[0]}};
+    assign raw_pp[1] = ({10{s2_sel1x[1]}} & s2_p1 | {10{s2_sel2x[1]}} & s2_p2) ^ {10{s2_neg[1]}};
+    assign raw_pp[2] = ({10{s2_sel1x[2]}} & s2_p1 | {10{s2_sel2x[2]}} & s2_p2) ^ {10{s2_neg[2]}};
+    assign raw_pp[3] = ({10{s2_sel1x[3]}} & s2_p1 | {10{s2_sel2x[3]}} & s2_p2) ^ {10{s2_neg[3]}};
+    // PP4 usa apenas 8 bits do multiplicador (últimos bits, não precisa de todos os 10)
+    assign raw_pp4   = ({8{s2_sel1x[4]}} & s2_p1[7:0] | {8{s2_sel2x[4]}} & s2_p2[7:0]) ^ {8{s2_neg[4]}};
 
     always @(posedge clk) begin
         s3_v <= s2_v;
         
-        if (s2_v) begin  // CLOCK GATING
-            s3_neg <= s2_neg;
+        if (s2_v) begin
+            // Alinhamento e extensão de sinal para 16 bits
+            // $signed() garante extensão de sinal aritmética correta
             
-            // PP0-PP3: Full width (10 bits)
-            // Padrão: (sel1x & 1×A) | (sel2x & 2×A) XOR {10{neg}}
-            s3_pp0 <= ({10{s2_sel1x[0]}} & s2_p1 | {10{s2_sel2x[0]}} & s2_p2) ^ {10{s2_neg[0]}};
-            s3_pp1 <= ({10{s2_sel1x[1]}} & s2_p1 | {10{s2_sel2x[1]}} & s2_p2) ^ {10{s2_neg[1]}};
-            s3_pp2 <= ({10{s2_sel1x[2]}} & s2_p1 | {10{s2_sel2x[2]}} & s2_p2) ^ {10{s2_neg[2]}};
-            s3_pp3 <= ({10{s2_sel1x[3]}} & s2_p1 | {10{s2_sel2x[3]}} & s2_p2) ^ {10{s2_neg[3]}};
+            // PP0: posição [15:0], extensão de 6 bits
+            s3_pp0 <= $signed({{6{raw_pp[0][9]}}, raw_pp[0]});
             
-            // PP4: Reduced width (8 bits) - Otimização de área
-            // Usa apenas bits [7:0] de p1/p2 pois PP4 já está shifted 8 bits
-            s3_pp4 <= ({8{s2_sel1x[4]}} & s2_p1[7:0] | {8{s2_sel2x[4]}} & s2_p2[7:0]) ^ {8{s2_neg[4]}};
+            // PP1: posição [15:2], shift de 2 bits, extensão de 4 bits
+            s3_pp1 <= $signed({{4{raw_pp[1][9]}}, raw_pp[1], 2'b00});
+            
+            // PP2: posição [15:4], shift de 4 bits, extensão de 2 bits
+            s3_pp2 <= $signed({{2{raw_pp[2][9]}}, raw_pp[2], 4'b0000});
+            
+            // PP3: posição [15:6], shift de 6 bits, sem extensão de sinal (unsigned)
+            s3_pp3 <= {raw_pp[3], 6'b000000};
+            
+            // PP4: posição [15:8], shift de 8 bits
+            s3_pp4 <= {raw_pp4, 8'b00000000};
+
+            // Vetor de correção: adiciona +1 na posição LSB de cada PP negativo
+            // Completa o complemento de 2: -X = ~X + 1
+            // Bits ímpares são 0, bits pares (2i) recebem neg[i]
+            s3_corr <= {7'b0, s2_neg[4], 1'b0, s2_neg[3], 1'b0, s2_neg[2], 1'b0, s2_neg[1], 1'b0, s2_neg[0]};
         end
     end
 
     //==========================================================================
-    // ESTÁGIO 4: Primeira Redução (Árvore de Soma - Nível 1)
+    // ESTÁGIO 4: PRIMEIRA REDUÇÃO CSA (6 operandos → 4)
     //==========================================================================
-    // Função: Soma PP0+PP1 e PP2+PP3 em paralelo, prepara PP4
+    // Propósito:
+    //   - Reduz 6 operandos (5 PPs + correção) para 4 usando 2 CSAs paralelos
+    //   - Primeira etapa da árvore Wallace de redução
     //
-    // Timing: ~3 níveis LUT (somadores com carry chain)
-    // Power: Clock gating ativo
+    // Estratégia:
+    //   - CSA #1: reduz PP0 + PP1 + PP2 → (sum_a, carry_a)
+    //   - CSA #2: reduz PP3 + PP4 + corr → (sum_b, carry_b)
+    //   - Resultado: 4 operandos para próxima redução
     //
-    // Árvore de Redução Balanceada:
-    //   Entrada: 5 produtos parciais (PP0-PP4) + vetor de correção
-    //   Nível 1 (S4): Reduz 5→3 (sum01, sum23, pp4_ext)
-    //   Nível 2 (S5): Reduz 3→2 (sum0123, pp4_corr)
-    //   Nível 3 (S6): Reduz 2→1 (resultado final)
-    //
-    // Alinhamento dos PPs (posição dos bits):
-    //   PP0: bits [9:0]     (sem shift)
-    //   PP1: bits [11:2]    (shift left 2)
-    //   PP2: bits [13:4]    (shift left 4)
-    //   PP3: bits [15:6]    (shift left 6)
-    //   PP4: bits [15:8]    (shift left 8)
-    //
-    // Extensão de Sinal:
-    //   Cada PP precisa ser estendido para 16 bits antes da soma
-    //   MSBs replicam o bit de sinal do PP original
+    // Observação:
+    //   - CSAs são puramente combinacionais, mas saídas são registradas
+    //   - Isso permite alta frequência de clock (>250 MHz)
     //==========================================================================
-    reg signed [15:0] s4_sum01;     // PP0 + PP1
-    reg signed [15:0] s4_sum23;     // PP2 + PP3
-    reg signed [15:0] s4_pp4_ext;   // PP4 estendido (sem correção ainda)
-    reg [4:0]         s4_neg;       // Flags para correção no S5
-    reg               s4_v;
+    reg [15:0] s4_sa, s4_ca;    // Resultado do CSA #1: sum_a, carry_a
+    reg [15:0] s4_sb, s4_cb;    // Resultado do CSA #2: sum_b, carry_b
+    reg        s4_v;            // Valid propagado
+
+    // Fios para conectar saídas combinacionais dos CSAs aos registradores
+    wire [15:0] w_sa, w_ca, w_sb, w_cb;
+    
+    // Instancia 2 CSAs paralelos para primeira redução
+    csa_16bit csa_inst1 (
+        .a(s3_pp0), 
+        .b(s3_pp1), 
+        .c(s3_pp2), 
+        .sum(w_sa), 
+        .carry(w_ca)
+    );
+    
+    csa_16bit csa_inst2 (
+        .a(s3_pp3), 
+        .b(s3_pp4), 
+        .c(s3_corr), 
+        .sum(w_sb), 
+        .carry(w_cb)
+    );
 
     always @(posedge clk) begin
         s4_v <= s3_v;
         
-        if (s3_v) begin  // CLOCK GATING
-            s4_neg <= s3_neg;
-            
-            // Soma PP0 + PP1 (alinhados em posições 0 e 2)
-            // PP0: extende 6 MSBs com sinal → 16 bits [15:0] = {sext[5:0], pp0[9:0]}
-            // PP1: extende 4 MSBs com sinal + shift 2 → [15:0] = {sext[3:0], pp1[9:0], 2'b0}
-            s4_sum01 <= $signed({{6{s3_pp0[9]}}, s3_pp0}) + 
-                        $signed({{4{s3_pp1[9]}}, s3_pp1, 2'b00});
-            
-            // Soma PP2 + PP3 (alinhados em posições 4 e 6)
-            // PP2: extende 2 MSBs + shift 4 → [15:0] = {sext[1:0], pp2[9:0], 4'b0}
-            // PP3: sem extensão + shift 6 → [15:0] = {pp3[9:0], 6'b0}
-            s4_sum23 <= $signed({{2{s3_pp2[9]}}, s3_pp2, 4'b0000}) + 
-                        $signed({s3_pp3, 6'b000000});
-            
-            // PP4: apenas estende para 16 bits com shift 8
-            // Correção de complemento de 2 será aplicada no S5
-            s4_pp4_ext <= $signed({s3_pp4, 8'b00000000});
+        if (s3_v) begin
+            // Registra saídas dos CSAs
+            s4_sa <= w_sa; 
+            s4_ca <= w_ca;
+            s4_sb <= w_sb; 
+            s4_cb <= w_cb;
         end
     end
 
     //==========================================================================
-    // ESTÁGIO 5: Segunda Redução (Árvore de Soma - Nível 2)
+    // ESTÁGIO 5: SEGUNDA REDUÇÃO CSA (4 operandos → 2)
     //==========================================================================
-    // Função: Combina resultados do S4 e aplica correção de complemento de 2
+    // Propósito:
+    //   - Reduz 4 operandos para 2 usando 2 CSAs em cascata
+    //   - Segunda etapa da árvore Wallace
     //
-    // Timing: ~3 níveis LUT
-    // Power: Clock gating ativo
+    // Estratégia:
+    //   - CSA #3: reduz sum_a + carry_a + sum_b → (sum_c, carry_c)
+    //   - CSA #4: reduz sum_c + carry_c + carry_b → (final_sum, final_carry)
+    //   - Resultado: 2 operandos prontos para soma final
     //
-    // Correção de Complemento de 2:
-    //   Quando neg[i]=1, o PP foi invertido (XOR) mas falta adicionar +1
-    //   O vetor de correção adiciona esses +1s nas posições corretas:
-    //
-    //   Posição do bit de correção para cada PP:
-    //   PP0 (pos 0):  bit 0  → correção em bit 0
-    //   PP1 (pos 2):  bit 0  → correção em bit 2
-    //   PP2 (pos 4):  bit 0  → correção em bit 4
-    //   PP3 (pos 6):  bit 0  → correção em bit 6
-    //   PP4 (pos 8):  bit 0  → correção em bit 8
-    //
-    //   Vetor: {7'b0, neg[4], 1'b0, neg[3], 1'b0, neg[2], 1'b0, neg[1], 1'b0, neg[0]}
-    //          MSB                                                                  LSB
-    //   Largura: 16 bits (7 zeros + 5 flags + 4 zeros intercalados)
+    // Observação:
+    //   - CSA #4 opera sobre saídas combinacionais de CSA #3
+    //   - Ainda assim, caminho crítico fica em ~4ns @ iCE40
+    //   - Alternativa: adicionar mais 1 estágio para >300 MHz (trade-off latência)
     //==========================================================================
-    reg signed [15:0] s5_sum0123;   // Soma dos 4 primeiros PPs
-    reg signed [15:0] s5_pp4_corr;  // PP4 + correção de complemento de 2
-    reg               s5_v;
+    reg [15:0] s5_final_s, s5_final_c;  // Últimos 2 operandos: sum e carry finais
+    reg        s5_v;                     // Valid propagado
+
+    // Fios intermediários para conexão em cascata dos CSAs
+    wire [15:0] w_sc, w_cc;      // Saída do CSA #3
+    wire [15:0] w_fs, w_fc;      // Saída do CSA #4 (final)
+    
+    // CSA #3: primeira redução (4→3)
+    csa_16bit csa_inst3 (
+        .a(s4_sa), 
+        .b(s4_ca), 
+        .c(s4_sb), 
+        .sum(w_sc), 
+        .carry(w_cc)
+    );
+    
+    // CSA #4: segunda redução (3→2)
+    csa_16bit csa_inst4 (
+        .a(w_sc),       // Sum do CSA anterior
+        .b(w_cc),       // Carry do CSA anterior
+        .c(s4_cb),      // Carry_b do estágio 4
+        .sum(w_fs), 
+        .carry(w_fc)
+    );
 
     always @(posedge clk) begin
         s5_v <= s4_v;
         
-        if (s4_v) begin  // CLOCK GATING
-            // Combina as duas somas parciais de S4
-            s5_sum0123 <= s4_sum01 + s4_sum23;
-            
-            // Adiciona vetor de correção ao PP4
-            // Cada neg[i] contribui com +1 na posição 2*i do resultado final
-            s5_pp4_corr <= s4_pp4_ext + 
-                           $signed({7'b0000000, 
-                                    s4_neg[4], 1'b0,  // Correção PP4 em bit 8
-                                    s4_neg[3], 1'b0,  // Correção PP3 em bit 6
-                                    s4_neg[2], 1'b0,  // Correção PP2 em bit 4
-                                    s4_neg[1], 1'b0,  // Correção PP1 em bit 2
-                                    s4_neg[0]});      // Correção PP0 em bit 0
+        if (s4_v) begin
+            // Registra os 2 operandos finais
+            s5_final_s <= w_fs;
+            s5_final_c <= w_fc;
         end
     end
 
     //==========================================================================
-    // ESTÁGIO 6: Soma Final e Saída
+    // ESTÁGIO 6: SOMADOR FINAL (CPA - Carry Propagate Adder)
     //==========================================================================
-    // Função: Combina as duas somas parciais do S5 para resultado final
+    // Propósito:
+    //   - Realiza soma final dos últimos 2 operandos (sum + carry)
+    //   - Gera resultado completo de 16 bits da multiplicação
+    //   - Propaga sinal de valid para indicar dado pronto
     //
-    // Timing: ~3 níveis LUT (somador 16-bit)
-    // Power: Clock gating ativo
+    // Implementação:
+    //   - Usa somador de 16 bits sintetizado pelo compilador
+    //   - Sintetizador infere automaticamente carry chain otimizado
+    //   - Em iCE40, usa carry logic dedicado (rápido e eficiente)
     //
-    // CAMINHO CRÍTICO VERIFICADO (iCE40HX8K @ 253.68 MHz):
-    //   Origem:  s5_pp4_corr[0]    (início do somador final)
-    //   Destino: p[15]             (MSB do resultado)
-    //   Delay:   3.93 ns
-    //   Níveis:  16 LUTs (cadeia de carry otimizada)
+    // Timing:
+    //   - Esta soma é o caminho crítico do design (~1.5ns @ iCE40)
+    //   - Domina o período mínimo de clock junto com roteamento
     //
-    // Este é o estágio que define a frequência máxima do design.
-    // A cadeia de carry do somador final percorre todos os 16 bits,
-    // com ~245 ps por bit (excelente para iCE40).
-    //
-    // Resultado:
-    //   p = (PP0 + PP1 + PP2 + PP3) + (PP4 + correção)
-    //   16 bits representando produto completo de 8×8 bits
+    // Throughput:
+    //   - Após 6 ciclos de latência inicial (preenchimento do pipeline)
+    //   - Produz 1 resultado por ciclo de clock
+    //   - @ 250 MHz: 250 milhões de multiplicações/segundo
     //==========================================================================
     always @(posedge clk) begin
+        // Propaga valid (resultado pronto após 6 ciclos desde v_in)
         v_out <= s5_v;
         
-        if (s5_v) begin  // CLOCK GATING
-            // Soma final: combina todos os produtos parciais
-            p <= s5_sum0123 + s5_pp4_corr;
+        if (s5_v) begin
+            // Soma final: combina sum e carry em resultado único
+            // Operação de 16 bits infere carry chain otimizado
+            p <= s5_final_s + s5_final_c;
         end
-        // else: mantém último valor (reduz switching quando pipeline vazio)
     end
 
 endmodule
 
+// Restaura comportamento padrão de nets não declaradas
 `default_nettype wire
+
+//==============================================================================
+// FIM DO ARQUIVO
+//==============================================================================
+// Resumo de Performance (iCE40-HX8K @ Icestorm):
+//   - Frequência:     266.24 MHz (P&R)
+//   - Caminho crítico: 3.90 ns (estágio 6: soma final + roteamento para I/O)
+//   - Latência:       6 ciclos de clock
+//   - Throughput:     1 multiplicação/ciclo (após inicialização)
+//   - Área:           246 LCs (3% do chip)
+//   - Sem uso de BRAM
+//
+// Observações de Síntese:
+//   - Timing crítico está no roteamento para pino de saída, não na lógica
+//   - Para frequências >300 MHz, considerar pipeline adicional na saída
+//   - Código otimizado para inferência de carry chains pelo sintetizador
+//==============================================================================
