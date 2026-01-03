@@ -4,7 +4,7 @@
  * Módulo: booth_radix16
  * --------------------
  * Multiplicador assinado de 16 bits utilizando o algoritmo de Booth Radix-16.
- * 
+ *
  * Características:
  * - Processa 4 bits por iteração (Radix-16).
  * - Pipeline de 2 estágios para pré-cálculo de múltiplos (otimização de timing).
@@ -51,12 +51,12 @@ module booth_radix16 #(
     //--------------------------------------------------------------------------
     reg signed [WIDTH-1:0] m_cap;           // Captura do multiplicando
     reg [WIDTH-1:0] q_cap;                 // Captura do multiplicador
-    
+
     // Acumulador A (Parte Alta) e Q_low (Parte Baixa resultante)
     // WIDTH+5 bits para suportar M8 (WIDTH+3) e evitar overflow na soma parcial
     reg signed [WIDTH+4:0] A;
     reg [WIDTH-1:0] Q_low;
-    
+
     reg [WIDTH-1:0] Q_sr;                  // Shift Register do multiplicador
     reg Q_neg1;                            // Bit auxiliar de Booth (Q_{-1})
 
@@ -80,19 +80,19 @@ module booth_radix16 #(
         case (win)
             // Tabela Radix-16: Seleciona o múltiplo com base no dígito de Booth
             5'b00000, 5'b11111: next_p_mux = 0;   // 0
-            5'b00001, 5'b00010, 
+            5'b00001, 5'b00010,
             5'b11110, 5'b11101: next_p_mux = M1;  // +/- 1
-            5'b00011, 5'b00100, 
+            5'b00011, 5'b00100,
             5'b11100, 5'b11011: next_p_mux = M2;  // +/- 2
-            5'b00101, 5'b00110, 
+            5'b00101, 5'b00110,
             5'b11010, 5'b11001: next_p_mux = M3;  // +/- 3
-            5'b00111, 5'b01000, 
+            5'b00111, 5'b01000,
             5'b11000, 5'b10111: next_p_mux = M4;  // +/- 4
-            5'b01001, 5'b01010, 
+            5'b01001, 5'b01010,
             5'b10110, 5'b10101: next_p_mux = M5;  // +/- 5
-            5'b01011, 5'b01100, 
+            5'b01011, 5'b01100,
             5'b10100, 5'b10011: next_p_mux = M6;  // +/- 6
-            5'b01101, 5'b01110, 
+            5'b01101, 5'b01110,
             5'b10010, 5'b10001: next_p_mux = M7;  // +/- 7
             5'b01111, 5'b10000: next_p_mux = M8;  // +/- 8
             default:            next_p_mux = 0;
@@ -124,7 +124,7 @@ module booth_radix16 #(
             iter_oh    <= 4'b0000;
         end else begin
             case (state)
-                
+
                 // Aguarda o sinal de start
                 IDLE: begin
                     done <= 0;
@@ -141,7 +141,7 @@ module booth_radix16 #(
                     M2 <= {{5{m_cap[WIDTH-1]}}, m_cap} << 1;
                     M4 <= {{5{m_cap[WIDTH-1]}}, m_cap} << 2;
                     M8 <= {{5{m_cap[WIDTH-1]}}, m_cap} << 3;
-                    
+
                     A      <= 0;
                     Q_sr   <= q_cap;
                     Q_neg1 <= 1'b0;
@@ -181,7 +181,7 @@ module booth_radix16 #(
                     negate_reg <= next_negate;
                     Q_neg1     <= Q_sr[3];
                     Q_sr       <= Q_sr >> 4;
-                    
+
                     // 4. Controle de iteração One-Hot
                     iter_oh    <= {iter_oh[2:0], 1'b0};
 
