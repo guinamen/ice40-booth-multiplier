@@ -19,7 +19,7 @@ module radix8_booth_slice #
     wire [WIDTH+2:0] a_x4  = a_ext << 2;
 
     // ============================================================
-    // 2. Decodificação booleana mínima da magnitude
+    // 2. Magnitude mínima (radix-8)
     // ============================================================
 
     wire sign_bit = booth_bits[3];
@@ -28,17 +28,13 @@ module radix8_booth_slice #
     wire b1 = booth_bits[1];
     wire b0 = booth_bits[0];
 
-    // magnitude bits
-
     wire m0 = b1 ^ b0;
-
     wire c1 = b1 & b0;
     wire m1 = b2 ^ c1;
-
     wire m2 = b2 & c1;
 
     // ============================================================
-    // 3. Seleção por mascaramento (sem mux)
+    // 3. Seleção por mascaramento
     // ============================================================
 
     wire [WIDTH+2:0] part0 = { (WIDTH+3){m0} } & a_ext;
@@ -46,38 +42,40 @@ module radix8_booth_slice #
     wire [WIDTH+2:0] part2 = { (WIDTH+3){m2} } & a_x4;
 
     // ============================================================
-    // 4. Compressão CSA (3 operandos → 2 vetores)
+    // 4. CSA da magnitude positiva
     // ============================================================
 
-    wire [WIDTH+2:0] s1;
-    wire [WIDTH+2:0] c1_csa;
+    wire [WIDTH+2:0] s_pos;
+    wire [WIDTH+2:0] c_pos;
 
-    assign s1 = part0 ^ part1 ^ part2;
+    assign s_pos = part0 ^ part1 ^ part2;
 
-    assign c1_csa =
+    assign c_pos =
         ((part0 & part1) |
          (part0 & part2) |
          (part1 & part2)) << 1;
 
     // ============================================================
-    // 5. Aplicação do sinal (XOR + correção)
+    // 5. Aplicação correta do sinal em carry-save
     // ============================================================
 
-    wire [WIDTH+2:0] sign_mask = { (WIDTH+3){sign_bit} };
+    wire [WIDTH+2:0] mask = { (WIDTH+3){sign_bit} };
 
-    wire [WIDTH+2:0] op_sum   = s1 ^ sign_mask;
-    wire [WIDTH+2:0] op_carry = c1_csa ^ sign_mask;
+    // inverte ambos
+    wire [WIDTH+2:0] s_inv = s_pos ^ mask;
+    wire [WIDTH+2:0] c_inv = c_pos ^ mask;
 
+    // correção = 2 quando negativo
     wire [WIDTH+2:0] correction =
-        { {(WIDTH+2){1'b0}}, sign_bit };
+        sign_bit ? {{(WIDTH+1){1'b0}}, 2'b10} :
+                   {(WIDTH+3){1'b0}};
 
-    // CSA final (3:2)
-
-    assign sum = op_sum ^ op_carry ^ correction;
+    // CSA final
+    assign sum = s_inv ^ c_inv ^ correction;
 
     assign carry =
-        ((op_sum & op_carry) |
-         (op_sum & correction) |
-         (op_carry & correction)) << 1;
+        ((s_inv & c_inv) |
+         (s_inv & correction) |
+         (c_inv & correction)) << 1;
 
 endmodule
